@@ -1,5 +1,9 @@
 .nav ul{
   display: flex;
-  gap: 10px;
+  gap: 20px;
   list-style: none;
+}
+
+.link {
+  font-weight: 700;
 }

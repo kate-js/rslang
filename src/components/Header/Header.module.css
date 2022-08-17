@@ -1,0 +1,17 @@
+header {
+  display: flex;
+  box-shadow: inset 0px 0px 5px gray;
+  padding: 10px 0;
+  font-family: 'Roboto', sans-serif;
+}
+
+header a {
+  display: flex;
+  text-decoration: none;
+  color: black;
+}
+
+.logo {
+  max-width: 55px;
+  margin: auto 10px;
+}

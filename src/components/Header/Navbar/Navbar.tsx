@@ -6,13 +6,19 @@ export const Navbar = () => {
     <nav className={styles.nav}>
       <ul>
         <li>
-          <Link to="/">Home</Link>
+          <Link to="/" className={styles.link}>
+            Home
+          </Link>
         </li>
         <li>
-          <Link to="/about">About us</Link>
+          <Link to="/about" className={styles.link}>
+            About us
+          </Link>
         </li>
         <li>
-          <Link to="/games">Games</Link>
+          <Link to="/games" className={styles.link}>
+            Games
+          </Link>
         </li>
       </ul>
     </nav>
