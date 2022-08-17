@@ -1,0 +1,44 @@
+.home {
+  height: calc(100vh - 140px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+body {
+  margin: 0;
+}
+
+.main {
+  display: flex;
+  background-color: rgba(2, 57, 134, 0.9);
+  height: 100%;
+  margin: 0;
+  align-items: center;
+  justify-content: space-around;
+  padding: 0 50px;
+  font-family: 'Roboto', sans-serif;
+}
+
+.main_image {
+  display: block;
+  height: fit-content;
+  max-width: 500px;
+}
+
+.main_info {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  max-width: 400px;
+  font-size: 20px;
+}
+
+.main_info p {
+  text-indent: 30px;
+  text-align: justify;
+}
+
+.main_info h1 {
+  text-align: center;
+}
