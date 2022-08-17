@@ -1,4 +1,3 @@
-import React from 'react';
 import GitHub from './assets/GitHub.png';
 import RSSchool from './assets/Rss_Logo.svg';
 import footer from './Footer.module.css';
