@@ -1,0 +1,57 @@
+.modal {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.wrap {
+  padding: 20px 0 20px 0;
+  position: absolute;
+  width: 320px;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  background-color: #f7cc7e;
+}
+
+.link_list {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 40px 0 0 0;
+}
+
+.link_item {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.item_active {
+  background-color: hsla(0, 0%, 100%, 0.5);
+}
+
+.link {
+  font-weight: 700;
+  text-decoration: none;
+  color: black;
+}
+
+.close {
+  font-size: 26px;
+  position: absolute;
+  top: 10px;
+  left: 20px;
+}
+
+.close:hover {
+  cursor: pointer;
+}
