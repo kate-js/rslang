@@ -1,29 +1,16 @@
-.home {
-  height: calc(100vh - 140px);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
-
-body {
-  margin: 0;
-}
-
 .main {
   display: flex;
   background-color: rgba(2, 57, 134, 0.9);
-  height: 100%;
-  margin: 0;
   align-items: center;
   justify-content: space-around;
-  padding: 0 50px;
   font-family: 'Roboto', sans-serif;
+  width: 100%;
 }
 
 .main_image {
   display: block;
   height: fit-content;
-  max-width: 500px;
+  width: 500px;
 }
 
 .main_info {
