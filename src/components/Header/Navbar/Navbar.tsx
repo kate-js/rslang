@@ -26,6 +26,11 @@ export const Navbar = () => {
             Statistics
           </Link>
         </li>
+        <li>
+          <Link to="/tutorial" className={styles.link}>
+            Tutorial
+          </Link>
+        </li>
       </ul>
     </nav>
   );
