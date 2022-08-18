@@ -1,0 +1,28 @@
+footer {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 20px;
+  font-family: 'Roboto', sans-serif;
+  box-shadow: inset 0px 0px 5px gray;
+}
+
+footer a {
+  display: flex;
+  text-decoration: none;
+  color: black;
+  align-items: center;
+}
+
+.gitHub_link {
+  display: flex;
+  gap: 10px;
+}
+
+.github {
+  width: 40px;
+  height: 40px;
+}
+
+.rss_school {
+  width: 90px;
+}

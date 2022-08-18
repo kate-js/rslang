@@ -1,0 +1,37 @@
+.main {
+  background-color: rgba(2, 57, 134, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  font-family: 'Roboto', sans-serif;
+  width: 100%;
+}
+
+.main_image {
+  display: block;
+  height: fit-content;
+  width: 500px;
+}
+
+.main_info {
+  display: flex;
+  flex-direction: column;
+  color: white;
+  max-width: 400px;
+  font-size: 20px;
+}
+
+.main_info p {
+  text-indent: 30px;
+  text-align: justify;
+}
+
+.main_info h1 {
+  text-align: center;
+}
+
+@media screen and (max-width: 1024px) {
+  .main {
+    flex-direction: column;
+  }
+}
