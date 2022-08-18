@@ -1,0 +1,39 @@
+.wrap {
+  margin: 0 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.burger {
+  display: flex;
+  flex-direction: column;
+  width: 22px;
+  row-gap: 7px;
+}
+
+.burger:hover {
+  cursor: pointer;
+}
+
+.button {
+  width: 120px;
+  height: 40px;
+  font-size: 18px;
+  border: 0;
+  background-color: rgba(2, 57, 134, 0.9);
+  color: #fff;
+}
+
+.button:hover {
+  cursor: pointer;
+  box-shadow: inset 2px 2px 0 0 #f7cc7e, inset -2px -2px 0 0 #f7cc7e;
+  background-color: #fff;
+  color: #000000;
+}
+
+.burger_item {
+  height: 3px;
+  width: 100%;
+  background-color: #000000;
+}

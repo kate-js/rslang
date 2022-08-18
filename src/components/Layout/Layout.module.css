@@ -10,6 +10,8 @@
   display: flex;
 }
 
-header, main, footer {
+header,
+main,
+footer {
   flex-shrink: 0;
 }

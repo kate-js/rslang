@@ -1,9 +1,14 @@
-.nav ul{
+.link_list {
   display: flex;
+  align-items: center;
   gap: 20px;
   list-style: none;
+  margin: 0;
+  padding: 0;
 }
 
 .link {
   font-weight: 700;
+  text-decoration: none;
+  color: black;
 }

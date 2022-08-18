@@ -1,22 +1,23 @@
 import { Link } from 'react-router-dom';
 import styles from './Navbar.module.css';
+import { ERoutes } from '../../../utils/constants';
 
 export const Navbar = () => {
   return (
     <nav className={styles.nav}>
-      <ul>
+      <ul className={styles.link_list}>
         <li>
-          <Link to="/" className={styles.link}>
+          <Link to={ERoutes.home} className={styles.link}>
             Home
           </Link>
         </li>
         <li>
-          <Link to="/about" className={styles.link}>
+          <Link to={ERoutes.about} className={styles.link}>
             About us
           </Link>
         </li>
         <li>
-          <Link to="/games" className={styles.link}>
+          <Link to={ERoutes.games} className={styles.link}>
             Games
           </Link>
         </li>

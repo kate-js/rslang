@@ -1,5 +1,6 @@
 import Logo from './assets/Logo.png';
 import { Navbar } from './Navbar/Navbar';
+import Auth from './Auth/Auth';
 import header from './Header.module.css';
 
 export const Header = () => {
@@ -7,6 +8,7 @@ export const Header = () => {
     <header>
       <img src={Logo} alt="Logo" className={header.logo} />
       <Navbar />
+      <Auth />
     </header>
   );
 };
