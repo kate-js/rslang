@@ -1,6 +1,11 @@
 import styles from './About.module.css'
+<<<<<<< HEAD
 import { TeamMember } from '../TeamMember';
 import image from '../assets/member-photo.png'
+=======
+import { TeamMember } from './TeamMember';
+import image from '../../assets/member-photo.png'
+>>>>>>> 787349b (refactor: change files folder)
 
 export const About = () => {
   return (
@@ -12,6 +17,7 @@ export const About = () => {
           name={'Иван Потапов'} 
           role={'Team Lead'} 
           description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}
+          link={'https://github.com/ivnpotapov'}
         />
 
         <TeamMember 
@@ -19,6 +25,7 @@ export const About = () => {
           name={'Екатерина Вакульская'} 
           role={'Developer'}
           description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}
+          link={'https://github.com/kate-js'}
         />
 
         <TeamMember 
@@ -26,6 +33,7 @@ export const About = () => {
           name={'Глеб Сидоренко'} 
           role={'Developer'} 
           description={'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'}
+          link={'https://github.com/glsidorenko'}
         />
       </div>
     </div>
