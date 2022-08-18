@@ -1,11 +1,7 @@
 import styles from './About.module.css'
-<<<<<<< HEAD
-import { TeamMember } from '../TeamMember';
-import image from '../assets/member-photo.png'
-=======
+
 import { TeamMember } from './TeamMember';
 import image from '../../assets/member-photo.png'
->>>>>>> 787349b (refactor: change files folder)
 
 export const About = () => {
   return (
