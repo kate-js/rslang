@@ -7,6 +7,7 @@ import { Home } from './pages/Home/Home';
 import { NotFound } from './pages/NotFound/NotFound';
 import { Sprint } from './pages/Sprint/Sprint';
 import './App.module.css';
+import { Statistics } from './pages/Statistics/Statistics';
 
 export default function App() {
   return (
@@ -19,6 +20,7 @@ export default function App() {
             <Route path="/games" element={<Games />} />
             <Route path="/games/audio" element={<Audio />} />
             <Route path="/games/sprint" element={<Sprint />} />
+            <Route path="/statistics" element={<Statistics />} />
             <Route path="*" element={<NotFound />} />
           </Route>
         </Routes>
