@@ -1,0 +1,46 @@
+.about {
+  max-width: 1200px;
+  margin: 0 auto;
+  font-size: 18px;
+}
+
+.title {
+  text-align: center;
+}
+
+.team {
+  padding-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
+}
+
+.member {
+  width: 300px;
+  text-align: center;
+}
+
+.photo {
+  height: 250px;
+}
+
+.name {
+  font-size: 24px;
+}
+
+.description {
+  text-align: justify;
+}
+
+.github {
+  width: 75px;
+  height: 75px;
+}
+
+@media all and (max-width: 1074px) {
+
+  .team {
+    gap: 40px 80px;
+  }
+}
