@@ -6,6 +6,7 @@ import { Games } from './pages/Games/Games';
 import { Home } from './pages/Home/Home';
 import { NotFound } from './pages/NotFound/NotFound';
 import { Sprint } from './pages/Sprint/Sprint';
+import './App.module.css';
 
 export default function App() {
   return (
