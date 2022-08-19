@@ -10,6 +10,7 @@ import { Sprint } from './pages/Sprint/Sprint';
 import './App.module.css';
 import { Statistics } from './pages/Statistics/Statistics';
 import { Tutorial } from './pages/Tutorial/Tutorial';
+import { GroupLevel } from './pages/Tutorial_group/GroupLevel';
 
 export default function App() {
   return (
@@ -22,6 +23,7 @@ export default function App() {
             <Route path={ERoutes.games} element={<Games />} />
             <Route path={ERoutes.statistics} element={<Statistics />} />
             <Route path={ERoutes.tutorial} element={<Tutorial />} />
+            <Route path={`${ERoutes.tutorial}${ERoutes.grouplevel}`} element={<GroupLevel />} />
             <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<Audio />} />
             <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
             <Route path={ERoutes.notFound} element={<NotFound />} />

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import styles from './Tutorial.module.css';
 import { MouseEvent } from 'react';
 import { Tutorial_description } from './Tutorial.description.tsx/Tutorial_description';
-import { cardTutorial, ERoutes } from '../../utils/constants';
+import { cardTutorial } from '../../utils/constants';
 import { fontPageTutorial } from '../../data/Data';
 import { Link } from 'react-router-dom';
 
@@ -18,32 +18,32 @@ export const Tutorial = () => {
     <div className={styles.tutorial}>
       <ul className={styles.levels}>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             A1
           </Link>
         </li>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             A2
           </Link>
         </li>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             B1
           </Link>
         </li>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             B2
           </Link>
         </li>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             C1
           </Link>
         </li>
         <li>
-          <Link to={ERoutes.home} className={styles.link} onMouseOver={asd}>
+          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
             C2
           </Link>
         </li>

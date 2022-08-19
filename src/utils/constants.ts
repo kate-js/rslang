@@ -6,7 +6,7 @@ export enum ERoutes {
   sprint = '/sprint',
   statistics = '/statistics',
   tutorial = '/tutorial',
-  group1 = '/tutorial/group1',
+  grouplevel = '/tutorial/grouplevel',
   notFound = '*'
 }
 
@@ -16,4 +16,8 @@ export type cardTutorial = {
   url: string;
   description: string;
   bigName: string;
+};
+
+export type Props = {
+  children: React.ReactNode;
 };
