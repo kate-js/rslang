@@ -1,7 +1,16 @@
+.tutorial {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
 .levels {
   display: flex;
   justify-content: space-around;
   padding-left: 0;
+  justify-content: center;
+  gap: 30px;
   width: 100%;
 }
 
@@ -28,16 +37,9 @@
   cursor: pointer;
 }
 
-.image {
-  width: 300px;
-  height: 250px;
-  display: block;
-}
-
-.tutorial {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
+.link {
+  font-weight: 700;
+  text-decoration: none;
+  color: black;
+  padding: 30px;
 }
