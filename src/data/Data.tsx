@@ -5,6 +5,7 @@ import C2 from '../pages/Tutorial/assets/C2.png';
 import B1 from '../pages/Tutorial/assets/B1.png';
 import B2 from '../pages/Tutorial/assets/B2.png';
 import { cardTutorial } from '../utils/constants';
+import image from '../assets/member-photo.png';
 
 export const fontPageTutorial: cardTutorial[] = [
   {
@@ -54,5 +55,32 @@ export const fontPageTutorial: cardTutorial[] = [
     url: C2,
     description:
       'Итак, finishная. Сложнее этих слов только подъемы с утра. Но вы справитесь. Бонусом будет прекрасное понимание и владение темой разговора без подготовки (включая узкоориентированные темы), свободное выражение мнения, чтение без услилий. Давно мечтали поговорить о медицине, астрологии или юриспруденции? Теперь это не будет проблемой.'
+  }
+];
+
+export const membersData = [
+  {
+    img: image,
+    name: 'Иван Потапов',
+    role: 'Team Lead',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ',
+    link: 'https://github.com/ivnpotapov'
+  },
+  {
+    img: image,
+    name: 'Екатерина Вакульская',
+    role: 'Developer',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    link: 'https://github.com/kate-js'
+  },
+  {
+    img: image,
+    name: 'Глеб Сидоренко',
+    role: 'Developer',
+    description:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    link: 'https://github.com/glsidorenko'
   }
 ];
