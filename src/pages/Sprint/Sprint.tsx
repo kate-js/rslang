@@ -1,3 +1,9 @@
+import styles from './Sprint.module.css';
+
 export const Sprint = () => {
-  return <div>Здесь будет игра Спринт</div>;
+  return (
+    <div className={styles.sprint}>
+      <div className={styles.word}>Слово блок</div>
+    </div>
+  );
 };

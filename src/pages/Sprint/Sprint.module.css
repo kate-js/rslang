@@ -1,0 +1,15 @@
+.sprint {
+  background-color: rgba(2, 57, 134, 0.9);
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.word {
+  border: 1px solid white;
+  border-radius: 5%;
+  background-color: white;
+  width: 40%;
+  height: 50vh;
+}
