@@ -2,18 +2,18 @@ import { Link } from 'react-router-dom';
 import { Button } from '../../components/UI/Button/Button';
 import { ERoutes } from '../../utils/constants';
 import styles from './Sprint.module.css';
-import Close from './close.png';
-import Arrow from './arrow.png';
-import Love from './love.png';
-import Note from './note.png';
+import Close from './assets/close.png';
+import Arrow from './assets/arrow.png';
+import Love from './assets/love.png';
+import Note from './assets/note.png';
 
 export const Sprint = () => {
   return (
     <div className={styles.sprint}>
-      <p>Таймер</p>
+      <p className={styles.timer}>Таймер</p>
       <div className={styles.main}>
         <div className={styles.counter_section}>
-          <p className={styles.counter}>Счетчик</p>
+          <p className={styles.counter}>0</p>
           <img src={Note} alt="volume" className={styles.note} />
         </div>
         <div className={styles.word_section}>
@@ -41,7 +41,7 @@ export const Sprint = () => {
           </div>
         </div>
       </div>
-      <div>
+      <div className={styles.close_section}>
         <Link to={ERoutes.games} className={styles.link}>
           <img src={Close} alt="close" className={styles.close_button} />
         </Link>

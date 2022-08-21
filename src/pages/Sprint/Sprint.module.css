@@ -4,10 +4,9 @@
   display: flex;
   flex-direction: row;
   justify-content: center;
-  align-items: center;
   align-items: flex-start;
   color: white;
-  padding-top: 50px;
+  padding-top: 20px;
 }
 
 .word_section {
@@ -15,12 +14,12 @@
   border-radius: 3%;
   background-color: white;
   width: 30vw;
-  height: 50vh;
+  height: 60vh;
   color:rgba(2, 57, 134, 1);
   display: flex;
   flex-direction: column;
   gap: 10px;
-  padding: 10px;
+  justify-content: space-around;
 }
 
 .main {
@@ -84,6 +83,7 @@
 .word,
 .translation {
   text-align: center;
+  margin: 0;
 }
 
 .word {
@@ -111,9 +111,16 @@
 .counter {
   flex-grow: 1;
   text-align: center;
-  margin-left: 25px;
   font-size: 30px;
   font-weight: 600;
   margin: 0;
-  padding: 5px;
+  padding: 5px 5px 0px 30px;
+}
+.timer,
+.close_section {
+  width: 50px;
+}
+
+.timer {
+  margin: 0;
 }
