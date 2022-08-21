@@ -1,3 +1,15 @@
 .button {
-  background-color: tomato;
+  background-color: rgba(2, 57, 134, 0.9);
+  width: 120px;
+  color:white;
+  font-family: 'Roboto', sans-serif;
+  border-radius: 10px;
+  border: 2px solid gray;
+  padding: 10px 15px;
+  margin: 5px;
+  cursor: pointer;
+}
+
+.button:hover {
+  background-color: rgba(2, 57, 134, 0.5);
 }
