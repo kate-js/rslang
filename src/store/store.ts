@@ -12,18 +12,3 @@ export const store = configureStore({
 });
 
 export type TState = ReturnType<typeof rootReducer>;
-
-// export type TState = {
-//   testToolkit: { value: number };
-//   auth: {
-//     currentUser: {
-//       message: string;
-//       token: string;
-//       refreshToken: string;
-//       userId: string;
-//       name: string;
-//     };
-//     isModalSignupOpen: boolean;
-//     isModalSigninOpen: boolean;
-//   };
-// };

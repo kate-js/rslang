@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   initialState,
@@ -21,6 +21,14 @@ const Auth = () => {
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
 
   const [isModalNavOpen, setIsModalNavOpen] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem('currentUser')) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') as string);
+      dispatch(setCurrentUser(currentUser));
+      dispatch(setIsLogined(true));
+    }
+  }, []);
 
   const handleBurgerClick = () => {
     setIsModalNavOpen(true);
