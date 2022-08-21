@@ -9,22 +9,27 @@ import { NotFound } from './pages/NotFound/NotFound';
 import { Sprint } from './pages/Sprint/Sprint';
 import './App.module.css';
 import { Statistics } from './pages/Statistics/Statistics';
+import { Provider } from 'react-redux';
+import { store } from './store/store';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route>
-            <Route index element={<Home />} />
-            <Route path={ERoutes.about} element={<About />} />
-            <Route path={ERoutes.games} element={<Games />} />
-            <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<Audio />} />
-            <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
-            <Route path={ERoutes.notFound} element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route>
+              <Route index element={<Home />} />
+              <Route path={ERoutes.about} element={<About />} />
+              <Route path={ERoutes.games} element={<Games />} />
+              <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<Audio />} />
+              <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
+              <Route path={`${ERoutes.statistics}`} element={<Statistics />} />
+              <Route path={ERoutes.notFound} element={<NotFound />} />
+            </Route>
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </Provider>
   );
 }

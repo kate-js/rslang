@@ -1,11 +1,44 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styles from './ModalSignup.module.css';
+import { api } from '../../../utils/Api';
 
 interface IProps {
   onClose: () => void;
+  openSignin: () => void;
 }
 
 const ModalSignup = (props: IProps) => {
+  const [username, setUsername] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handelUsernameChange = (e: React.ChangeEvent) => {
+    const target = e.target as HTMLInputElement;
+    setUsername(target.value);
+  };
+
+  const handelEmailChange = (e: React.ChangeEvent) => {
+    const target = e.target as HTMLInputElement;
+    setEmail(target.value);
+  };
+
+  const handelPasswordChange = (e: React.ChangeEvent) => {
+    const target = e.target as HTMLInputElement;
+    setPassword(target.value);
+  };
+
+  const handelSignupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const newUser = { name: username, email, password };
+    try {
+      await api.signup(newUser);
+      props.onClose();
+      props.openSignin();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
   return (
     <div className={styles.modal}>
       <nav className={styles.wrap}>
@@ -13,10 +46,12 @@ const ModalSignup = (props: IProps) => {
           X
         </span>
         <h2 className={styles.title}>Sign Up</h2>
-        <form className={styles.form} name="signup">
+        <form className={styles.form} onSubmit={handelSignupSubmit} name="signup">
           <div className={styles.input_item}>
             <label className={styles.input_label}>Name</label>
             <input
+              defaultValue={username}
+              onChange={handelUsernameChange}
               required
               placeholder="Name"
               className={styles.input}
@@ -27,6 +62,8 @@ const ModalSignup = (props: IProps) => {
           <div className={styles.input_item}>
             <label className={styles.input_label}>E-mail</label>
             <input
+              defaultValue={email}
+              onChange={handelEmailChange}
               required
               placeholder="Email"
               className={styles.input}
@@ -37,6 +74,8 @@ const ModalSignup = (props: IProps) => {
           <div className={styles.input_item}>
             <label className={styles.input_label}>Password</label>
             <input
+              defaultValue={password}
+              onChange={handelPasswordChange}
               required
               placeholder="Password"
               className={styles.input}
@@ -44,17 +83,10 @@ const ModalSignup = (props: IProps) => {
               type="password"
             />
           </div>
-        </form>
-
-        <div className={styles.control_wrap}>
           <button type="submit" className={styles.button} aria-label="Sign Up">
             Sign Up
           </button>
-          <div className={styles.text_container}>
-            <p className={styles.text}>Ещё не зарегистрированы?</p>
-            <p className={styles.text_link}>Регистрация</p>
-          </div>
-        </div>
+        </form>
       </nav>
     </div>
   );
