@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../../components/UI/Button/Button';
 import { ERoutes } from '../../utils/constants';
 import { useEffect, useState } from 'react';
@@ -8,16 +8,23 @@ import Close from './assets/close.png';
 import Arrow from './assets/arrow.png';
 import Love from './assets/love.png';
 import Note from './assets/note.png';
+import { Modal } from './Modal/Modal';
 
 export const Sprint = () => {
   const [seconds, setSeconds] = useState(60);
   const [timerActive, setTimerActive] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const navigate = useNavigate();
+  const refreshPage = () => {
+    navigate(0);
+  };
 
   useEffect(() => {
     if (seconds > 0 && timerActive) {
       setTimeout(setSeconds, 1000, seconds - 1);
     } else {
       setTimerActive(false);
+      setVisible(true);
     }
   }, [seconds, timerActive]);
 
@@ -25,11 +32,26 @@ export const Sprint = () => {
     <div className={styles.sprint}>
       <div className={styles.timer}>
         {seconds && timerActive ? (
-          <div onClick={() => setTimerActive(!timerActive)}>{seconds}</div>
+          <div onClick={() => setTimerActive(!timerActive)} className={styles.timer_time}>
+            {seconds}
+          </div>
         ) : seconds && !timerActive ? (
           <div onClick={() => setTimerActive(!timerActive)}>||</div>
         ) : (
-          <div>Таймер</div>
+          <Modal visible={visible}>
+            <p>результаты игры</p>
+            <Link to={ERoutes.games} className={styles.link}>
+              Вернуться к выбору игры
+            </Link>
+            <Link
+              onClick={() => {
+                setVisible(false), refreshPage();
+              }}
+              className={styles.link}
+              to={''}>
+              Продолжить играть
+            </Link>
+          </Modal>
         )}
       </div>
       <div className={styles.main}>
