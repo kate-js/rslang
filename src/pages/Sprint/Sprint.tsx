@@ -1,6 +1,8 @@
 import { Link } from 'react-router-dom';
 import { Button } from '../../components/UI/Button/Button';
 import { ERoutes } from '../../utils/constants';
+import { useEffect, useState } from 'react';
+
 import styles from './Sprint.module.css';
 import Close from './assets/close.png';
 import Arrow from './assets/arrow.png';
@@ -8,9 +10,28 @@ import Love from './assets/love.png';
 import Note from './assets/note.png';
 
 export const Sprint = () => {
+  const [seconds, setSeconds] = useState(60);
+  const [timerActive, setTimerActive] = useState(false);
+
+  useEffect(() => {
+    if (seconds > 0 && timerActive) {
+      setTimeout(setSeconds, 1000, seconds - 1);
+    } else {
+      setTimerActive(false);
+    }
+  }, [seconds, timerActive]);
+
   return (
     <div className={styles.sprint}>
-      <p className={styles.timer}>Таймер</p>
+      <div className={styles.timer}>
+        {seconds && timerActive ? (
+          <div onClick={() => setTimerActive(!timerActive)}>{seconds}</div>
+        ) : seconds && !timerActive ? (
+          <div onClick={() => setTimerActive(!timerActive)}>||</div>
+        ) : (
+          <div>Таймер</div>
+        )}
+      </div>
       <div className={styles.main}>
         <div className={styles.counter_section}>
           <p className={styles.counter}>0</p>
