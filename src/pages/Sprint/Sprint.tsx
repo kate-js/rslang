@@ -32,11 +32,11 @@ export const Sprint = () => {
     <div className={styles.sprint}>
       <div className={styles.timer}>
         {seconds && timerActive ? (
-          <div onClick={() => setTimerActive(!timerActive)} className={styles.timer_time}>
-            {seconds}
-          </div>
+          <div onClick={() => setTimerActive(!timerActive)}>{seconds}</div>
         ) : seconds && !timerActive ? (
-          <div onClick={() => setTimerActive(!timerActive)}>||</div>
+          <div onClick={() => setTimerActive(!timerActive)} className={styles.timer_pause}>
+            ||
+          </div>
         ) : (
           <Modal visible={visible}>
             <p>результаты игры</p>
