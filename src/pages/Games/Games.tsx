@@ -17,21 +17,25 @@ export const Games = () => {
 
   return (
     <div className={styles.games}>
-      <Link to={`${ERoutes.games}${ERoutes.audio}`}>
-        <NewGame name='Спринт' img={SprintImage}/>
-      </Link>
 
-      <Link to={`${ERoutes.games}${ERoutes.sprint}`}>
-        <NewGame name='Аудиовызов' img={AudioImage} />
-      </Link>
+      <h1>Выбор игры</h1>
+      <div className={styles.wrapper}>
+        <Link to={`${ERoutes.games}${ERoutes.sprint}`}>
+          <NewGame name='Спринт' img={SprintImage}/>
+        </Link>
 
-      <div className={styles.select_level}>
-        <LangLevel id='level-1' descr='A1 - Beginner' value='1' onChange={onInputChange} />
-        <LangLevel id='level-2' descr='A2 - Elementary' value='2' onChange={onInputChange} />
-        <LangLevel id='level-3' descr='B1 - Intermediate' value='3' onChange={onInputChange} />
-        <LangLevel id='level-4' descr='B2 - Upper Intermediate' value='4' onChange={onInputChange} />
-        <LangLevel id='level-5' descr='C1 - Advanced' value='5' onChange={onInputChange} />
-        <LangLevel id='level-6' descr='C2 - Proficiency' value='6' onChange={onInputChange} />
+        <div className={styles.select_level}>
+          <LangLevel id='level-1' descr='A1 - Beginner' value='1' onChange={onInputChange} />
+          <LangLevel id='level-2' descr='A2 - Elementary' value='2' onChange={onInputChange} />
+          <LangLevel id='level-3' descr='B1 - Intermediate' value='3' onChange={onInputChange} />
+          <LangLevel id='level-4' descr='B2 - Upper Intermediate' value='4' onChange={onInputChange} />
+          <LangLevel id='level-5' descr='C1 - Advanced' value='5' onChange={onInputChange} />
+          <LangLevel id='level-6' descr='C2 - Proficiency' value='6' onChange={onInputChange} />
+        </div>
+
+        <Link to={`${ERoutes.games}${ERoutes.audio}`}>
+          <NewGame name='Аудиовызов' img={AudioImage} />
+        </Link>
       </div>
     </div>
   );
