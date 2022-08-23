@@ -7,7 +7,7 @@
     "node": "16.x"
   },
   "scripts": {
-    "start": "vite preview",
+    "heroku-postbuild": "ng build --prod",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
