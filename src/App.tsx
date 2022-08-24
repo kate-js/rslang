@@ -23,7 +23,7 @@ export default function App() {
             <Route path={ERoutes.games} element={<Games />} />
             <Route path={ERoutes.statistics} element={<Statistics />} />
             <Route path={ERoutes.tutorial} element={<Tutorial />} />
-            <Route path={`${ERoutes.tutorial}${ERoutes.grouplevel}`} element={<GroupLevel />} />
+            <Route path={`${ERoutes.tutorial}/:level`} element={<GroupLevel />} />
             <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<Audio />} />
             <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
             <Route path={ERoutes.notFound} element={<NotFound />} />

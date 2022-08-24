@@ -3,12 +3,11 @@ import styles from './Tutorial.module.css';
 import { MouseEvent } from 'react';
 import { Tutorial_description } from './Tutorial.description.tsx/Tutorial_description';
 import { cardTutorial } from '../../utils/constants';
-import { fontPageTutorial } from '../../data/Data';
+import { fontPageTutorial, LEVELS_main } from '../../data/Data';
 import { Link } from 'react-router-dom';
 
 export const Tutorial = () => {
   const [level, setLevel] = useState('A1');
-  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
   function updateLevel(event: MouseEvent) {
     const level = (event.target as HTMLElement).innerHTML;
@@ -18,9 +17,9 @@ export const Tutorial = () => {
   return (
     <div className={styles.tutorial}>
       <ul className={styles.levels}>
-        {LEVELS.map((item) => (
-          <li>
-            <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={updateLevel}>
+        {LEVELS_main.map((item, index) => (
+          <li key={index}>
+            <Link to={`./${item}`} className={styles.link} onMouseOver={updateLevel}>
               {item}
             </Link>
           </li>
