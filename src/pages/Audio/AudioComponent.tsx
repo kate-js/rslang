@@ -59,7 +59,7 @@ const generateWords = (words: wordObj[]) => {
 
 export const AudioComponent = () => {
   const [playing, setPlaying] = useState(false);
-  const [answer, setAnswer] = useState<wordObj>({});
+  const [answer, setAnswer] = useState<wordObj>();
   const [audio, setAudio] = useState(new Audio);
   const [newWords, setNewWords] = useState<wordObj[]>([]);
   const [appState, setAppState] = useState<IState>({

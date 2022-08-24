@@ -2,7 +2,7 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ERoutes } from './utils/constants';
 import { Layout } from './components/Layout/Layout';
 import { About } from './pages/About/About';
-import { Audio } from './pages/Audio/Audio';
+import { AudioComponent } from './pages/Audio/AudioComponent';
 import { Games } from './pages/Games/Games';
 import { Home } from './pages/Home/Home';
 import { NotFound } from './pages/NotFound/NotFound';
@@ -21,7 +21,7 @@ export default function App() {
             <Route index element={<Home />} />
             <Route path={ERoutes.about} element={<About />} />
             <Route path={ERoutes.games} element={<Games />} />
-            <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<Audio />} />
+            <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<AudioComponent />} />
             <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
             <Route path={ERoutes.notFound} element={<NotFound />} />
           </Route>
