@@ -51,9 +51,9 @@ export const Games = () => {
         </Link>
 
         <div className={styles.select_level}>
-          {data.map((elem) => {
+          {data.map((elem, index) => {
             return (
-              <LangLevel {...elem} />
+              <LangLevel key={index + 1} {...elem} />
             )
           })}
         </div>
