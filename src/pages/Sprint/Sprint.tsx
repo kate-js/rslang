@@ -11,8 +11,8 @@ import Note from './assets/note.png';
 import { Modal } from './Modal/Modal';
 
 export const Sprint = () => {
-  const [seconds, setSeconds] = useState(60);
-  const [timerActive, setTimerActive] = useState(false);
+  const [seconds, setSeconds] = useState(10);
+  const [timerActive, setTimerActive] = useState(true);
   const [visible, setVisible] = useState(false);
   const navigate = useNavigate();
   const refreshPage = () => {
@@ -28,11 +28,25 @@ export const Sprint = () => {
     }
   }, [seconds, timerActive]);
 
+  const handleKeyDown = (event) => {
+    event.key === 'ArrowLeft'
+      ? console.log('Не верно')
+      : event.key === 'ArrowRight'
+      ? console.log('Верно')
+      : console.log('Игнорим');
+  };
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
-    <div className={styles.sprint}>
+    <div className={styles.sprint} tabIndex={1}>
       <div className={styles.timer}>
         {seconds && timerActive ? (
-          <div onClick={() => setTimerActive(!timerActive)}>{seconds}</div>
+          <div onClick={() => setTimerActive(!timerActive)} className={styles.timer_pause}>
+            {seconds}
+          </div>
         ) : seconds && !timerActive ? (
           <div onClick={() => setTimerActive(!timerActive)} className={styles.timer_pause}>
             ||

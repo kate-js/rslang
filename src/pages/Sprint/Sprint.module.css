@@ -37,12 +37,11 @@
   width: 30px;
 }
 
-.arrow_right {
-  transform: rotate(-90deg);
-}
-
 .arrow_left {
-  transform: scale(1, -1) rotate(90deg);;
+  transform: rotate(180deg);;
+}
+.arrow_section {
+  padding-bottom: 10px;
 }
 
 .arrow_section,
