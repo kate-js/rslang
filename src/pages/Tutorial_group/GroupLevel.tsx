@@ -1,12 +1,11 @@
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 
 import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
 import Book from './assets/English-book.webp';
 import { Modal } from './Modal/Modal';
-
 import { IResponse } from '../../utils/constants';
 
 export const GroupLevel = () => {
@@ -65,6 +64,14 @@ export const GroupLevel = () => {
         ))}
       </ul>
       <Modal modal={modal} setModal={setModal} word={words} />
+      <div>
+        <Link to="/games/audio" className={styles.link}>
+          <img src={Book} alt="" className={styles.game_image} />
+        </Link>
+        <Link to="/games/sprint" className={styles.link}>
+          <img src={Book} alt="" className={styles.game_image} />
+        </Link>
+      </div>
     </div>
   );
 };
