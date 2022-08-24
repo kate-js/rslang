@@ -37,4 +37,10 @@ export interface IResponse {
   wordTranslate: 'string';
   textMeaningTranslate: 'string';
   textExampleTranslate: 'string';
-};
+}
+
+export interface IModal {
+  modal: boolean;
+  setModal: (item: boolean) => void;
+  word: IResponse;
+}
