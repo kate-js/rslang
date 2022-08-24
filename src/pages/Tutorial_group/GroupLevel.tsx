@@ -1,14 +1,45 @@
-import { UNITS } from '../../data/Data';
+import axios from 'axios';
+import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+
+import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
 import Book from './assets/English-book.webp';
-import { useState } from 'react';
 import { Modal } from './Modal/Modal';
+
+import { IResponse } from '../../utils/constants';
 
 export const GroupLevel = () => {
   const [modal, setModal] = useState(false);
+  const { level } = useParams<{ level: string }>();
+  const [listWords, setListWords] = useState<Array<IResponse>>([]);
+  const [numberPage, setNumberPage] = useState<number>(1);
+  const [words, setWords] = useState<IResponse>({});
 
-  function changeModal() {
+  function changeModal(item: IResponse) {
     setModal(!modal);
+    setWords(item);
+  }
+
+  useEffect(() => {
+    getWords();
+  }, [numberPage]);
+
+  async function getWords() {
+    try {
+      const response = await axios.get(
+        `https://react-learnwords-example.herokuapp.com/words?group=${LEVELS[level]}&page=${numberPage}`
+      );
+      setListWords(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
+    console.log(typeof e.target.value);
+    const page = Number(e.target.value);
+    setNumberPage(page);
   }
 
   return (
@@ -16,9 +47,9 @@ export const GroupLevel = () => {
       <div className={styles.title}>
         <div className={styles.title_block}>
           <img src={Book} alt="book" className={styles.image} />
-          <h3>Топ слов уроверь A1</h3>
+          <h3>Топ слов уроверь {level}</h3>
         </div>
-        <select className={styles.select}>
+        <select className={styles.select} onChange={getPage}>
           {UNITS.map((number: number) => (
             <option key={number} value={number}>
               Page {number}
@@ -26,31 +57,14 @@ export const GroupLevel = () => {
           ))}
         </select>
       </div>
-      <Modal modal={modal} setModal={setModal} />
-      <div className={styles.wordList}>
-        <div className={styles.word} onClick={changeModal}>
-          Word1
-        </div>
-        <div className={styles.word}>Word2</div>
-        <div className={styles.word}>Word3</div>
-        <div className={styles.word}>Word4</div>
-        <div className={styles.word}>Word5</div>
-        <div className={styles.word}>Word6</div>
-        <div className={styles.word}>Word7</div>
-        <div className={styles.word}>Word8</div>
-        <div className={styles.word}>Word9</div>
-        <div className={styles.word}>Word10</div>
-        <div className={styles.word}>Word11</div>
-        <div className={styles.word}>Word12</div>
-        <div className={styles.word}>Word13</div>
-        <div className={styles.word}>Word14</div>
-        <div className={styles.word}>Word15</div>
-        <div className={styles.word}>Word16</div>
-        <div className={styles.word}>Word17</div>
-        <div className={styles.word}>Word18</div>
-        <div className={styles.word}>Word19</div>
-        <div className={styles.word}>Word20</div>
-      </div>
+      <ul className={styles.wordList}>
+        {listWords.map((item) => (
+          <li className={styles.word} onClick={() => changeModal(item)} key={item.id}>
+            {item.word}
+          </li>
+        ))}
+      </ul>
+      <Modal modal={modal} setModal={setModal} word={words} />
     </div>
   );
 };
