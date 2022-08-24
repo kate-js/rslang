@@ -4,7 +4,7 @@ import { ERoutes } from '../../utils/constants';
 import { Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 
-const baseLink = 'http://localhost:1488/words';
+const baseLink = 'http://localhost:1488/';
 
 type wordObj = {
   id: string,
@@ -24,104 +24,133 @@ type wordObj = {
 }
 
 interface IState {
-  loading: boolean,
+  isLoaded: boolean,
   words: wordObj[];
 }
 
-export const AudioComp = () => {
+function openFullscreen(elem) {
+  if (elem.requestFullscreen) {
+    elem.requestFullscreen();
+  }
+}
 
+/* Close fullscreen */
+function closeFullscreen() {
+  if (document.exitFullscreen) {
+    document.exitFullscreen();
+  }
+}
+
+function getRandomIntInclusive(min: number, max: number) {
+  min = Math.ceil(min);
+  max = Math.floor(max);
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+const generateWords = (words: wordObj[]) => {
+  for (let i = 0 ; (i < 5) && (i < words.length) ; i++) {
+    const r = getRandomIntInclusive(0, 19);
+    const word = words[r];
+    words[r] = words[i];
+    words[i] = word;
+  }
+
+  return words.slice(0, 5);
+}
+
+
+
+export const AudioComp = () => {
   const [playing, setPlaying] = useState(false);
   const [answer, setAnswer] = useState({});
+  const [audio, setAudio] = useState(new Audio);
+  const [newWords, setnewWords] = useState<wordObj[]>([]);
   const [appState, setAppState] = useState<IState>({
-    loading: false,
+    isLoaded: false,
     words: [],
   });
 
-  useEffect(() => {
-    setAppState({ loading: true, words: [] });
-    fetch(`${baseLink}?page=${0}&group=${0}`)
-      .then((res) => res.json())
-      .then((words) => {
-        // console.log(words);
-        // setAppState({ loading: false, words });
+  const startAgain = () => {
+    setnewWords([]);
+  }
 
-        const newArr = generateWords(words);
-        // console.log(newArr);
-        setAppState({ loading: false, words: newArr });
-        setAnswer(newArr[getRandomIntInclusive(0, 4)])
-      })
+  useEffect(() => {
+    fetch(`${baseLink}words?page=${getRandomIntInclusive(0, 29)}&group=${getRandomIntInclusive(0, 5)}`)
+      .then((res) => res.json())
+      .then(
+        (words) => {
+          setAppState({ isLoaded: true, words });
+          const newArr = generateWords(words);
+          setnewWords(newArr)
+          
+          const myAnswer = newArr[getRandomIntInclusive(0, 4)];
+          console.log(myAnswer)
+          setAnswer(myAnswer);
+          setAudio(new Audio(`${baseLink}${myAnswer.audio}`))
+        },
+        (error) => {
+          setAppState({ isLoaded: false, words: [] });
+        }
+      )
   }, []);
 
-  const generateWords = (words: wordObj[]) => {
-    for (let i = 0 ; (i < 5) && (i < words.length) ; i++) {
-      const r = getRandomIntInclusive(0, 19);
-      const word = words[r];
-      words[r] = words[i];
-      words[i] = word;
+  const checkForAnswer = ({target}) => {
+    if (target.innerText.split(' ')[1] === answer.wordTranslate) {
+      console.log('correct')
+    } else {
+      console.log('incorrect')
     }
-
-    return words.slice(0, 5);
   }
 
-  // const file = 'files/01_0002.mp3'
-  // const audioLink = `http://localhost:1488/${file}`;
-
-  // function createNewAudio(url: string) {
-  //   return new Audio(url);
-  // }
-
-  // const [audio, setAudio] = useState(createNewAudio(audioLink));
-
-  // const togglePlay = () => setPlaying(!playing);
+  const togglePlay = () => setPlaying(!playing);
   // const changeAudio = () => setAudio(createNewAudio(audioLink))
 
-  // useEffect(() => {
-  //   playing ? audio.play() : audio.pause();
-  // }, [playing] );
+  useEffect(() => {
+    if (playing) {
+      audio.play();
+    }
+    // playing ? audio.play() : audio.pause();
+  }, [playing] );
     
-  // useEffect(() => {
-  //   audio.addEventListener('ended', () => setPlaying(false));
-  //   return () => {
-  //     audio.removeEventListener('ended', () => setPlaying(false));
-  //   };
-  // }, []);
+  useEffect(() => {
+    audio.addEventListener('ended', () => setPlaying(false));
+    return () => {
+      audio.removeEventListener('ended', () => setPlaying(false));
+    };
+  }, []);
 
-  function getRandomIntInclusive(min: number, max: number) {
-    min = Math.ceil(min);
-    max = Math.floor(max);
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
-
-
-  return (
-    <div className={styles.audio}>
-      <div className={styles.wrapper}>
-        <div className={styles.controls}>
-          <span>Mute</span>
-          <span>Fullscreen</span>
-          
-          <Link to={`${ERoutes.games}`}>
-            <span>Exit</span>
-          </Link>
-        </div>
-
-        <div className={styles.main}>
-          <div className='audio-img'>
-            <img src={AudioImg} alt="" />
+  if (!appState.isLoaded) {
+    return <div>Загрузка...</div>;
+  } else {
+    return (
+      <div className={styles.audio}>
+        <div className={styles.wrapper}>
+          <div className={styles.controls}>
+            <span>Mute</span>
+            <span onClick={() => openFullscreen(document.documentElement)}>Fullscreen</span>
+            
+            <Link to={`${ERoutes.games}`}>
+              <span>Exit</span>
+            </Link>
           </div>
-          
-          <div className={styles.words}>
-            {appState.words && appState.words.map(({wordTranslate}, index) => {
-              return <button key={index}>{index + 1}. {wordTranslate}</button>
-            })}
-          </div>
-          
-          <button id={styles.result}>Не знаю</button>
-          <button>Change Audio</button>
-        </div>
 
+          <div className={styles.main}>
+            <div className='audio-img' onClick={togglePlay}>
+              <img src={AudioImg} alt="" />
+            </div>
+            
+            <div className={styles.words}>
+              {newWords && newWords.map(({wordTranslate, id}, index) => {
+                return <button onClick={(e) => checkForAnswer(e)} key={id}>{index + 1}. {wordTranslate}</button>
+              })}
+            </div>
+            
+            <button id={styles.result}>Не знаю</button>
+            <button>Change Audio</button>
+          </div>
+
+        </div>
       </div>
-    </div>
-  ) 
-  
+    ) 
+  }
 };
