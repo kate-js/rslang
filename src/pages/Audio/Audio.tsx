@@ -34,7 +34,6 @@ function openFullscreen(elem) {
   }
 }
 
-/* Close fullscreen */
 function closeFullscreen() {
   if (document.exitFullscreen) {
     document.exitFullscreen();
@@ -58,44 +57,47 @@ const generateWords = (words: wordObj[]) => {
   return words.slice(0, 5);
 }
 
-
-
 export const AudioComp = () => {
   const [playing, setPlaying] = useState(false);
   const [answer, setAnswer] = useState({});
   const [audio, setAudio] = useState(new Audio);
-  const [newWords, setnewWords] = useState<wordObj[]>([]);
+  const [newWords, setNewWords] = useState<wordObj[]>([]);
   const [appState, setAppState] = useState<IState>({
     isLoaded: false,
     words: [],
   });
 
-  const startAgain = () => {
-    setnewWords([]);
+  const getWordsList = () => {
+    fetch(`${baseLink}words?page=${getRandomIntInclusive(0, 29)}&group=${getRandomIntInclusive(0, 5)}`)
+    .then((res) => res.json())
+    .then(
+      (words) => {
+        // получаем слова
+        setAppState({ isLoaded: true, words });
+        
+        // наши 5 слов
+        const newArr = generateWords(words);
+        setNewWords(newArr);
+
+        // одно выбранное слово
+        const myAnswer = newArr[getRandomIntInclusive(0, 4)];
+        console.log(myAnswer)
+
+        setAnswer(myAnswer);
+        setAudio(new Audio(`${baseLink}${myAnswer.audio}`))
+      },
+      (error) => {
+        setAppState({ isLoaded: false, words: [] });
+      }
+    )
   }
 
   useEffect(() => {
-    fetch(`${baseLink}words?page=${getRandomIntInclusive(0, 29)}&group=${getRandomIntInclusive(0, 5)}`)
-      .then((res) => res.json())
-      .then(
-        (words) => {
-          setAppState({ isLoaded: true, words });
-          const newArr = generateWords(words);
-          setnewWords(newArr)
-          
-          const myAnswer = newArr[getRandomIntInclusive(0, 4)];
-          console.log(myAnswer)
-          setAnswer(myAnswer);
-          setAudio(new Audio(`${baseLink}${myAnswer.audio}`))
-        },
-        (error) => {
-          setAppState({ isLoaded: false, words: [] });
-        }
-      )
+    getWordsList();
   }, []);
 
   const checkForAnswer = ({target}) => {
-    if (target.innerText.split(' ')[1] === answer.wordTranslate) {
+    if (target.value === answer.id) {
       console.log('correct')
     } else {
       console.log('incorrect')
@@ -103,13 +105,9 @@ export const AudioComp = () => {
   }
 
   const togglePlay = () => setPlaying(!playing);
-  // const changeAudio = () => setAudio(createNewAudio(audioLink))
 
   useEffect(() => {
-    if (playing) {
-      audio.play();
-    }
-    // playing ? audio.play() : audio.pause();
+    playing ? audio.play() : audio.pause();
   }, [playing] );
     
   useEffect(() => {
@@ -119,6 +117,15 @@ export const AudioComp = () => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   window.addEventListener('keyup', handleKeyUp);
+    
+  //   return () => {
+  //     window.removeEventListener('ended', handleKeyUp);
+  //   };
+  // }, [handleKeyUp]);
+
+
   if (!appState.isLoaded) {
     return <div>Загрузка...</div>;
   } else {
@@ -127,7 +134,9 @@ export const AudioComp = () => {
         <div className={styles.wrapper}>
           <div className={styles.controls}>
             <span>Mute</span>
-            <span onClick={() => openFullscreen(document.documentElement)}>Fullscreen</span>
+            <span 
+              onClick={() => openFullscreen(document.documentElement)}>Fullscreen
+            </span>
             
             <Link to={`${ERoutes.games}`}>
               <span>Exit</span>
@@ -138,15 +147,19 @@ export const AudioComp = () => {
             <div className='audio-img' onClick={togglePlay}>
               <img src={AudioImg} alt="" />
             </div>
-            
             <div className={styles.words}>
               {newWords && newWords.map(({wordTranslate, id}, index) => {
-                return <button onClick={(e) => checkForAnswer(e)} key={id}>{index + 1}. {wordTranslate}</button>
+                return (
+                <button 
+                  value={id}
+                  onClick={(e) => checkForAnswer(e)} 
+                  key={id}>
+                    {index + 1}. {wordTranslate}
+                </button>)
               })}
             </div>
             
-            <button id={styles.result}>Не знаю</button>
-            <button>Change Audio</button>
+            <button id={styles.result} onClick={getWordsList}>Не знаю</button>
           </div>
 
         </div>
