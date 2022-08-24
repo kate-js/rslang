@@ -28,7 +28,7 @@ export const Sprint = () => {
     }
   }, [seconds, timerActive]);
 
-  const handleKeyDown = (event) => {
+  const handleKeyDown = (event: KeyboardEvent) => {
     event.key === 'ArrowLeft'
       ? console.log('Не верно')
       : event.key === 'ArrowRight'
