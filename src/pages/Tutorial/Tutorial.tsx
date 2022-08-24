@@ -8,8 +8,9 @@ import { Link } from 'react-router-dom';
 
 export const Tutorial = () => {
   const [level, setLevel] = useState('A1');
+  const LEVELS = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
 
-  function asd(event: MouseEvent) {
+  function updateLevel(event: MouseEvent) {
     const level = (event.target as HTMLElement).innerHTML;
     setLevel(level);
   }
@@ -17,36 +18,13 @@ export const Tutorial = () => {
   return (
     <div className={styles.tutorial}>
       <ul className={styles.levels}>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            A1
-          </Link>
-        </li>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            A2
-          </Link>
-        </li>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            B1
-          </Link>
-        </li>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            B2
-          </Link>
-        </li>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            C1
-          </Link>
-        </li>
-        <li>
-          <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={asd}>
-            C2
-          </Link>
-        </li>
+        {LEVELS.map((item) => (
+          <li>
+            <Link to="./tutorial/grouplevel" className={styles.link} onMouseOver={updateLevel}>
+              {item}
+            </Link>
+          </li>
+        ))}
       </ul>
       <>
         {fontPageTutorial.map((item: cardTutorial) =>
