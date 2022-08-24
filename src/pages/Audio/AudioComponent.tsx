@@ -1,4 +1,4 @@
-import styles from './Audio.module.css'
+import styles from './AudioComponent.module.css'
 import AudioImg from './assets/audio.png'
 import { ERoutes } from '../../utils/constants';
 import { Link } from 'react-router-dom';
@@ -28,17 +28,17 @@ interface IState {
   words: wordObj[];
 }
 
-function openFullscreen(elem) {
-  if (elem.requestFullscreen) {
-    elem.requestFullscreen();
-  }
-}
+// function openFullscreen(elem) {
+//   if (elem.requestFullscreen) {
+//     elem.requestFullscreen();
+//   }
+// }
 
-function closeFullscreen() {
-  if (document.exitFullscreen) {
-    document.exitFullscreen();
-  }
-}
+// function closeFullscreen() {
+//   if (document.exitFullscreen) {
+//     document.exitFullscreen();
+//   }
+// }
 
 function getRandomIntInclusive(min: number, max: number) {
   min = Math.ceil(min);
@@ -57,9 +57,9 @@ const generateWords = (words: wordObj[]) => {
   return words.slice(0, 5);
 }
 
-export const AudioComp = () => {
+export const AudioComponent = () => {
   const [playing, setPlaying] = useState(false);
-  const [answer, setAnswer] = useState({});
+  const [answer, setAnswer] = useState<wordObj>({});
   const [audio, setAudio] = useState(new Audio);
   const [newWords, setNewWords] = useState<wordObj[]>([]);
   const [appState, setAppState] = useState<IState>({
@@ -134,8 +134,7 @@ export const AudioComp = () => {
         <div className={styles.wrapper}>
           <div className={styles.controls}>
             <span>Mute</span>
-            <span 
-              onClick={() => openFullscreen(document.documentElement)}>Fullscreen
+            <span>Fullscreen
             </span>
             
             <Link to={`${ERoutes.games}`}>
