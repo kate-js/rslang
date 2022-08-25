@@ -13,7 +13,7 @@ export const GroupLevel = () => {
   const { level } = useParams<{ level: string }>();
   const [listWords, setListWords] = useState<Array<IResponse>>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
-  const [words, setWords] = useState<IResponse>({});
+  const [words, setWords] = useState<IResponse>();
 
   function changeModal(item: IResponse) {
     setModal(!modal);
@@ -25,9 +25,15 @@ export const GroupLevel = () => {
   }, [numberPage]);
 
   async function getWords() {
+    if (!level) {
+      return;
+    }
+
+    const group = LEVELS[level as keyof typeof LEVELS];
+
     try {
       const response = await axios.get(
-        `https://react-learnwords-example.herokuapp.com/words?group=${LEVELS[level]}&page=${numberPage}`
+        `https://react-learnwords-example.herokuapp.com/words?group=${group}&page=${numberPage}`
       );
       setListWords(response.data);
     } catch (error) {

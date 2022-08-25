@@ -42,5 +42,5 @@ export interface IResponse {
 export interface IModal {
   modal: boolean;
   setModal: (item: boolean) => void;
-  word: IResponse;
+  word: IResponse | undefined;
 }
