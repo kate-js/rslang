@@ -7,7 +7,7 @@ import B2 from '../pages/Tutorial/assets/b2.png';
 import { cardTutorial } from '../utils/constants';
 import image from '../assets/member-photo.png';
 
-export const fontPageTutorial: cardTutorial[] = [
+export const Description: cardTutorial[] = [
   {
     id: 1,
     name: 'A1',
