@@ -1,4 +1,4 @@
-import GitHub from '../../assets/Github.png';
+import GitHub from '../../assets/GitHub.png';
 import RSSchool from './assets/rss-logo.svg';
 import footer from './Footer.module.css';
 
