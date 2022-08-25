@@ -9,7 +9,9 @@ import IncorrectSound from './assets/sounds/incorrect.mp3'
 import MuteImg from './assets/volume-mute.png'
 import UnmuteImg from './assets/volume.png'
 
-const baseLink = 'http://localhost:1488/';
+const baseLinkLocal = 'http://localhost:1488/';
+const baseLink = 'https://rs-lang-final.herokuapp.com/';
+
 
 interface IWord {
   id: string,
