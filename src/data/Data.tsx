@@ -1,9 +1,9 @@
-import A1 from '../pages/Tutorial/assets/a1.png';
-import A2 from '../pages/Tutorial/assets/a2.png';
-import C1 from '../pages/Tutorial/assets/c1.png';
-import C2 from '../pages/Tutorial/assets/c2.png';
-import B1 from '../pages/Tutorial/assets/b1.png';
-import B2 from '../pages/Tutorial/assets/b2.png';
+import A1 from './assets/a1.png';
+import A2 from './assets/a2.png';
+import C1 from './assets/c1.png';
+import C2 from './assets/c2.png';
+import B1 from './assets/b1.png';
+import B2 from './assets/b2.png';
 import { cardTutorial } from '../utils/constants';
 import image from '../assets/member-photo.png';
 
