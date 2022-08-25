@@ -6,7 +6,7 @@ import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
 import Book from './assets/book.png';
 import Game1 from './assets/audio.png';
-import Game2 from './assets/sprint.jpeg';
+import Game2 from './assets/sprint.png';
 import { Modal } from './Modal/Modal';
 import { IResponse } from '../../utils/constants';
 
