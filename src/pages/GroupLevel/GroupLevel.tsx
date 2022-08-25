@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom';
 
 import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
-import Book from './assets/english-book.webp';
+import Book from './assets/book.png';
 import Game1 from './assets/audio.png';
 import Game2 from './assets/sprint.jpeg';
 import { Modal } from './Modal/Modal';
