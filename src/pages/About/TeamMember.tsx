@@ -1,5 +1,5 @@
 import styles from './About.module.css'
-import GitImage from '../../assets/Github.png'
+import GitImage from '../../assets/GitHub.png'
 
 type MemberData = {
   img: string,
