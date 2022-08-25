@@ -2,7 +2,7 @@ import styles from './AudioComponent.module.css'
 import AudioImg from './assets/audio.png'
 import { ERoutes } from '../../utils/constants';
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import CorrectSound from './assets/sounds/correct.mp3'
 import IncorrectSound from './assets/sounds/incorrect.mp3'
@@ -45,8 +45,6 @@ interface IState {
 //     document.exitFullscreen();
 //   }
 // }
-
-const anse: IWord[] = [];
 
 function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
@@ -125,21 +123,21 @@ export const AudioComponent = () => {
     getWords();
   }, []);
 
-  const checkForAnswer = ({target}) => {
+  // ClickEvent<HTMLButtonElement>
+  const checkForAnswer = ({target}: React.MouseEvent<HTMLButtonElement>) => {
     setIsAnswered(true);
     setAnswerCount((answer) => answer + 1);
 
-    if (target.value === (answer && answer.id)) {
+
+    if ((target as HTMLButtonElement).value === (answer && answer.id)) {
       playCorrect();
-      target.classList.add(styles.correct);
+      (target as HTMLButtonElement).classList.add(styles.correct);
       answer && (answer['correct'] = true);
-      // anse.push(answer);
     } else {
       
       playIncorrect();
-      target.classList.add(styles.incorrect)
+      (target as HTMLButtonElement).classList.add(styles.incorrect)
       answer && (answer['correct'] = false);
-      // anse.push(answer);
     }
   }
 
@@ -163,16 +161,16 @@ export const AudioComponent = () => {
     };
   }, []);
 
-  const handleKey = (e) => {
-    console.log(e.key);
-  }
+  // const handleKey = (e) => {
+  //   console.log(e.key);
+  // }
 
-  useEffect(() => {
-    window.addEventListener('keyup', handleKey);
-    return () => {
-      window.removeEventListener('ended', handleKey);
-    };
-  }, );
+  // useEffect(() => {
+  //   window.addEventListener('keyup', handleKey);
+  //   return () => {
+  //     window.removeEventListener('ended', handleKey);
+  //   };
+  // }, );
 
   const showAnswerContent = () => {
     return (
