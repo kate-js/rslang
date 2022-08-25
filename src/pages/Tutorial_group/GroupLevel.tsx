@@ -36,7 +36,6 @@ export const GroupLevel = () => {
   }
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
-    console.log(typeof e.target.value);
     const page = Number(e.target.value);
     setNumberPage(page);
   }
