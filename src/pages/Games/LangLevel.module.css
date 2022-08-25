@@ -1,0 +1,26 @@
+.btn {
+  width: 170px;
+}
+
+.btn + .btn {
+	margin-top: 10px;
+}
+
+.btn input[type=radio] {
+	display: none;
+}
+
+.btn label {
+	display: inline-block;
+	line-height: 34px;
+  padding: 0 10px;
+  border: 1px solid #999;
+	border-radius: 6px;
+	cursor: pointer;
+	user-select: none;
+  width: calc(100% - 22px);
+}
+ 
+.btn input[type=radio]:checked + label {
+	background: #ffe0a6;
+}

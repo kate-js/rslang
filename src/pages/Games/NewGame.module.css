@@ -1,0 +1,14 @@
+.game {
+  border: 1px solid black;
+  /* width: 300px; */
+  text-align: center;
+  cursor: pointer;
+}
+
+a {
+  text-decoration: none;
+}
+
+.image {
+  width: 250px;
+}
