@@ -10,7 +10,7 @@ import { Sprint } from './pages/Sprint/Sprint';
 import './App.module.css';
 import { Statistics } from './pages/Statistics/Statistics';
 import { Tutorial } from './pages/Tutorial/Tutorial';
-import { GroupLevel } from './pages/Tutorial_group/GroupLevel';
+import { GroupLevel } from './pages/GroupLevel/GroupLevel';
 import { Provider } from 'react-redux';
 import { store } from './store/store';
 
