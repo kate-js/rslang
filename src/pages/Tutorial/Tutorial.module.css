@@ -43,3 +43,8 @@
   color: black;
   padding: 30px;
 }
+
+.levels li:last-child {
+  font-size: 20px;
+  text-align: center;
+} 

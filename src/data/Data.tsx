@@ -4,6 +4,7 @@ import C1 from './assets/c1.png';
 import C2 from './assets/c2.png';
 import B1 from './assets/b1.png';
 import B2 from './assets/b2.png';
+import Hard from './assets/hard.png';
 import { cardTutorial } from '../utils/constants';
 import image from '../assets/member-photo.png';
 
@@ -55,6 +56,13 @@ export const Description: cardTutorial[] = [
     url: C2,
     description:
       'Итак, finishная. Сложнее этих слов только подъемы с утра. Но вы справитесь. Бонусом будет прекрасное понимание и владение темой разговора без подготовки (включая узкоориентированные темы), свободное выражение мнения, чтение без услилий. Давно мечтали поговорить о медицине, астрологии или юриспруденции? Теперь это не будет проблемой.'
+  },
+  {
+    id: 7,
+    name: 'Hard Words',
+    bigName: 'Hard Words - это ваш выбор!',
+    url: Hard,
+    description: 'Отмечайте сложные слова в данный раздел и учите в любое время.'
   }
 ];
 
@@ -99,4 +107,4 @@ export const LEVELS = {
   C2: 5
 };
 
-export const LEVELS_main = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];
+export const LEVELS_main = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'HARD WORDS'];
