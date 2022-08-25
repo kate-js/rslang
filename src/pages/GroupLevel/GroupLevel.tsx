@@ -18,8 +18,13 @@ export const GroupLevel = () => {
   const [words, setWords] = useState<IResponse>();
 
   useEffect(() => {
+    const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
+    setNumberPage(page);
     getWords();
-    localStorage.setItem('numberPage', JSON.stringify(numberPage));
+  }, []);
+
+  useEffect(() => {
+    getWords();
   }, [numberPage]);
 
   function changeModal(item: IResponse) {
@@ -46,8 +51,8 @@ export const GroupLevel = () => {
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
     const page = Number(e.target.value);
-    console.log('ok');
     setNumberPage(page);
+    localStorage.setItem('numberPage', JSON.stringify(page));
   }
 
   return (
