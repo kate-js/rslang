@@ -14,19 +14,22 @@ import { store } from './store/store';
 
 export default function App() {
   return (
-    <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route>
-            <Route index element={<Home />} />
-            <Route path={ERoutes.about} element={<About />} />
-            <Route path={ERoutes.games} element={<Games />} />
-            <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<AudioComponent />} />
-            <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
-            <Route path={ERoutes.notFound} element={<NotFound />} />
-          </Route>
-        </Routes>
-      </Layout>
-    </BrowserRouter>
+    <Provider store={store}>
+      <BrowserRouter>
+        <Layout>
+          <Routes>
+            <Route>
+              <Route index element={<Home />} />
+              <Route path={ERoutes.about} element={<About />} />
+              <Route path={ERoutes.games} element={<Games />} />
+              <Route path={`${ERoutes.games}${ERoutes.audio}`} element={<AudioComponent />} />
+              <Route path={`${ERoutes.games}${ERoutes.sprint}`} element={<Sprint />} />
+              <Route path={`${ERoutes.statistics}`} element={<Statistics />} />
+              <Route path={ERoutes.notFound} element={<NotFound />} />
+            </Route>
+          </Routes>
+        </Layout>
+      </BrowserRouter>
+    </Provider>
   );
 }
