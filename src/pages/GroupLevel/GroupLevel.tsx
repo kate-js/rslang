@@ -4,7 +4,9 @@ import { Link, useParams } from 'react-router-dom';
 
 import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
-import Book from './assets/English-book.webp';
+import Book from './assets/english-book.webp';
+import Game1 from './assets/audio.png';
+import Game2 from './assets/sprint.jpeg';
 import { Modal } from './Modal/Modal';
 import { IResponse } from '../../utils/constants';
 
@@ -15,14 +17,15 @@ export const GroupLevel = () => {
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<IResponse>();
 
+  useEffect(() => {
+    getWords();
+    localStorage.setItem('numberPage', JSON.stringify(numberPage));
+  }, [numberPage]);
+
   function changeModal(item: IResponse) {
     setModal(!modal);
     setWords(item);
   }
-
-  useEffect(() => {
-    getWords();
-  }, [numberPage]);
 
   async function getWords() {
     if (!level) {
@@ -33,7 +36,7 @@ export const GroupLevel = () => {
 
     try {
       const response = await axios.get(
-        `https://react-learnwords-example.herokuapp.com/words?group=${group}&page=${numberPage}`
+        `https://react-learnwords-example.herokuapp.com/words?group=${group}&page=${numberPage - 1}`
       );
       setListWords(response.data);
     } catch (error) {
@@ -43,6 +46,7 @@ export const GroupLevel = () => {
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
     const page = Number(e.target.value);
+    console.log('ok');
     setNumberPage(page);
   }
 
@@ -71,10 +75,10 @@ export const GroupLevel = () => {
       <Modal modal={modal} setModal={setModal} word={words} />
       <div>
         <Link to="/games/audio" className={styles.link}>
-          <img src={Book} alt="" className={styles.game_image} />
+          <img src={Game1} alt="" className={styles.game_image} />
         </Link>
         <Link to="/games/sprint" className={styles.link}>
-          <img src={Book} alt="" className={styles.game_image} />
+          <img src={Game2} alt="" className={styles.game_image} />
         </Link>
       </div>
     </div>
