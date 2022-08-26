@@ -12,7 +12,6 @@ import UnmuteImg from './assets/volume.png'
 const baseLinkLocal = 'http://localhost:1488/';
 const baseLink = 'https://rs-lang-final.herokuapp.com/';
 
-
 interface IWord {
   id: string,
   group: number,
@@ -35,18 +34,6 @@ interface IState {
   isLoaded: boolean,
   words: IWord[];
 }
-
-// function openFullscreen(elem) {
-//   if (elem.requestFullscreen) {
-//     elem.requestFullscreen();
-//   }
-// }
-
-// function closeFullscreen() {
-//   if (document.exitFullscreen) {
-//     document.exitFullscreen();
-//   }
-// }
 
 function getRandomIntInclusive(min: number, max: number): number {
   min = Math.ceil(min);
@@ -125,11 +112,8 @@ export const AudioComponent = () => {
     getWords();
   }, []);
 
-  // ClickEvent<HTMLButtonElement>
   const checkForAnswer = ({target}: React.MouseEvent<HTMLButtonElement>) => {
     setIsAnswered(true);
-    setAnswerCount((answer) => answer + 1);
-
 
     if ((target as HTMLButtonElement).value === (answer && answer.id)) {
       playCorrect();
@@ -141,6 +125,8 @@ export const AudioComponent = () => {
       (target as HTMLButtonElement).classList.add(styles.incorrect)
       answer && (answer['correct'] = false);
     }
+    setAnswerCount((answer) => answer + 1);
+
   }
 
   const togglePlay = () => {
@@ -153,26 +139,15 @@ export const AudioComponent = () => {
   //   return () => audio.pause();
   // }, [playing] );
     
-  useEffect(() => {
-    audio.addEventListener('ended', () => {
-      console.log('end')
-      setPlaying(false)
-    });
-    return () => {
-      audio.removeEventListener('ended', () => setPlaying(false));
-    };
-  }, []);
-
-  // const handleKey = (e) => {
-  //   console.log(e.key);
-  // }
-
   // useEffect(() => {
-  //   window.addEventListener('keyup', handleKey);
+  //   audio.addEventListener('ended', () => {
+  //     console.log('end')
+  //     setPlaying(false)
+  //   });
   //   return () => {
-  //     window.removeEventListener('ended', handleKey);
+  //     audio.removeEventListener('ended', () => setPlaying(false));
   //   };
-  // }, );
+  // }, []);
 
   const showAnswerContent = () => {
     return (
@@ -203,12 +178,15 @@ export const AudioComponent = () => {
     )
   }
 
-  if (!appState.isLoaded) {
-    return <div>Загрузка...</div>;
-  } else {
+  const renderStatistics = () => {
+    return(
+      <div>There should be a modal window</div>
+    )
+  }
+
+  const renderBody = () => {
     return (
-      <div className={styles.audio} >
-        <div className={styles.wrapper}>
+      <div className={styles.wrapper}>
           <div className={styles.controls}>
             <img 
               className={styles.volume} 
@@ -216,7 +194,6 @@ export const AudioComponent = () => {
               alt="Volume Button" 
               onClick={changeVolume} 
             />
-
             <span onClick={(e) => console.log(e.target)}>
               Fullscreen
             </span>
@@ -227,6 +204,7 @@ export const AudioComponent = () => {
           </div>
 
           <div className={styles.main}>
+            <span>{answerCount} / 20</span>
             <div className={styles.answer__wrapper}>
               {isAnswered ? showAnswerContent() : showAudio()}
             </div>
@@ -245,9 +223,40 @@ export const AudioComponent = () => {
             
             <button id={styles.result} onClick={getWords}>{isAnswered ? '⟶' : 'Не знаю'}</button>
           </div>
-
         </div>
+    )
+  }
+
+  if (!appState.isLoaded) {
+    return <div>Загрузка...</div>;
+  } else {
+    return (
+      <div className={styles.audio}>
+        {answerCount === 10 ? renderStatistics() : renderBody()}
       </div>
     ) 
   }
 };
+
+
+// const handleKey = (e) => {
+  //   console.log(e.key);
+  // }
+  // useEffect(() => {
+  //   window.addEventListener('keyup', handleKey);
+  //   return () => {
+  //     window.removeEventListener('ended', handleKey);
+  //   };
+  // }, );
+
+// function openFullscreen(elem) {
+//   if (elem.requestFullscreen) {
+//     elem.requestFullscreen();
+//   }
+// }
+
+// function closeFullscreen() {
+//   if (document.exitFullscreen) {
+//     document.exitFullscreen();
+//   }
+// }
