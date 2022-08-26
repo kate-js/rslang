@@ -50,88 +50,124 @@ function shuffleArray(array: IWord[]): IWord[] {
   return newArr;
 }
 
+interface IComponentState {
+  answerCount: number,
+    volumeSettings: {
+      volume: number,
+      isMuted: boolean,
+    },
+    playing: boolean,
+    answer: IWord,
+    audio: HTMLAudioElement,
+    newWords: IWord[],
+    appState: IState,
+    isAnswered: false
+}
+
 export const AudioComponent = () => {
-  const [answerCount, setAnswerCount] = useState(0);
-  const [volumeSettings, setVolume] = useState({
-    volume: 0.3,
-    isMuted: false,
+  const [componentState, setComponentState] = useState<IComponentState>({
+    answerCount: 0,
+    volumeSettings: {
+      volume: 0.3,
+      isMuted: false,
+    },
+    playing: false,
+    answer: {
+      id: '',
+      group: 0,
+      page: 0,
+      word: '',
+      image: '',
+      audio: '',
+      audioMeaning: '',
+      audioExample: '',
+      textMeaning: '',
+      textExample: '',
+      transcription: '',
+      textExampleTranslate: '',
+      textMeaningTranslate: '',
+      wordTranslate: '',
+      correct : false,
+    },
+    audio: new Audio,
+    newWords: [],
+    appState: {
+      isLoaded: false,
+      words: [],
+    },
+    isAnswered: false
   });
-  const [playing, setPlaying] = useState(false);
-  const [answer, setAnswer] = useState<IWord>();
-  const [audio, setAudio] = useState(new Audio);
-  const [newWords, setNewWords] = useState<IWord[]>([]);
-  const [appState, setAppState] = useState<IState>({
-    isLoaded: false,
-    words: [],
-  });
-  const [isAnswered, setIsAnswered] = useState(false);
+
+  
+  function updateState(key, value) {
+    const newState = componentState;
+    newState[key] = value;
+
+    setComponentState(newState);
+  }
+
   const [playCorrect] = useSound(CorrectSound, {
-    volume: volumeSettings.volume
+    volume: componentState.volumeSettings.volume
   });
   const [playIncorrect] = useSound(IncorrectSound, {
-    volume: volumeSettings.volume
+    volume: componentState.volumeSettings.volume
   });
   
-  const changeVolume = () => {
-    volumeSettings.isMuted 
-    ? setVolume({
-      volume: 0.3,
-      isMuted: false
-    })
-    : setVolume({
-      volume: 0,
-      isMuted: true
-    });
-  }
-
-  function setStates(words: IWord[]) {
-    setAppState({ isLoaded: true, words });
-    setIsAnswered(false);        
-  
-    // наши 5 слов
-    const newArr = shuffleArray(words).slice(0, 5);
-    setNewWords(newArr);
-    // одно выбранное слово
-    const myAnswer = newArr[getRandomIntInclusive(0, 4)];
-    console.log(myAnswer)
-    setAnswer(myAnswer);
-    setAudio(
-      new Audio(`${baseLink}${myAnswer.audio}`)
-    );
-  }
-
   const getWords = async () => {
     const res = await fetch(`${baseLink}words?page=${getRandomIntInclusive(0, 29)}&group=${getRandomIntInclusive(0, 5)}`)
 
-    const words = await res.json();
-    
-    setStates(words);
+    return await res.json();
   }
 
   useEffect(() => {
-    getWords();
-  }, []);
+    const recieveData = async () => {
+      const words = await getWords(); 
+      
+      updateState('appState', { isLoaded: true, words })
+      console.log(componentState.appState);
+
+      updateState('isAnswered', false);       
+    
+      // наши 5 слов
+      const newArr = shuffleArray(words).slice(0, 5);
+      updateState('newWords', newArr);
+      console.log(componentState.newWords);
+      
+      // одно выбранное слово
+      const myAnswer = newArr[getRandomIntInclusive(0, 4)];
+      console.log(myAnswer)
+
+      updateState('answer', myAnswer);
+      updateState('audio', new Audio(`${baseLink}${myAnswer.audio}`));
+    }
+    recieveData();
+  }, [componentState.newWords]);
 
   const checkForAnswer = ({target}: React.MouseEvent<HTMLButtonElement>) => {
-    setIsAnswered(true);
 
-    if ((target as HTMLButtonElement).value === (answer && answer.id)) {
+    updateState('isAnswered', true);
+
+    const rule = (target as HTMLButtonElement).value === (componentState.answer && componentState.answer.id);
+
+    // Это надо будет изменить
+    // (target as HTMLButtonElement).classList.add(rule ? styles.correct : styles.incorrect );
+
+    if (rule) {
       playCorrect();
       (target as HTMLButtonElement).classList.add(styles.correct);
-      answer && (answer['correct'] = true);
+      componentState.answer && (componentState.answer['correct'] = true);
     } else {
       
       playIncorrect();
       (target as HTMLButtonElement).classList.add(styles.incorrect)
-      answer && (answer['correct'] = false);
+      componentState.answer && (componentState.answer['correct'] = false);
     }
-    setAnswerCount((answer) => answer + 1);
-
+    updateState('answerCount', componentState.answerCount++);
   }
 
   const togglePlay = () => {
     // setPlaying(!playing)
-    audio.play();
+    componentState.audio.play();
   };
 
   // useEffect(() => {
@@ -153,14 +189,18 @@ export const AudioComponent = () => {
     return (
       <>
         <img 
-          src={`${baseLink}${answer && answer.image}`} 
+          src={`${baseLink}${componentState.answer && componentState.answer.image}`} 
           className={styles.answer} 
           alt="Answer Image" 
           onClick={togglePlay}
         />
         <div className={styles.answer__translate}>
-          <span className={styles.answer__eng}>{answer && answer.word}</span>
-          <span className={styles.answer__ru}>{answer && answer.wordTranslate}</span>
+          <span className={styles.answer__eng}>
+            {componentState.answer && componentState.answer.word}
+            </span>
+          <span className={styles.answer__ru}>
+            {componentState.answer && componentState.answer.wordTranslate}
+            </span>
         </div>
       </>
     )
@@ -190,9 +230,14 @@ export const AudioComponent = () => {
           <div className={styles.controls}>
             <img 
               className={styles.volume} 
-              src={volumeSettings.isMuted ? MuteImg : UnmuteImg} 
+              src={componentState.volumeSettings.isMuted ? MuteImg : UnmuteImg} 
               alt="Volume Button" 
-              onClick={changeVolume} 
+              onClick={() => {
+                updateState("volumeSettings", {
+                  volume: componentState.volumeSettings.isMuted ? 0.3 : 0,
+                  isMuted: componentState.volumeSettings.isMuted ? false : true
+                })
+              }} 
             />
             <span onClick={(e) => console.log(e.target)}>
               Fullscreen
@@ -204,15 +249,15 @@ export const AudioComponent = () => {
           </div>
 
           <div className={styles.main}>
-            <span>{answerCount} / 20</span>
+            <span>{componentState.answerCount} / 20</span>
             <div className={styles.answer__wrapper}>
-              {isAnswered ? showAnswerContent() : showAudio()}
+              {componentState.isAnswered ? showAnswerContent() : showAudio()}
             </div>
             <div className={styles.words}>
-              {newWords && newWords.map(({wordTranslate, id}, index) => {
+              {componentState.newWords && componentState.newWords.map(({wordTranslate, id}, index) => {
                 return (
                 <button 
-                  disabled={isAnswered}
+                  disabled={componentState.isAnswered}
                   value={id}
                   onClick={(e) => checkForAnswer(e)} 
                   key={id}>
@@ -221,23 +266,28 @@ export const AudioComponent = () => {
               })}
             </div>
             
-            <button id={styles.result} onClick={getWords}>{isAnswered ? '⟶' : 'Не знаю'}</button>
+            <button id={styles.result} onClick={getWords}>{componentState.isAnswered ? '⟶' : 'Не знаю'}</button>
           </div>
         </div>
     )
   }
 
-  if (!appState.isLoaded) {
-    return <div>Загрузка...</div>;
-  } else {
-    return (
-      <div className={styles.audio}>
-        {answerCount === 10 ? renderStatistics() : renderBody()}
-      </div>
-    ) 
-  }
+  // if (componentState.appState.isLoaded) {
+  //   return (
+  //     <div className={styles.audio}>
+  //       {componentState.answerCount === 10 ? renderStatistics() : renderBody()}
+  //     </div>
+  //   ) 
+  // } else {
+  //   return <div>Загрузка...</div>;
+  // }
+  
+  return (
+    <div className={styles.audio}>
+      {componentState.answerCount === 10 ? renderStatistics() : renderBody()}
+    </div>
+  ) 
 };
-
 
 // const handleKey = (e) => {
   //   console.log(e.key);
