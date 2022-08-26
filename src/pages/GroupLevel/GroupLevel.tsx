@@ -19,8 +19,7 @@ export const GroupLevel = () => {
 
   useEffect(() => {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
-    setNumberPage(page);
-    getWords();
+    setNumberPage(page || numberPage);
   }, []);
 
   useEffect(() => {
@@ -41,9 +40,9 @@ export const GroupLevel = () => {
 
     try {
       const response = await axios.get(
-        `https://react-learnwords-example.herokuapp.com/words?group=${group}&page=${numberPage - 1}`
+        `https://rs-lang-final.herokuapp.com/words?group=${group}&page=${numberPage - 1}`
       );
-      setListWords(response.data);
+      await setListWords(response.data);
     } catch (error) {
       console.error(error);
     }
@@ -62,7 +61,7 @@ export const GroupLevel = () => {
           <img src={Book} alt="book" className={styles.image} />
           <h3>Топ слов уроверь {level}</h3>
         </div>
-        <select className={styles.select} onChange={getPage}>
+        <select className={styles.select} onChange={getPage} value={numberPage}>
           {UNITS.map((number: number) => (
             <option key={number} value={number}>
               Page {number}
