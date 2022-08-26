@@ -1,4 +1,4 @@
-import Logo from './assets/logo.png';
+import Logo from './assets/header-logo.png';
 import { Navbar } from './Navbar/Navbar';
 import Auth from './Auth/Auth';
 import header from './Header.module.css';
