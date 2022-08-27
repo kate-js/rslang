@@ -22,8 +22,13 @@ export const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Link to="/statistics" className={styles.link}>
+          <Link to={ERoutes.statistics} className={styles.link}>
             Statistics
+          </Link>
+        </li>
+        <li>
+          <Link to={ERoutes.tutorial} className={styles.link}>
+            Tutorial
           </Link>
         </li>
       </ul>

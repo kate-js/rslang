@@ -1,0 +1,54 @@
+.Modal {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  display: none;
+  background: rgba(0,0,0, 0.5);
+}
+
+.ModalContent {
+  padding: 25px;
+  background: white;
+  border-radius: 16px;
+  min-width: 250px;
+  max-width: 70vw;
+  max-height: 80vh;
+  display: flex;
+}
+
+.Modal.active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.modal_examples {
+  padding: 10px;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+  flex-direction: column;
+}
+
+.modal_examples {
+  padding: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+}
+
+.modal_main {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.modal_main p,
+.modal_main h1,
+.modal_main h3 {
+  margin: 0;
+  padding: 0;
+}

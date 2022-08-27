@@ -1,5 +1,5 @@
 import style from './Home.module.css';
-import image from '../../assets/Main.png';
+import Image from './assets/main.png';
 
 export const Home = () => {
   return (
@@ -13,7 +13,7 @@ export const Home = () => {
           национальностей, и быть уверенным, что тебя поняли.
         </p>
       </div>
-      <img src={image} alt="image with people" className={style.main_image} />
+      <img src={Image} alt="image with people" className={style.main_image} />
     </div>
   );
 };

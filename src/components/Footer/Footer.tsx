@@ -1,5 +1,5 @@
 import GitHub from '../../assets/GitHub.png';
-import RSSchool from './assets/Rss_Logo.svg';
+import RSSchool from './assets/rss-logo.svg';
 import footer from './Footer.module.css';
 
 export const Footer = () => {
