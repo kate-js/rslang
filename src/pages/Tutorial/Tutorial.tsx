@@ -7,6 +7,7 @@ import { LevelDescription } from './LevelDescription/LevelDescription';
 export const Tutorial = () => {
   const [level, setLevel] = useState(0);
 
+  localStorage.setItem('numberPage', '1');
   function updateLevel(index: number) {
     setLevel(index);
   }

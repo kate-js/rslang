@@ -22,7 +22,7 @@ export type Props = {
   children: React.ReactNode;
 };
 
-export interface IResponse {
+export interface WordResponse {
   id: 'string';
   group: 'number';
   page: 'number';
@@ -42,5 +42,5 @@ export interface IResponse {
 export interface IModal {
   modal: boolean;
   setModal: (item: boolean) => void;
-  word: IResponse | undefined;
+  word: WordResponse | undefined;
 }

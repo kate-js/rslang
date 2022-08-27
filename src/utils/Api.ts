@@ -1,3 +1,5 @@
+import { WordResponse } from "./constants";
+
 export enum EApiParametrs {
   baseUrl = 'https://rs-lang-final.herokuapp.com'
 }
@@ -29,7 +31,7 @@ export interface IApi {
 class Api implements IApi {
   public baseUrl = '';
   public headers = {};
-
+  
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
@@ -69,6 +71,17 @@ class Api implements IApi {
 
     const res = await fetch(`${this.baseUrl}/signin`, fetchConfig);
     return this.checkRes(res);
+  }
+
+  public async getWords({group, numberPage} : {group: number, numberPage: number}): Promise<WordResponse[]> {
+    const fetchConfig = {
+      method: 'GET',
+      headers: this.headers,
+    };
+
+    const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`, fetchConfig);
+    const json = await res.json();
+    return json;
   }
 }
 

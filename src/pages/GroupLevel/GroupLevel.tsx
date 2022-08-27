@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
 
@@ -8,25 +7,26 @@ import Book from './assets/book.png';
 import Game1 from './assets/audio.png';
 import Game2 from './assets/sprint.png';
 import { Modal } from './Modal/Modal';
-import { IResponse } from '../../utils/constants';
+import { WordResponse } from '../../utils/constants';
+import { api } from '../../utils/Api';
 
 export const GroupLevel = () => {
   const [modal, setModal] = useState(false);
   const { level } = useParams<{ level: string }>();
-  const [listWords, setListWords] = useState<Array<IResponse>>([]);
+  const [listWords, setListWords] = useState<Array<WordResponse>>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
-  const [words, setWords] = useState<IResponse>();
+  const [words, setWords] = useState<WordResponse>();
 
   useEffect(() => {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
-    setNumberPage(page || numberPage);
+    setNumberPage(page);
   }, []);
 
   useEffect(() => {
     getWords();
   }, [numberPage]);
 
-  function changeModal(item: IResponse) {
+  function changeModal(item: WordResponse) {
     setModal(!modal);
     setWords(item);
   }
@@ -39,10 +39,8 @@ export const GroupLevel = () => {
     const group = LEVELS[level as keyof typeof LEVELS];
 
     try {
-      const response = await axios.get(
-        `https://rs-lang-final.herokuapp.com/words?group=${group}&page=${numberPage - 1}`
-      );
-      await setListWords(response.data);
+      const response = await api.getWords({ group, numberPage });
+      await setListWords(response);
     } catch (error) {
       console.error(error);
     }
