@@ -1,0 +1,50 @@
+.tutorial {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  justify-content: center;
+  align-items: center;
+}
+.levels {
+  display: flex;
+  justify-content: space-around;
+  padding-left: 0;
+  justify-content: center;
+  gap: 30px;
+  width: 100%;
+}
+
+.levels li {
+  list-style: none;
+  border: 2px solid gray ;
+  border-radius: 50%;
+  background-color: rgba(2, 57, 134, 0.8);
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  color:black;
+  font-weight: 700;
+  font-size: 30px;
+  flex-wrap: wrap;
+}
+
+.levels li:hover {
+  background-color: rgba(201, 7, 42, 0.9);
+  box-shadow: 10px 5px 5px gray;
+  cursor: pointer;
+}
+
+.link {
+  font-weight: 700;
+  text-decoration: none;
+  color: black;
+  padding: 30px;
+}
+
+.levels li:last-child {
+  font-size: 20px;
+  text-align: center;
+} 

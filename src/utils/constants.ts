@@ -6,7 +6,43 @@ export enum ERoutes {
   sprint = '/sprint',
   statistics = '/statistics',
   tutorial = '/tutorial',
+  grouplevel = '/tutorial/grouplevel',
   notFound = '*'
+}
+
+export type cardTutorial = {
+  id: number;
+  name: string;
+  url: string;
+  description: string;
+  bigName: string;
+};
+
+export type Props = {
+  children: React.ReactNode;
+};
+
+export interface WordResponse {
+  id: 'string';
+  group: 'number';
+  page: 'number';
+  word: 'string';
+  image: 'string';
+  audio: 'string';
+  audioMeaning: 'string';
+  audioExample: 'string';
+  textMeaning: 'string';
+  textExample: 'string';
+  transcription: 'string';
+  wordTranslate: 'string';
+  textMeaningTranslate: 'string';
+  textExampleTranslate: 'string';
+}
+
+export interface IModal {
+  modal: boolean;
+  setModal: (item: boolean) => void;
+  word: WordResponse | undefined;
 }
 
 export interface IWord {

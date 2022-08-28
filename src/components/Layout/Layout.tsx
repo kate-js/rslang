@@ -1,10 +1,7 @@
 import styles from './Layout.module.css';
 import { Footer } from '../Footer/Footer';
 import { Header } from '../Header/Header';
-
-type Props = {
-  children: React.ReactNode;
-};
+import { Props } from '../../utils/constants';
 
 export const Layout = ({ children }: Props) => {
   return (
