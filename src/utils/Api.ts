@@ -1,4 +1,4 @@
-import { WordResponse } from "./constants";
+import { UserWordsReponse, WordResponse } from "./constants";
 
 export enum EApiParametrs {
   baseUrl = 'https://rs-lang-final.herokuapp.com'
@@ -83,9 +83,57 @@ class Api implements IApi {
     const json = await res.json();
     return json;
   }
+
+  public async getHardWords({userId, token}: {userId: string, token : string}): Promise<WordResponse[]> {
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?page=0&filter={"$and":[{"userWord.difficulty":"hard"}]}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json[0].paginatedResults;
+  }
+
+  public async getWord({item, token}: {item: UserWordsReponse, token : string}): Promise<WordResponse[]> {
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+
+    const res = await fetch(`${this.baseUrl}/words/${item.wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+
+  public async addHardWord({userId, token, word}: {userId: string, token : string, word: WordResponse}): Promise<UserWordsReponse[]> {
+    
+    const fetchConfig = {
+      method: 'POST',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "hard", "optional": {test: 'test'}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${word.id}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+
 }
 
 export const api = new Api({
   baseUrl: EApiParametrs.baseUrl,
-  headers: { ['Content-Type']: 'application/json' }
-});
+  headers: { ['Content-Type']: 'application/json'
+}});
