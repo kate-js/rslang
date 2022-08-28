@@ -87,3 +87,11 @@ button:hover {
   width: 40px;
   height: 40px;
 }
+
+.overall {
+  margin: 0 auto;
+  width: 1280px;
+  background-color: azure;
+}
+
+

@@ -9,6 +9,7 @@ import IncorrectSound from './assets/sounds/incorrect.mp3'
 import muteImg from './assets/volume-mute.png'
 import unmuteImg from './assets/volume.png'
 import { getRandomIntInclusive, shuffleArray } from '../../utils/utils';
+import { Word } from './Word';
 
 // const baseLinkLocal = 'http://localhost:1488/';
 const baseLink = 'https://rs-lang-final.herokuapp.com/';
@@ -38,7 +39,8 @@ export const AudioComponent = () => {
       wordTranslate: '',
       correct: false,
     },
-    answers: [],
+    correctAnswers: [],
+    incorrectAnswers: [],
     audio: new Audio,
     newWords: [],
     appState: {
@@ -112,7 +114,7 @@ export const AudioComponent = () => {
   // }, []);
 
   const checkForAnswer = ({target}: React.MouseEvent<HTMLButtonElement>) => {
-    const data_id = (target as HTMLButtonElement).getAttribute('');
+    const data_id = (target as HTMLButtonElement).getAttribute('data-id');
     const rule = data_id === (componentState.answer && componentState.answer.id);
 
     (target as HTMLButtonElement).classList.add(rule ? styles.correct : styles.incorrect);
@@ -125,10 +127,11 @@ export const AudioComponent = () => {
 
     // updateStateByKey('answers', [...componentState.answers])
 
-
     if (rule) {
       playCorrect();
+      componentState.correctAnswers?.push(componentState.answer)
     } else {
+      componentState.incorrectAnswers?.push(componentState.answer)
       playIncorrect();
     }
 
@@ -136,6 +139,7 @@ export const AudioComponent = () => {
       isAnswered: true,
       answerCount:  (componentState.answerCount || 0) + 1
     }
+
     
     updateStateByKeys(state);
   }
@@ -144,6 +148,11 @@ export const AudioComponent = () => {
     // setPlaying(!playing)
     componentState.audio?.play();
   };
+
+  const tooglePlayStatistics = (audio: string) => {
+    const sound = new Audio(`${baseLink}${audio}`)
+    sound.play();
+  }
 
   // useEffect(() => {
   //   playing ? audio.play() : audio.pause();
@@ -195,7 +204,31 @@ export const AudioComponent = () => {
 
   const renderStatistics = () => {
     return (
-      <div>There should be a modal window
+      <div className={styles.overall}>
+        {/* <div className={styles.correctAnswers}>
+          {componentState.correctAnswers?.map(({wordTranslate, word, id, audio}) => {
+            return (
+              <div className={styles.word} key={id}>
+                <img src={AudioImg} alt="Audio Image" className={styles.audio__overall} onClick={() => tooglePlayStatistics(audio)}/>
+                <span key={id}>{`${word}`} - {wordTranslate}</span>
+              </div>
+            )
+          })}
+        </div> */}
+        <div className={styles.incorrectAnswers}>
+          {componentState.incorrectAnswers?.map(({wordTranslate, word, id, audio}) => {
+            return (
+              <Word 
+                wordTranslate={wordTranslate} 
+                word={word} 
+                id={id} 
+                audio={audio}
+                func={() => tooglePlayStatistics(audio)}
+              />
+            )
+          })}
+        </div>
+        
         <button onClick={resetGame}>Try again</button>
       </div>
     )
@@ -240,11 +273,6 @@ export const AudioComponent = () => {
                   disabled={componentState.isAnswered}
                   data-id={id}
                   onClick={(e) => checkForAnswer(e)}
-                  onKeyDown={(e) => {
-                    if (e.key === '1') {
-                      console.log('Enter press');
-                    }
-                  }}
                   key={id}>
                   {index + 1}. {wordTranslate}
                 </button>)
@@ -262,16 +290,13 @@ export const AudioComponent = () => {
 if (componentState.appState?.isLoaded) {
     return (
       <div className={styles.audio}>
-        {componentState.answerCount === 10 ? renderStatistics() : renderBody()}
+        {componentState.answerCount === 3 ? renderStatistics() : renderBody()}
       </div>
     ) 
   } else {
     return <div>Загрузка...</div>;
   }
-
 };
-
-
 
 // function openFullscreen(elem) {
 //   if (elem.requestFullscreen) {
