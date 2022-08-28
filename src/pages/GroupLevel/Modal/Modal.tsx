@@ -1,12 +1,36 @@
 import styles from './Modal.module.css';
 import ReactAudioPlayer from 'react-audio-player';
 import { IModal } from '../../../utils/constants';
-import { EApiParametrs } from '../../../utils/Api';
+import { api, EApiParametrs } from '../../../utils/Api';
+import { useSelector } from 'react-redux';
+import { TState } from '../../../store/store';
+import { Button } from '../../../components/UI/Button/Button';
 
 export const Modal = ({ modal, setModal, word }: IModal) => {
+  const token = useSelector((state: TState) => state.auth.currentUser.token);
+  const userId = useSelector((state: TState) => state.auth.currentUser.userId);
+
   const rootClasses = [styles.Modal];
   if (modal) {
     rootClasses.push(styles.active);
+  }
+
+  const isLodined = useSelector((state: TState) => state.auth.isLogined);
+
+  async function sendHardWord() {
+    if (!word) {
+      return;
+    }
+
+    try {
+      await api.addHardWord({ userId, token, word });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  function sendLearnWord() {
+    console.log('добавлено в изученные');
   }
 
   return (
@@ -33,6 +57,12 @@ export const Modal = ({ modal, setModal, word }: IModal) => {
               <ReactAudioPlayer src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`} controls />
             ) : null}
           </div>
+          {isLodined ? (
+            <div>
+              <button onClick={sendHardWord}>Сложные слова</button>
+              <Button value={'Изучено'} func={sendLearnWord} />
+            </div>
+          ) : null}
         </div>
       </div>
     </div>
