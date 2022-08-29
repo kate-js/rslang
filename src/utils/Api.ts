@@ -91,7 +91,7 @@ class Api implements IApi {
       headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
     };
 
-    const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?page=0&filter={"$and":[{"userWord.difficulty":"hard"}]}`, fetchConfig);
+    const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?wordsPerPage=4000&filter={"$and":[{"userWord.difficulty":"hard"}]}`, fetchConfig);
     if (res.status !== 200) {
       throw new Error(`There was an error with status code ${res.status}`)
     }
@@ -140,6 +140,22 @@ class Api implements IApi {
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
       body: JSON.stringify({ "difficulty": "hard", "optional": {test: 'test'}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${word.id}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async delHardWord({userId, token, word}: {userId: string, token : string, word: WordResponse}): Promise<UserWordsReponse[]> {
+    
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "weak"})
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${word.id}`, fetchConfig);
