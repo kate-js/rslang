@@ -12,9 +12,12 @@ import unmuteImg from './assets/volume.png'
 import { Word } from './Word';
 import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
+import { Loading } from './Loading';
 
-
+// 1. беру слова из книги
+// 2. беру из стейта сложность и страницы
 // const baseLinkLocal = 'http://localhost:1488/';
+
 const baseLink = 'https://rs-lang-final.herokuapp.com/';
 
 export const AudioComponent = () => {
@@ -115,6 +118,8 @@ export const AudioComponent = () => {
     const rule = data_id === (componentState.answer && componentState.answer.id);
 
     (target as HTMLButtonElement).classList.add(rule ? styles.correct : styles.wrong);
+
+    // один массив
 
     componentState.answer && (componentState.answer['correct'] = rule ? true : false);
 
@@ -273,10 +278,10 @@ export const AudioComponent = () => {
 if (componentState.appState?.isLoaded) {
     return (
       <div className={styles.audio}>
-        {componentState.answerCount === 20 ? showStatistics() : showBody()}
+        {componentState.answerCount === 5 ? showStatistics() : showBody()}
       </div>
     ) 
   } else {
-    return <div>Загрузка...</div>;
+    return <Loading/>;
   }
 };
