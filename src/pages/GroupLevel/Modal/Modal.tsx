@@ -20,9 +20,21 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
     if (!word) {
       return;
     }
-
     try {
       await api.addHardWord({ userId, token, word });
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  async function deleteHardWord() {
+    if (!word) {
+      return;
+    }
+
+    try {
+      const wordId = word._id || word.id;
+      await api.delHardWord({ userId, token, wordId });
     } catch (error) {
       console.error(error);
     }
@@ -59,7 +71,15 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
           </div>
           {isLodined ? (
             <div>
-              <button onClick={sendHardWord}>Сложные слова</button>
+              {!hard ? (
+                <button onClick={sendHardWord} disabled={hard}>
+                  Добавить в сложные
+                </button>
+              ) : (
+                <button onClick={deleteHardWord} disabled={!hard}>
+                  Удалить из сложного
+                </button>
+              )}
               <Button value={'Изучено'} func={sendLearnWord} />
             </div>
           ) : null}

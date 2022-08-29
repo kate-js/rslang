@@ -44,7 +44,8 @@ export const GroupLevel = () => {
   }, [numberPage]);
 
   function changeModal(item: WordResponse) {
-    getWordInfo(item.id);
+    const value = item._id || item.id;
+    getWordInfo(value);
     setModal(!modal);
     setWords(item);
   }
@@ -97,7 +98,7 @@ export const GroupLevel = () => {
                 </li>
               ))}
             </ul>
-            <Modal modal={modal} setModal={setModal} word={words} hard={hard} />
+            <Modal modal={modal} setModal={setModal} word={words} hard={true} />
             <GameLinks />
           </>
         ) : (

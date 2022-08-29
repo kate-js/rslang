@@ -111,7 +111,6 @@ class Api implements IApi {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    console.log('json', json);
     return json;
   }
 
@@ -129,7 +128,6 @@ class Api implements IApi {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    console.log('json', json);
     return json;
   }
 
@@ -149,7 +147,7 @@ class Api implements IApi {
     const json = await res.json();
     return json;
   }
-  public async delHardWord({userId, token, word}: {userId: string, token : string, word: WordResponse}): Promise<UserWordsReponse[]> {
+  public async delHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
     
     const fetchConfig = {
       method: 'PUT',
@@ -158,7 +156,7 @@ class Api implements IApi {
       body: JSON.stringify({ "difficulty": "weak"})
     };
 
-    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${word.id}`, fetchConfig);
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
     if (res.status !== 200) {
       throw new Error(`There was an error with status code ${res.status}`)
     }
