@@ -6,16 +6,15 @@ import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import { Button } from '../../../components/UI/Button/Button';
 
-export const Modal = ({ modal, setModal, word }: IModal) => {
+export const Modal = ({ modal, setModal, word, hard }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
+  const isLodined = useSelector((state: TState) => state.auth.isLogined);
 
   const rootClasses = [styles.Modal];
   if (modal) {
     rootClasses.push(styles.active);
   }
-
-  const isLodined = useSelector((state: TState) => state.auth.isLogined);
 
   async function sendHardWord() {
     if (!word) {
@@ -41,6 +40,7 @@ export const Modal = ({ modal, setModal, word }: IModal) => {
           <p>{word?.transcription}</p>
           <h3>{word?.wordTranslate}</h3>
           {word?.image ? <img src={`${EApiParametrs.baseUrl}/${word?.image}`} alt="" /> : null}
+          {hard ? <p>Внимание! Слово отмечено как сложное!</p> : null}
         </div>
         <div className={styles.modal_examples}>
           <div className={styles.modal_example}>

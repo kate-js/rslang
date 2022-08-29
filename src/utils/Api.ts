@@ -99,18 +99,37 @@ class Api implements IApi {
     return json[0].paginatedResults;
   }
 
-  public async getWord({item, token}: {item: UserWordsReponse, token : string}): Promise<WordResponse[]> {
+  public async getWord({id, token}: {id: string, token : string}): Promise<WordResponse[]> {
     const fetchConfig = {
       method: 'GET',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
     };
 
-    const res = await fetch(`${this.baseUrl}/words/${item.wordId}`, fetchConfig);
+    const res = await fetch(`${this.baseUrl}/words/${id}`, fetchConfig);
     if (res.status !== 200) {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
+    console.log('json', json);
+    return json;
+  }
+
+  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<WordResponse[] | boolean> {
+    console.log(userId, wordId, token);
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status === 404) {
+      return res.ok;
+    } else if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    console.log('json', json);
     return json;
   }
 

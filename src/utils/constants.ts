@@ -57,6 +57,7 @@ export interface IModal {
   userId?: string;
   wordId?: string;
   level?: string;
+  hard?: boolean;
 }
 
 export interface HardWordsReponse {
