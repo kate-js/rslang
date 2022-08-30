@@ -5,11 +5,17 @@ import { api, EApiParametrs } from '../../../utils/Api';
 import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import { Button } from '../../../components/UI/Button/Button';
+import { useEffect, useState } from 'react';
 
-export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
+export const Modal = ({ modal, setModal, word, hard }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
+  const [hardWord, setHardWord] = useState<boolean>();
+
+  useEffect(() => {
+    setHardWord(hard);
+  }, [modal]);
 
   const rootClasses = [styles.Modal];
   if (modal) {
@@ -23,7 +29,7 @@ export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
     try {
       const wordId = word._id || word.id;
       await api.addHardWord({ userId, token, wordId });
-      setHard(true);
+      setHardWord(true);
     } catch (error) {
       console.error(error);
     }
@@ -36,7 +42,7 @@ export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
     try {
       const wordId = word._id || word.id;
       await api.delHardWord({ userId, token, wordId });
-      setHard(false);
+      setHardWord(false);
     } catch (error) {
       console.error(error);
     }
@@ -54,7 +60,7 @@ export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
           <p>{word?.transcription}</p>
           <h3>{word?.wordTranslate}</h3>
           {word?.image ? <img src={`${EApiParametrs.baseUrl}/${word?.image}`} alt="" /> : null}
-          {hard ? <p>Внимание! Слово отмечено как сложное!</p> : null}
+          {hardWord ? <p>Внимание! Слово отмечено как сложное!</p> : null}
         </div>
         <div className={styles.modal_examples}>
           <div className={styles.modal_example}>
@@ -73,7 +79,7 @@ export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
           </div>
           {isLodined ? (
             <div>
-              {!hard ? (
+              {!hardWord ? (
                 <button onClick={sendHardWord}>Добавить в сложные</button>
               ) : (
                 <button onClick={deleteHardWord}>Удалить из сложного</button>

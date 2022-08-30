@@ -56,7 +56,7 @@ export const GroupLevel = () => {
 
   async function getWordInfo(wordId: string) {
     const word = await api.getWordInfo({ userId, token, wordId });
-    if (word.toString() === 'hard') {
+    if (word === 'hard') {
       setHard(true);
     } else {
       setHard(false);
