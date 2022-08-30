@@ -17,6 +17,8 @@ export const GroupLevel = () => {
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
   const [hard, setHard] = useState<boolean>(false);
+  const [learn, setLearn] = useState<boolean>(false);
+
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
@@ -55,11 +57,16 @@ export const GroupLevel = () => {
   }
 
   async function getWordInfo(wordId: string) {
-    const word = await api.getWordInfo({ userId, token, wordId });
-    if (word === 'hard') {
+    const [difficulty, learningWord] = await api.getWordInfo({ userId, token, wordId });
+    if (difficulty === 'hard') {
       setHard(true);
     } else {
       setHard(false);
+    }
+    if (learningWord) {
+      setLearn(true);
+    } else {
+      setLearn(false);
     }
   }
 
@@ -102,7 +109,7 @@ export const GroupLevel = () => {
                 </li>
               ))}
             </ul>
-            <Modal modal={modal} setModal={setModal} word={words} hard={hard} setHard={setHard} />
+            <Modal modal={modal} setModal={setModal} word={words} hard={hard} learn={learn} />
             <GameLinks />
           </>
         ) : (
@@ -130,7 +137,7 @@ export const GroupLevel = () => {
               </li>
             ))}
           </ul>
-          <Modal modal={modal} setModal={setModal} word={words} hard={hard} setHard={setHard} />
+          <Modal modal={modal} setModal={setModal} word={words} hard={hard} />
           <GameLinks />
         </>
       )}

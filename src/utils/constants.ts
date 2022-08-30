@@ -43,10 +43,8 @@ export interface WordResponse {
 export interface UserWordsReponse {
   id: string,
   difficulty: string,
-  optional: {
-    test?: string;
-    testFieldString?: string,
-    testFieldBoolean: boolean,
+  optional?: {
+    learningWord?: boolean;
   },
   wordId: string
 }
@@ -54,13 +52,8 @@ export interface IModal {
   modal: boolean;
   setModal: (item: boolean) => void;
   word: WordResponse | undefined;
-  token?: string;
-  userId?: string;
-  wordId?: string;
-  level?: string;
   hard?: boolean;
-  getHardWords?: ()=> void;
-  setHard?:(item: boolean) => void;
+  learn?: boolean;
 }
 
 export interface HardWordsReponse {

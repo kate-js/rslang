@@ -4,17 +4,18 @@ import { IModal } from '../../../utils/constants';
 import { api, EApiParametrs } from '../../../utils/Api';
 import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
-import { Button } from '../../../components/UI/Button/Button';
 import { useEffect, useState } from 'react';
 
-export const Modal = ({ modal, setModal, word, hard }: IModal) => {
+export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const [hardWord, setHardWord] = useState<boolean>();
+  const [learnWord, setLearnWord] = useState<boolean>();
 
   useEffect(() => {
     setHardWord(hard);
+    setLearnWord(learn);
   }, [modal]);
 
   const rootClasses = [styles.Modal];
@@ -48,8 +49,29 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
     }
   }
 
-  function sendLearnWord() {
-    console.log('добавлено в изученные');
+  async function addLearnWord() {
+    if (!word) {
+      return;
+    }
+    const wordId = word._id || word.id;
+    try {
+      await api.addLearningWord({ userId, token, wordId });
+    } catch (error) {
+      await api.addLearningWord({ userId, token, wordId });
+    }
+    setLearnWord(true);
+  }
+  async function deleteLearningWord() {
+    if (!word) {
+      return;
+    }
+    try {
+      const wordId = word._id || word.id;
+      await api.deleteLearningWord({ userId, token, wordId });
+      setLearnWord(false);
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   return (
@@ -84,7 +106,11 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
               ) : (
                 <button onClick={deleteHardWord}>Удалить из сложного</button>
               )}
-              <Button value={'Изучено'} func={sendLearnWord} />
+              {!learnWord ? (
+                <button onClick={addLearnWord}>Пометить как изученное</button>
+              ) : (
+                <button onClick={deleteLearningWord}>Удалить из изученного</button>
+              )}
             </div>
           ) : null}
         </div>

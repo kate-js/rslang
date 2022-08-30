@@ -114,7 +114,7 @@ class Api implements IApi {
     return json;
   }
 
-  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<string | boolean> {
+  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<string| string[]> {
     const fetchConfig = {
       method: 'GET',
       withCredentials: true,
@@ -129,7 +129,7 @@ class Api implements IApi {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    return json.difficulty;
+    return [json.difficalty, json.optional.learningWord];
   }
 
   public async addHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
@@ -161,12 +161,12 @@ class Api implements IApi {
     }
   }
 
-  public async createUserWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+  public async addLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
     const fetchConfig = {
       method: 'POST',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "difficulty": "weak", "optional": {}})
+      body: JSON.stringify({ "optional": {learningWord: true}})
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -174,7 +174,37 @@ class Api implements IApi {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    return json.difficulty;
+    return json;
+  }
+  public async changeLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "optional": {learningWord: true}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async deleteLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "optional": {learningWord: false}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
   }
 
 }
