@@ -5,6 +5,7 @@ import { api, EApiParametrs } from '../../../utils/Api';
 import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import { useEffect, useState } from 'react';
+import buttonStyles from '../../../components/UI/Button/Button.module.css';
 
 export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
@@ -102,14 +103,22 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
           {isLodined ? (
             <div>
               {!hardWord ? (
-                <button onClick={sendHardWord}>Добавить в сложные</button>
+                <button onClick={sendHardWord} className={buttonStyles.button}>
+                  Добавить в сложные
+                </button>
               ) : (
-                <button onClick={deleteHardWord}>Удалить из сложного</button>
+                <button onClick={deleteHardWord} className={buttonStyles.button}>
+                  Удалить из сложного
+                </button>
               )}
               {!learnWord ? (
-                <button onClick={addLearnWord}>Пометить как изученное</button>
+                <button onClick={addLearnWord} className={buttonStyles.button}>
+                  Пометить как изученное
+                </button>
               ) : (
-                <button onClick={deleteLearningWord}>Удалить из изученного</button>
+                <button onClick={deleteLearningWord} className={buttonStyles.button}>
+                  Удалить из изученного
+                </button>
               )}
             </div>
           ) : null}
