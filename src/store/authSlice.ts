@@ -29,6 +29,11 @@ const authSlice = createSlice({
     setIsLogined: (state, actions) => {
       state.isLogined = actions.payload;
     }
+    // handelLogout: (state) => {
+    //   state.isLogined = false;
+    //   state.currentUser = initialState.currentUser;
+    //   localStorage.removeItem('currentUser');
+    // },
   }
 });
 

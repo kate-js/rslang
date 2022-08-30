@@ -1,4 +1,11 @@
-import { checkRes, EApiParametrs, IApiInitialData, IUserWord, IHeaders } from './apiConstants';
+import {
+  checkRes,
+  EApiParametrs,
+  IApiInitialData,
+  IUserWord,
+  IHeaders,
+  getJwtToken
+} from './apiConstants';
 
 class ApiUsersWords implements IApiUsersWords {
   public baseUrl = '';
@@ -6,13 +13,6 @@ class ApiUsersWords implements IApiUsersWords {
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
-  }
-
-  getToken() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      this.headers.authorization = `Bearer ${token}`;
-    }
   }
 
   /*  getsAllUserWords
@@ -31,11 +31,9 @@ class ApiUsersWords implements IApiUsersWords {
       ]
   */
   public async getsAllUserWords(userId: string): Promise<IUserWord[]> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words`, fetchConfig);
@@ -69,11 +67,9 @@ class ApiUsersWords implements IApiUsersWords {
     wordId: string,
     word: IUserWord
   ): Promise<IUserWord> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'POST',
-      headers: this.headers,
+      headers: { ...this.headers, authorization: getJwtToken() },
       body: JSON.stringify({
         difficulty: word.difficulty,
         optional: word.optional
@@ -101,11 +97,9 @@ class ApiUsersWords implements IApiUsersWords {
       }
   */
   public async getUserWordById(userId: string, wordId: string): Promise<IUserWord> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -139,11 +133,9 @@ class ApiUsersWords implements IApiUsersWords {
     wordId: string,
     word: IUserWord
   ): Promise<IUserWord> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'PUT',
-      headers: this.headers,
+      headers: { ...this.headers, authorization: getJwtToken() },
       body: JSON.stringify({
         difficulty: word.difficulty,
         optional: word.optional
@@ -171,11 +163,9 @@ class ApiUsersWords implements IApiUsersWords {
       }
   */
   public async deleteUserWordsById(userId: string, wordId: string): Promise<IUserWord> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'DELETE',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);

@@ -1,4 +1,11 @@
-import { checkRes, EApiParametrs, IApiInitialData, IHeaders, IUserSettings } from './apiConstants';
+import {
+  checkRes,
+  EApiParametrs,
+  IApiInitialData,
+  IHeaders,
+  IUserSettings,
+  getJwtToken
+} from './apiConstants';
 
 class ApiUsersSetting implements IApiUsersSetting {
   public baseUrl = '';
@@ -6,13 +13,6 @@ class ApiUsersSetting implements IApiUsersSetting {
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
-  }
-
-  getToken() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      this.headers.authorization = `Bearer ${token}`;
-    }
   }
 
   /*  getUserSettings
@@ -29,11 +29,9 @@ class ApiUsersSetting implements IApiUsersSetting {
       }
   */
   public async getUserSettings(userId: string): Promise<IUserSettings> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/settings`, fetchConfig);
@@ -59,11 +57,9 @@ class ApiUsersSetting implements IApiUsersSetting {
     userId: string,
     newSettings: IUserSettings
   ): Promise<IUserSettings> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'PUT',
-      headers: this.headers,
+      headers: { ...this.headers, authorization: getJwtToken() },
       body: JSON.stringify({
         wordsPerDay: newSettings.wordsPerDay,
         optional: newSettings.optional

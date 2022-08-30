@@ -23,13 +23,34 @@ export interface IHeaders {
   [key: string]: string;
 }
 
-export const checkRes = (res: Response): Promise<Response> => {
-  if (res.ok) {
-    return res.json();
+export const checkRes = (rawRes: Response): Promise<Response> => {
+  let res;
+  if (rawRes.ok) {
+    res = rawRes.json();
+  } else {
+    res = Promise.reject(new Error(`${401}`));
   }
-  return Promise.reject(new Error(`${res.status}`));
+  return res;
+};
+
+export const getJwtToken = (): string => {
+  let res = '';
+  if (localStorage.getItem('currentUser')) {
+    const currentUser = JSON.parse(localStorage.getItem('currentUser') as string);
+    const token = currentUser.token;
+    res = `Bearer ${token}`;
+  }
+  return res;
 };
 
 export enum EApiParametrs {
   baseUrl = 'https://rs-lang-final.herokuapp.com'
+}
+
+export interface ICurrentUser {
+  message: string;
+  token: string;
+  refreshToken: string;
+  userId: string;
+  name: string;
 }

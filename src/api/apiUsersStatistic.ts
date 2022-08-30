@@ -3,7 +3,8 @@ import {
   EApiParametrs,
   IApiInitialData,
   IHeaders,
-  IUserStatistics
+  IUserStatistics,
+  getJwtToken
 } from './apiConstants';
 
 class ApiUsersStatistic implements IApiUsersStatistic {
@@ -12,13 +13,6 @@ class ApiUsersStatistic implements IApiUsersStatistic {
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
-  }
-
-  getToken() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      this.headers.authorization = `Bearer ${token}`;
-    }
   }
 
   /*  getStatistics
@@ -35,11 +29,9 @@ class ApiUsersStatistic implements IApiUsersStatistic {
       }
   */
   public async getStatistics(userId: string): Promise<IUserStatistics> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
@@ -65,11 +57,9 @@ class ApiUsersStatistic implements IApiUsersStatistic {
     userId: string,
     newStatistics: IUserStatistics
   ): Promise<IUserStatistics> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'PUT',
-      headers: this.headers,
+      headers: { ...this.headers, authorization: getJwtToken() },
       body: JSON.stringify({
         learnedWords: newStatistics.learnedWords,
         optional: newStatistics.optional

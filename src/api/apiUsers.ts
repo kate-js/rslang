@@ -1,4 +1,11 @@
-import { checkRes, EApiParametrs, IApiInitialData, IHeaders } from './apiConstants';
+import {
+  checkRes,
+  EApiParametrs,
+  IApiInitialData,
+  IHeaders,
+  ICurrentUser,
+  getJwtToken
+} from './apiConstants';
 
 class ApiUsers implements IApiUsers {
   public baseUrl = '';
@@ -6,13 +13,6 @@ class ApiUsers implements IApiUsers {
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
-  }
-
-  getToken() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      this.headers.authorization = `Bearer ${token}`;
-    }
   }
 
   /*  createNewUser
@@ -33,7 +33,7 @@ class ApiUsers implements IApiUsers {
         "password": "string"
       }
   */
-  public async createNewUser(newUser: IUser): Promise<Response> {
+  public async createNewUser(newUser: IUser): Promise<IUser> {
     const fetchConfig = {
       method: 'POST',
       headers: this.headers,
@@ -45,7 +45,8 @@ class ApiUsers implements IApiUsers {
     };
 
     const res = await fetch(`${this.baseUrl}/users`, fetchConfig);
-    return checkRes(res);
+    const userRes = checkRes(res) as unknown;
+    return userRes as IUser;
   }
 
   /* getUserById
@@ -63,11 +64,9 @@ class ApiUsers implements IApiUsers {
       }
   */
   public async getUserById(userId: string): Promise<IUser> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}`, fetchConfig);
@@ -97,11 +96,9 @@ class ApiUsers implements IApiUsers {
       }
   */
   public async updateUser(userId: string, user: ILoginUserData): Promise<IUser> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'PUT',
-      headers: this.headers,
+      headers: { ...this.headers, authorization: getJwtToken() },
       body: JSON.stringify({
         email: user.email,
         password: user.password
@@ -123,11 +120,9 @@ class ApiUsers implements IApiUsers {
   
   */
   public async deleteUserById(userId: string): Promise<void> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'DELETE',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     await fetch(`${this.baseUrl}/users/${userId}`, fetchConfig);
@@ -139,17 +134,22 @@ class ApiUsers implements IApiUsers {
 
     Parameters:
       path id=userId
-  
   */
-  public async getNewUserToken(userId: string): Promise<void> {
-    this.getToken();
+  public async getNewUserToken(userId: string): Promise<IGetNewUserToken> {
+    if (localStorage.getItem('currentUser')) {
+      const currentUser = JSON.parse(localStorage.getItem('currentUser') as string);
+      const refreshToken = currentUser.refreshToken;
+      this.headers.authorization = `Bearer ${refreshToken}`;
+    }
 
     const fetchConfig = {
       method: 'GET',
       headers: this.headers
     };
 
-    await fetch(`${this.baseUrl}/users/${userId}/tokens`, fetchConfig);
+    const rawRes = await fetch(`${this.baseUrl}/users/${userId}/tokens`, fetchConfig);
+    const res = checkRes(rawRes) as unknown;
+    return res as IGetNewUserToken;
   }
 
   /* signin
@@ -171,7 +171,7 @@ class ApiUsers implements IApiUsers {
         "name": "string"
       }
   */
-  public async signin(user: ILoginUserData): Promise<Response> {
+  public async signin(user: ILoginUserData): Promise<ICurrentUser> {
     const fetchConfig = {
       method: 'POST',
       headers: this.headers,
@@ -181,8 +181,17 @@ class ApiUsers implements IApiUsers {
       })
     };
 
-    const res = await fetch(`${this.baseUrl}/signin`, fetchConfig);
-    return checkRes(res);
+    let rawRes!: Response;
+    try {
+      rawRes = await fetch(`${this.baseUrl}/signin`, fetchConfig);
+    } catch (err) {
+      console.log(err);
+    }
+
+    const tempRes = checkRes(rawRes) as unknown;
+    const res = tempRes as ICurrentUser;
+
+    return res;
   }
 }
 
@@ -201,12 +210,12 @@ export const apiUsers = new ApiUsers({
 export interface IApiUsers {
   baseUrl: string;
   headers: IHeaders;
-  createNewUser: (newUser: IUser) => Promise<Response>;
+  createNewUser: (newUser: IUser) => Promise<IUser>;
   getUserById: (userId: string) => Promise<IUser>;
   updateUser: (userId: string, user: ILoginUserData) => Promise<IUser>;
   deleteUserById: (userId: string) => Promise<void>;
-  getNewUserToken: (userId: string) => Promise<void>;
-  signin: (newUser: IUser) => Promise<Response>;
+  getNewUserToken: (userId: string) => Promise<IGetNewUserToken>;
+  signin: (newUser: IUser) => Promise<ICurrentUser>;
 }
 
 export interface ILoginUserData {
@@ -218,4 +227,8 @@ export interface IUser {
   name: string;
   email: string;
   password: string;
+}
+export interface IGetNewUserToken {
+  token: string;
+  refreshToken: string;
 }

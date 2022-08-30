@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { apiUsers } from '../../../api/apiUsers';
 import {
   initialState,
   setIsModalSignupOpen,
@@ -22,13 +23,37 @@ const Auth = () => {
 
   const [isModalNavOpen, setIsModalNavOpen] = useState(false);
 
-  useEffect(() => {
+  const checkJwtToken = async (): Promise<void> => {
     if (localStorage.getItem('currentUser')) {
       const currentUser = JSON.parse(localStorage.getItem('currentUser') as string);
-      dispatch(setCurrentUser(currentUser));
-      dispatch(setIsLogined(true));
+      // try current jwt
+      try {
+        await apiUsers.getUserById(currentUser.userId);
+
+        dispatch(setCurrentUser(currentUser));
+        dispatch(setIsLogined(true));
+      } catch (error) {
+        const err = error as Error;
+        // if jwt expired, try refreshToken
+        if (err.message === '401') {
+          try {
+            const res = await apiUsers.getNewUserToken(currentUser.userId);
+            const updatedCurrentUser = { ...currentUser, ...res };
+
+            dispatch(setCurrentUser(updatedCurrentUser));
+            dispatch(setIsLogined(true));
+            localStorage.setItem('currentUser', JSON.stringify(updatedCurrentUser));
+          } catch (err) {
+            console.log(err);
+            // if refreshToken expired logout user
+            handelSignOutClick();
+          }
+        } else {
+          console.log(err);
+        }
+      }
     }
-  }, []);
+  };
 
   const handleBurgerClick = () => {
     setIsModalNavOpen(true);
@@ -57,6 +82,7 @@ const Auth = () => {
   const handelSignOutClick = () => {
     dispatch(setIsLogined(false));
     dispatch(setCurrentUser(initialState));
+    localStorage.removeItem('currentUser');
   };
 
   const signinButton = (
@@ -78,6 +104,10 @@ const Auth = () => {
   );
 
   const currentUserNameNode = <p>{currentUser.name}</p>;
+
+  useEffect(() => {
+    checkJwtToken();
+  }, []);
 
   return (
     <div className={styles.wrap}>

@@ -1,5 +1,12 @@
 import { WordResponse } from '../utils/constants';
-import { checkRes, EApiParametrs, IApiInitialData, IUserWord, IHeaders } from './apiConstants';
+import {
+  checkRes,
+  EApiParametrs,
+  IApiInitialData,
+  IUserWord,
+  IHeaders,
+  getJwtToken
+} from './apiConstants';
 
 class ApiAggregatedWords implements IApiAggregated {
   public baseUrl = '';
@@ -7,13 +14,6 @@ class ApiAggregatedWords implements IApiAggregated {
   constructor(options: IApiInitialData) {
     this.baseUrl = options.baseUrl;
     this.headers = options.headers;
-  }
-
-  getToken() {
-    if (localStorage.getItem('token')) {
-      const token = localStorage.getItem('token');
-      this.headers.authorization = `Bearer ${token}`;
-    }
   }
 
   /*  getAllAggregatedWords
@@ -60,8 +60,6 @@ class ApiAggregatedWords implements IApiAggregated {
     userId: string,
     query: IQueryAllAggregated
   ): Promise<WordResponse[]> {
-    this.getToken();
-
     const group = query.group ? `group=${query.group}` : '';
     const page = query.page ? `page=${query.page}` : '';
     const wordsPerPage = query.page ? `wordsPerPage=${query.wordsPerPage}` : '';
@@ -69,7 +67,7 @@ class ApiAggregatedWords implements IApiAggregated {
 
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(
@@ -98,11 +96,9 @@ class ApiAggregatedWords implements IApiAggregated {
       }
   */
   public async getUserAggregatedWordById(userId: string, wordId: string): Promise<IUserWord> {
-    this.getToken();
-
     const fetchConfig = {
       method: 'GET',
-      headers: this.headers
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
 
     const res = await fetch(
