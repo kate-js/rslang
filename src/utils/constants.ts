@@ -24,6 +24,7 @@ export type Props = {
 
 export interface WordResponse {
   id: 'string';
+  _id: 'string';
   group: 'number';
   page: 'number';
   word: 'string';
@@ -58,6 +59,8 @@ export interface IModal {
   wordId?: string;
   level?: string;
   hard?: boolean;
+  getHardWords?: ()=> void;
+  setHard?:(item: boolean) => void;
 }
 
 export interface HardWordsReponse {

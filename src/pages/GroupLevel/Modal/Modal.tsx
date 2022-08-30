@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import { Button } from '../../../components/UI/Button/Button';
 
-export const Modal = ({ modal, setModal, word, hard }: IModal) => {
+export const Modal = ({ modal, setModal, word, hard, setHard }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
@@ -21,7 +21,9 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
       return;
     }
     try {
-      await api.addHardWord({ userId, token, word });
+      const wordId = word._id || word.id;
+      await api.addHardWord({ userId, token, wordId });
+      setHard(true);
     } catch (error) {
       console.error(error);
     }
@@ -31,10 +33,10 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
     if (!word) {
       return;
     }
-
     try {
       const wordId = word._id || word.id;
       await api.delHardWord({ userId, token, wordId });
+      setHard(false);
     } catch (error) {
       console.error(error);
     }
@@ -72,13 +74,9 @@ export const Modal = ({ modal, setModal, word, hard }: IModal) => {
           {isLodined ? (
             <div>
               {!hard ? (
-                <button onClick={sendHardWord} disabled={hard}>
-                  Добавить в сложные
-                </button>
+                <button onClick={sendHardWord}>Добавить в сложные</button>
               ) : (
-                <button onClick={deleteHardWord} disabled={!hard}>
-                  Удалить из сложного
-                </button>
+                <button onClick={deleteHardWord}>Удалить из сложного</button>
               )}
               <Button value={'Изучено'} func={sendLearnWord} />
             </div>

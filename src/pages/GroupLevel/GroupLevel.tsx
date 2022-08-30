@@ -25,6 +25,10 @@ export const GroupLevel = () => {
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
 
+  useEffect(() => {
+    level === 'HARD WORDS' ? getHardWords() : null;
+  }, [modal]);
+
   function getLocaleNumberPage() {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
     setNumberPage(page);
@@ -43,19 +47,19 @@ export const GroupLevel = () => {
     getWords();
   }, [numberPage]);
 
-  function changeModal(item: WordResponse) {
+  async function changeModal(item: WordResponse) {
     const value = item._id || item.id;
-    getWordInfo(value);
+    await getWordInfo(value);
     setModal(!modal);
     setWords(item);
   }
 
   async function getWordInfo(wordId: string) {
     const word = await api.getWordInfo({ userId, token, wordId });
-    if (!word) {
-      setHard(false);
-    } else {
+    if (word.toString() === 'hard') {
       setHard(true);
+    } else {
+      setHard(false);
     }
   }
 
@@ -98,7 +102,7 @@ export const GroupLevel = () => {
                 </li>
               ))}
             </ul>
-            <Modal modal={modal} setModal={setModal} word={words} hard={true} />
+            <Modal modal={modal} setModal={setModal} word={words} hard={hard} setHard={setHard} />
             <GameLinks />
           </>
         ) : (
@@ -126,7 +130,7 @@ export const GroupLevel = () => {
               </li>
             ))}
           </ul>
-          <Modal modal={modal} setModal={setModal} word={words} hard={hard} />
+          <Modal modal={modal} setModal={setModal} word={words} hard={hard} setHard={setHard} />
           <GameLinks />
         </>
       )}
