@@ -1,13 +1,16 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
 import styles from './ModalSignup.module.css';
-import { api } from '../../../utils/Api';
-
+// import { api } from '../../../utils/Api';
+import { apiUsers } from '../../../api/apiUsers';
+import { setIsLogined, setCurrentUser } from '../../../store/authSlice';
 interface IProps {
   onClose: () => void;
   openSignin: () => void;
 }
 
 const ModalSignup = (props: IProps) => {
+  const dispatch = useDispatch();
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -31,9 +34,12 @@ const ModalSignup = (props: IProps) => {
     e.preventDefault();
     const newUser = { name: username, email, password };
     try {
-      await api.signup(newUser);
+      await apiUsers.createNewUser(newUser);
+      const res = await apiUsers.signin({ email, password });
+      dispatch(setCurrentUser(res));
+      dispatch(setIsLogined(true));
+      localStorage.setItem('currentUser', JSON.stringify(res));
       props.onClose();
-      props.openSignin();
     } catch (err) {
       console.log(err);
     }
