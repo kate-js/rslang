@@ -114,7 +114,7 @@ class Api implements IApi {
     return json;
   }
 
-  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<string| string[]> {
+  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<boolean[]> {
     const fetchConfig = {
       method: 'GET',
       withCredentials: true,
@@ -122,14 +122,28 @@ class Api implements IApi {
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    let learn = false;
+    let difficalty = false;
     if (res.status === 404) {
-      return 'noFound';
+      return [difficalty, learn];
     }
     if (res.status !== 200) {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    return [json.difficalty, json.optional.learningWord];
+    if(json.difficulty === 'hard'){
+      difficalty = true;
+    } else if (json.difficalty === 'easy' || typeof(json.difficalty) == 'undefined'){
+      difficalty = false;
+    }
+    try {
+      if(json.optional.learningWord)
+        learn = true;
+    } catch (error) {
+      learn = false;
+    }
+    
+    return [difficalty, learn];
   }
 
   public async addHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
@@ -137,7 +151,7 @@ class Api implements IApi {
       method: 'POST',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "difficulty": "hard", "optional": {}})
+      body: JSON.stringify({ "difficulty": "hard"})
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -148,15 +162,31 @@ class Api implements IApi {
     return json;
   }
 
-  public async delHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<void> {
+  public async changeHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
     const fetchConfig = {
-      method: 'DELETE',
+      method: 'PUT',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "hard"})
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
-    if (res.status !== 204) {
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async delHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<void> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "easy",})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
       throw new Error(`There was an error with status code ${res.status}`)
     }
   }

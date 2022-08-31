@@ -4,21 +4,13 @@ import { IModal } from '../../../utils/constants';
 import { api, EApiParametrs } from '../../../utils/Api';
 import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
-import { useEffect, useState } from 'react';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
 
-export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
+export const Modal = ({ modal, setModal, word, hard, learn, setHard, setLearn }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
-  const [hardWord, setHardWord] = useState<boolean>();
-  const [learnWord, setLearnWord] = useState<boolean>();
-
-  useEffect(() => {
-    setHardWord(hard);
-    setLearnWord(learn);
-  }, [modal]);
 
   const rootClasses = [styles.Modal];
   if (modal) {
@@ -29,13 +21,14 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
     if (!word) {
       return;
     }
+    const wordId = word._id || word.id;
     try {
-      const wordId = word._id || word.id;
       await api.addHardWord({ userId, token, wordId });
-      setHardWord(true);
     } catch (error) {
+      await api.changeHardWord({ userId, token, wordId });
       console.error(error);
     }
+    setHard(true);
   }
 
   async function deleteHardWord() {
@@ -45,10 +38,10 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
     try {
       const wordId = word._id || word.id;
       await api.delHardWord({ userId, token, wordId });
-      setHardWord(false);
     } catch (error) {
       console.error(error);
     }
+    setHard(false);
   }
 
   async function addLearnWord() {
@@ -59,10 +52,11 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
     try {
       await api.addLearningWord({ userId, token, wordId });
     } catch (error) {
-      await api.addLearningWord({ userId, token, wordId });
+      await api.changeLearningWord({ userId, token, wordId });
     }
-    setLearnWord(true);
+    setLearn(true);
   }
+
   async function deleteLearningWord() {
     if (!word) {
       return;
@@ -70,10 +64,10 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
     try {
       const wordId = word._id || word.id;
       await api.deleteLearningWord({ userId, token, wordId });
-      setLearnWord(false);
     } catch (error) {
       console.error(error);
     }
+    setLearn(false);
   }
 
   return (
@@ -84,7 +78,7 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
             <h1>{word?.word}</h1>
             <p>{word?.transcription}</p>
             <h3>{word?.wordTranslate}</h3>
-            {hardWord ? <img src={Hard} alt="mark-hard-word" className={styles.hard_word} /> : null}
+            {hard ? <img src={Hard} alt="mark-hard-word" className={styles.hard_word} /> : null}
           </div>
           {word?.image ? <img src={`${EApiParametrs.baseUrl}/${word?.image}`} alt="" /> : null}
         </div>
@@ -108,7 +102,7 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
         </div>
         {isLodined ? (
           <div>
-            {!hardWord ? (
+            {!hard ? (
               <button onClick={sendHardWord} className={buttonStyles.button}>
                 Добавить в сложные
               </button>
@@ -117,7 +111,7 @@ export const Modal = ({ modal, setModal, word, hard, learn }: IModal) => {
                 Удалить из сложного
               </button>
             )}
-            {!learnWord ? (
+            {!learn ? (
               <button onClick={addLearnWord} className={buttonStyles.button}>
                 Пометить как изученное
               </button>

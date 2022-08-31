@@ -54,6 +54,8 @@ export interface IModal {
   word: WordResponse | undefined;
   hard?: boolean;
   learn?: boolean;
+  setHard: (item: boolean) => void;
+  setLearn: (item: boolean) => void;
 }
 
 export interface HardWordsReponse {

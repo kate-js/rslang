@@ -16,8 +16,8 @@ export const GroupLevel = () => {
   const [listWords, setListWords] = useState<WordResponse[]>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
-  const [hard, setHard] = useState<boolean>(false);
-  const [learn, setLearn] = useState<boolean>(false);
+  const [hard, setHard] = useState<boolean>();
+  const [learn, setLearn] = useState<boolean>();
 
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
@@ -58,16 +58,8 @@ export const GroupLevel = () => {
 
   async function getWordInfo(wordId: string) {
     const [difficulty, learningWord] = await api.getWordInfo({ userId, token, wordId });
-    if (difficulty === 'hard') {
-      setHard(true);
-    } else {
-      setHard(false);
-    }
-    if (learningWord) {
-      setLearn(true);
-    } else {
-      setLearn(false);
-    }
+    setHard(difficulty);
+    setLearn(learningWord);
   }
 
   async function getWords() {
@@ -109,11 +101,21 @@ export const GroupLevel = () => {
                 </li>
               ))}
             </ul>
-            <Modal modal={modal} setModal={setModal} word={words} hard={hard} learn={learn} />
+            <Modal
+              modal={modal}
+              setModal={setModal}
+              word={words}
+              hard={hard}
+              learn={learn}
+              setHard={setHard}
+              setLearn={setLearn}
+            />
             <GameLinks />
           </>
         ) : (
-          <div>Чтобы получить доступ к данному разделу, вам необходимо зарегистироваться!</div>
+          <div className={styles.no_regictration}>
+            Вам необходимо зарегистироваться, чтобы получить доступ к данному разделу!
+          </div>
         )
       ) : (
         <>
@@ -137,7 +139,15 @@ export const GroupLevel = () => {
               </li>
             ))}
           </ul>
-          <Modal modal={modal} setModal={setModal} word={words} hard={hard} />
+          <Modal
+            modal={modal}
+            setModal={setModal}
+            word={words}
+            hard={hard}
+            learn={learn}
+            setHard={setHard}
+            setLearn={setLearn}
+          />
           <GameLinks />
         </>
       )}

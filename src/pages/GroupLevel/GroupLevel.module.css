@@ -56,3 +56,14 @@
 .game_image {
   width: 100px;
 }
+
+.no_regictration {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #023986;
+  height: 100%;
+  color: white;
+  font-size: 30px;
+  width: 100%;
+}
