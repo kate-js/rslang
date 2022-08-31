@@ -24,6 +24,7 @@ export type Props = {
 
 export interface WordResponse {
   id: 'string';
+  _id: 'string';
   group: 'number';
   page: 'number';
   word: 'string';
@@ -39,8 +40,24 @@ export interface WordResponse {
   textExampleTranslate: 'string';
 }
 
+export interface UserWordsReponse {
+  id: string,
+  difficulty: string,
+  optional?: {
+    learningWord?: boolean;
+  },
+  wordId: string
+}
 export interface IModal {
   modal: boolean;
   setModal: (item: boolean) => void;
   word: WordResponse | undefined;
+  hard?: boolean;
+  learn?: boolean;
+  setHard: (item: boolean) => void;
+  setLearn: (item: boolean) => void;
+}
+
+export interface HardWordsReponse {
+  paginatedResults: WordResponse[] | null;
 }

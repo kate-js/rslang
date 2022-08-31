@@ -1,4 +1,4 @@
-import { WordResponse } from "./constants";
+import { UserWordsReponse, WordResponse } from "./constants";
 
 export enum EApiParametrs {
   baseUrl = 'https://rs-lang-final.herokuapp.com'
@@ -83,9 +83,163 @@ class Api implements IApi {
     const json = await res.json();
     return json;
   }
+
+  public async getHardWords({userId, token}: {userId: string, token : string}): Promise<WordResponse[]> {
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?wordsPerPage=4000&filter={"$and":[{"userWord.difficulty":"hard"}]}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json[0].paginatedResults;
+  }
+
+  public async getWord({id, token}: {id: string, token : string}): Promise<WordResponse[]> {
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+
+    const res = await fetch(`${this.baseUrl}/words/${id}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+
+  public async getWordInfo({userId, wordId, token}: {userId: string, token : string, wordId: string}): Promise<boolean[]> {
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json' , "Authorization" : `Bearer ${token}`, 'Accept': 'application/json'},
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    let learn = false;
+    let difficalty = false;
+    if (res.status === 404) {
+      return [difficalty, learn];
+    }
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    if(json.difficulty === 'hard'){
+      difficalty = true;
+    } else if (json.difficalty === 'easy' || typeof(json.difficalty) == 'undefined'){
+      difficalty = false;
+    }
+    try {
+      if(json.optional.learningWord)
+        learn = true;
+    } catch (error) {
+      learn = false;
+    }
+    
+    return [difficalty, learn];
+  }
+
+  public async addHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
+    const fetchConfig = {
+      method: 'POST',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "hard"})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+
+  public async changeHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "hard"})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async delHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<void> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "difficulty": "easy",})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+  }
+
+  public async addLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+    const fetchConfig = {
+      method: 'POST',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "optional": {learningWord: true}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async changeLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "optional": {learningWord: true}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+  public async deleteLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+    const fetchConfig = {
+      method: 'PUT',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      body: JSON.stringify({ "optional": {learningWord: false}})
+    };
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    return json;
+  }
+
 }
 
 export const api = new Api({
   baseUrl: EApiParametrs.baseUrl,
-  headers: { ['Content-Type']: 'application/json' }
-});
+  headers: { ['Content-Type']: 'application/json'
+}});
