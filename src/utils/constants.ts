@@ -61,3 +61,46 @@ export interface IModal {
 export interface HardWordsReponse {
   paginatedResults: WordResponse[] | null;
 }
+
+export interface IWord {
+  id: string,
+  group: number,
+  page: number,
+  word: string,
+  image: string,
+  audio: string,
+  audioMeaning: string,
+  audioExample: string,
+  textMeaning: string,
+  textExample: string,
+  transcription: string,
+  textExampleTranslate: string,
+  textMeaningTranslate: string,
+  wordTranslate: string,
+  correct?: boolean,
+}
+
+export interface IState {
+  isLoaded: boolean,
+  words: IWord[];
+}
+
+export interface IVolumeSettings {
+  volume: number,
+  isMuted: boolean,
+}
+
+export interface IComponentState {
+  answerCount?: number,
+  volumeSettings?: IVolumeSettings,
+  possibleAnswers?: IWord[],
+  answer?: IWord,
+  answers?: IWord[],
+  audio?: HTMLAudioElement,
+  wordsToShow?: IWord[],
+  appState?: IState,
+  isAnswered?: boolean,
+  isWelcomeScreen?: boolean,
+}
+
+export type keys = 'appState' | 'isAnswered' | 'wordsToShow' | 'answer' | 'audio' | "answerCount" | "volumeSettings" | 'possibleAnswers' | 'isWelcomeScreen';

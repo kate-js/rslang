@@ -14,11 +14,10 @@ import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { EApiParametrs } from '../../utils/Api';
 // import { api } from '../../utils/Api';
-// import { Loading } from './Loading';
+import { Loader } from '../../components/UI/Loader/Loader';
 
 // TODO:
 // 1. Create keyboard support
-// 2. 
 
 // const wordsExample = [
 //   {
@@ -415,17 +414,16 @@ export const AudioComponent = () => {
   }, []);
 
   const setGameWords = async () => {
-    // const words = await api.getWords({
-    //   group: getRandomIntInclusive(0,29),
-    //   numberPage: getRandomIntInclusive(0, 5),
-    // }); 
+    const words = await getWords(); 
+    
+    console.log(words);
     // const words = fafa.slice();
 
     // наши 20 слов
     
     // if words in global state then take it
     // else fetch 
-    const words = await getWords()
+    // const words = await getWords()
 
     const newState = {
       appState:  { isLoaded: true, words },
@@ -436,13 +434,13 @@ export const AudioComponent = () => {
   }
 
   const handleWords = async () => {
-    let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice();
+    let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice() || [];
     
     const answer = possibleAnswers[getRandomIntInclusive(0, possibleAnswers.length - 1)];
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
     const wordsWithoutAnswer = componentState.appState?.words.filter(word => word !== answer);
     
-    const wordsToCreateArray = shuffleArray(wordsWithoutAnswer).slice(0, 4);
+    const wordsToCreateArray = shuffleArray(wordsWithoutAnswer || []).slice(0, 4);
     wordsToCreateArray.splice(getRandomIntInclusive(0, 4), 0, answer);
 
     const newState = {
@@ -653,6 +651,6 @@ export const AudioComponent = () => {
         </div>
       ) 
     } else {
-      // return <Loading/>;
+      return <Loader/>;
     }
   };
