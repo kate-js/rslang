@@ -1,5 +1,5 @@
 .audio {
-  height: 100vh;
+  height: 85vh;
   width: 100%;
   z-index: 9;
   background: rgb(2 57 134 / 90%);
@@ -10,6 +10,7 @@
 
 .wrapper {
   max-width: 1280px;
+  min-width: 800px;
   background-color: white;
   padding: 20px;
 }
@@ -90,7 +91,7 @@ button:hover {
 
 .overall {
   margin: 0 auto;
-  width: 1280px;
+  width: 600px;
   background-color: azure;
 }
 
@@ -99,4 +100,8 @@ button:hover {
 .fullscreen {
   width: 30px;
   height: 30px;
+}
+
+.audio__img {
+  width: 150px;
 }

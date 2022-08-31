@@ -76,14 +76,14 @@ export interface IVolumeSettings {
 export interface IComponentState {
   answerCount?: number,
   volumeSettings?: IVolumeSettings,
-  playing?: boolean,
+  possibleAnswers?: IWord[],
   answer?: IWord,
-  correctAnswers?: IWord[],
-  incorrectAnswers?: IWord[],
+  answers?: IWord[],
   audio?: HTMLAudioElement,
-  newWords?: IWord[],
+  wordsToShow?: IWord[],
   appState?: IState,
-  isAnswered?: boolean
+  isAnswered?: boolean,
+  isWelcomeScreen?: boolean,
 }
 
-export type keys = 'appState' | 'isAnswered' | 'newWords' | 'answer' | 'audio' | "answerCount" | "volumeSettings";
+export type keys = 'appState' | 'isAnswered' | 'wordsToShow' | 'answer' | 'audio' | "answerCount" | "volumeSettings" | 'possibleAnswers' | 'isWelcomeScreen';
