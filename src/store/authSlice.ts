@@ -1,13 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const currentUser = localStorage.getItem('currentUser');
+
+const DEFAULT_USER  = {
+  message: '',
+  token: '',
+  refreshToken: '',
+  userId: '',
+  name: ''
+};
+
 export const initialState = {
-  currentUser: {
-    message: '',
-    token: '',
-    refreshToken: '',
-    userId: '',
-    name: ''
-  },
+  currentUser: currentUser ? JSON.parse(currentUser) : DEFAULT_USER,
   isModalSignupOpen: false,
   isModalSigninOpen: false,
   isLogined: false
@@ -29,6 +33,11 @@ const authSlice = createSlice({
     setIsLogined: (state, actions) => {
       state.isLogined = actions.payload;
     }
+    // handelLogout: (state) => {
+    //   state.isLogined = false;
+    //   state.currentUser = initialState.currentUser;
+    //   localStorage.removeItem('currentUser');
+    // },
   }
 });
 

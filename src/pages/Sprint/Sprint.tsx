@@ -1,5 +1,4 @@
 import { Link, useNavigate } from 'react-router-dom';
-import { Button } from '../../components/UI/Button/Button';
 import { ERoutes } from '../../utils/constants';
 import { useEffect, useState } from 'react';
 
@@ -89,8 +88,8 @@ export const Sprint = () => {
           <p className={styles.word}>Слово</p>
           <p className={styles.translation}>Перевод</p>
           <div className={styles.button_section}>
-            <Button value="Не верно" />
-            <Button value="Верно" />
+            <button>Не верно</button>
+            <button>Верно</button>
           </div>
           <div className={styles.arrow_section}>
             <img src={Arrow} alt="arrow-left" className={styles.arrow_left} />

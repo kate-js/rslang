@@ -104,7 +104,8 @@ export const LEVELS = {
   B1: 2,
   B2: 3,
   C1: 4,
-  C2: 5
+  C2: 5,
+  'HARD WORDS': 6
 };
 
 export const LEVELS_main = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'HARD WORDS'];

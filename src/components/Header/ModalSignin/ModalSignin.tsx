@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import styles from './ModalSignin.module.css';
-import { api } from '../../../utils/Api';
+// import { api } from '../../../utils/Api';
+import { apiUsers } from '../../../api/apiUsers';
 import { setIsLogined, setCurrentUser } from '../../../store/authSlice';
 
 interface IProps {
@@ -26,7 +27,7 @@ const ModalSignin = (props: IProps) => {
   const handelSigninSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const res = await api.signin({ email, password });
+      const res = await apiUsers.signin({ email, password });
       dispatch(setCurrentUser(res));
       dispatch(setIsLogined(true));
       localStorage.setItem('currentUser', JSON.stringify(res));

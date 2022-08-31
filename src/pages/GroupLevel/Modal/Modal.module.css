@@ -16,6 +16,26 @@
   max-width: 70vw;
   max-height: 80vh;
   display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal_main {
+  display: flex;
+  align-items: center;
+}
+
+.modal_main .hard_word {
+  display: block;
+  height: 50px;
+  border: 0;
+}
+
+.modal_main img {
+  display: block;
+  margin-left: 20px;
+  height: 150px;
+  border: 2px solid gray;
 }
 
 .Modal.active {
@@ -24,31 +44,26 @@
   align-items: center;
 }
 
-.modal_examples {
+.modal_example {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid gray;
+  border-radius: 10px;
   padding: 10px;
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  flex-direction: column;
+  margin: 5px;
 }
 
-.modal_examples {
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-}
-
-.modal_main {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-around;
-}
-
-.modal_main p,
-.modal_main h1,
-.modal_main h3 {
+.modal_example p {
   margin: 0;
   padding: 0;
 }
+
+.modal_title p,
+.modal_title h1,
+.modal_title h3 {
+  padding: 0;
+  margin: 0;
+}
+
