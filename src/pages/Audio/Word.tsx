@@ -1,7 +1,14 @@
 import styles from './Word.module.css'
 import AudioImg from './assets/audio.png'
 
-export const Word = ({id, word, wordTranslate, playSound}) => {
+type IWord = {
+  id : string,
+  word: string,
+  wordTranslate: string,
+  playSound(): void,
+}
+
+export const Word = ({id, word, wordTranslate, playSound}: IWord) => {
   return(
     <div className={styles.word} key={id}>
       <img 

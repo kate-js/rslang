@@ -422,6 +422,7 @@ export const AudioComponent = () => {
     // const words = fafa.slice();
 
     // наши 20 слов
+    
     // if words in global state then take it
     // else fetch 
     const words = await getWords()
