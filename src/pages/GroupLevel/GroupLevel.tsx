@@ -6,19 +6,24 @@ import Book from './assets/book.png';
 import { Modal } from './Modal/Modal';
 import { WordResponse } from '../../utils/constants';
 import { api } from '../../utils/Api';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
+import { setLevel, setPage } from './GroupPage';
 
 export const GroupLevel = () => {
+  const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
   const { level } = useParams<{ level: string }>();
   const [listWords, setListWords] = useState<WordResponse[]>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
+
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
+
+  dispatch(setLevel(level));
 
   useEffect(() => {
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
@@ -31,6 +36,7 @@ export const GroupLevel = () => {
   function getLocaleNumberPage() {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
     setNumberPage(page);
+    dispatch(setPage(page));
   }
 
   async function getHardWords() {
@@ -69,6 +75,7 @@ export const GroupLevel = () => {
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
     const page = Number(e.target.value);
     setNumberPage(page);
+    dispatch(setPage(page));
     localStorage.setItem('numberPage', JSON.stringify(page));
   }
 

@@ -14,6 +14,11 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const [hard, setHard] = useState<boolean>();
   const [learn, setLearn] = useState<boolean>();
+  const page: number = useSelector((state: TState) => state.page.numberPage);
+  const level: string = useSelector((state: TState) => state.page.level);
+
+  console.log(page, 'page');
+  console.log(level, 'level');
 
   useEffect(() => {
     if (word) {

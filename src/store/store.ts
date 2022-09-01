@@ -1,10 +1,12 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { testToolkitReducer } from './testToolkitSlice';
 import { authReducer } from './authSlice';
+import { pageReducer } from '../pages/GroupLevel/GroupPage';
 
 const rootReducer = combineReducers({
   testToolkit: testToolkitReducer,
-  auth: authReducer
+  auth: authReducer,
+  page: pageReducer,
 });
 
 export const store = configureStore({
