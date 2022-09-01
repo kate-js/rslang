@@ -122,7 +122,7 @@ export const GroupLevel = () => {
             <GameLinks />
             <div className={styles.levels_group}>
               <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
-              <Levels onClick={() => getWords(userId, token)} />
+              <Levels />
             </div>
           </>
         ) : (
@@ -156,7 +156,7 @@ export const GroupLevel = () => {
           <GameLinks />
           <div className={styles.levels_group}>
             <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
-            <Levels onClick={() => getWords(userId, token)} />
+            <Levels />
           </div>
         </>
       )}
