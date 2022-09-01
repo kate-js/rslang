@@ -23,6 +23,7 @@ export type Props = {
 };
 
 export interface WordResponse {
+  userWord?: UserWordsReponse;
   id: 'string';
   _id: 'string';
   group: 'number';
@@ -41,21 +42,18 @@ export interface WordResponse {
 }
 
 export interface UserWordsReponse {
-  id: string,
+  id?: string,
   difficulty: string,
   optional?: {
     learningWord?: boolean;
   },
-  wordId: string
+  wordId?: string
 }
 export interface IModal {
   modal: boolean;
   setModal: (item: boolean) => void;
   word: WordResponse | undefined;
-  hard?: boolean;
-  learn?: boolean;
-  setHard: (item: boolean) => void;
-  setLearn: (item: boolean) => void;
+  changeModal: (item: WordResponse) => void;
 }
 
 export interface HardWordsReponse {

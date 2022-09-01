@@ -6,11 +6,28 @@ import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
+import { useEffect, useState } from 'react';
 
-export const Modal = ({ modal, setModal, word, hard, learn, setHard, setLearn }: IModal) => {
+export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
+  const [hard, setHard] = useState<boolean>();
+  const [learn, setLearn] = useState<boolean>();
+  const page: number = useSelector((state: TState) => state.page.numberPage);
+  const level: string = useSelector((state: TState) => state.page.level);
+
+  console.log(page, 'page');
+  console.log(level, 'level');
+
+  useEffect(() => {
+    if (word) {
+      const getHard = word ? word.userWord?.difficulty === 'hard' : false;
+      setHard(getHard);
+      const getLearn = word ? word.userWord?.optional?.learningWord : false;
+      setLearn(getLearn);
+    }
+  }, [changeModal]);
 
   const rootClasses = [styles.Modal];
   if (modal) {
@@ -102,22 +119,22 @@ export const Modal = ({ modal, setModal, word, hard, learn, setHard, setLearn }:
         </div>
         {isLodined ? (
           <div>
-            {!hard ? (
-              <button onClick={sendHardWord} className={buttonStyles.button}>
-                Добавить в сложные
-              </button>
-            ) : (
+            {hard ? (
               <button onClick={deleteHardWord} className={buttonStyles.button}>
                 Удалить из сложного
               </button>
-            )}
-            {!learn ? (
-              <button onClick={addLearnWord} className={buttonStyles.button}>
-                Пометить как изученное
-              </button>
             ) : (
+              <button onClick={sendHardWord} className={buttonStyles.button}>
+                Добавить в сложные
+              </button>
+            )}
+            {learn ? (
               <button onClick={deleteLearningWord} className={buttonStyles.button}>
                 Удалить из изученного
+              </button>
+            ) : (
+              <button onClick={addLearnWord} className={buttonStyles.button}>
+                Пометить как изученное
               </button>
             )}
           </div>
