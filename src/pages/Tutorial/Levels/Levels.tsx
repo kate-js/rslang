@@ -1,19 +1,15 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import { LEVELS_main } from '../../../data/Data';
-import styles from '../Tutorial.module.css';
+import { ERoutes } from '../../../utils/constants';
+import styles from './Levels.module.css';
 
-interface PopupProps {
-  updateLevel: (index: number) => void;
-}
-
-export const Levels = ({ updateLevel }: PopupProps) => {
+export const Levels = () => {
   return (
     <>
       <ul className={styles.levels}>
         {LEVELS_main.map((item, index) => (
-          <li key={index} value={item} onMouseOver={() => updateLevel(index)}>
-            <Link to={`./${item}`} className={styles.link}>
+          <li key={index} value={item}>
+            <Link to={`${ERoutes.tutorial}/${item}`} className={styles.link}>
               {item}
             </Link>
           </li>
