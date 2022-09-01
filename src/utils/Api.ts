@@ -73,16 +73,16 @@ class Api implements IApi {
     return this.checkRes(res);
   }
 
-  public async getWords({group, numberPage} : {group: number, numberPage: number}): Promise<WordResponse[]> {
-    const fetchConfig = {
-      method: 'GET',
-      headers: this.headers,
-    };
+  // public async getWords({group, numberPage} : {group: number, numberPage: number}): Promise<WordResponse[]> {
+  //   const fetchConfig = {
+  //     method: 'GET',
+  //     headers: this.headers,
+  //   };
 
-    const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`, fetchConfig);
-    const json = await res.json();
-    return json;
-  }
+  //   const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`, fetchConfig);
+  //   const json = await res.json();
+  //   return json;
+  // }
 
   public async getHardWords({userId, token}: {userId: string, token : string}): Promise<WordResponse[]> {
     const fetchConfig = {
@@ -221,6 +221,33 @@ class Api implements IApi {
     const json = await res.json();
     return json;
   }
+
+  public async fetchWords({userId = null, token = null, group, numberPage} : {userId: string|null, token: string|null, group: number, numberPage:number}) {
+
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+    };
+
+    if (userId) {
+      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?group=${group}&page=${numberPage-1}&wordsPerPage=20`, fetchConfig);
+      if (res.status !== 200) {
+        throw new Error(`There was an error with status code ${res.status}`)
+      }
+      const json = await res.json();
+      return json[0].paginatedResults;
+    }
+
+    const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`, fetchConfig);
+    if (res.status !== 200) {
+      throw new Error(`There was an error with status code ${res.status}`)
+    }
+    const json = await res.json();
+    console.log('json', json);
+    return json;
+  }
+
   public async deleteLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
     const fetchConfig = {
       method: 'PUT',

@@ -49,6 +49,51 @@
   cursor: pointer;
 }
 
+.wordHard {
+  border: 2px solid gray;
+  background-color: rgba(239, 239, 240,1);
+  width: 150px;
+  height: 100px;
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: rgb(116, 122, 182);
+}
+
+.wordLearn {
+  border: 2px solid gray;
+  background-color: rgba(239, 239, 240,1);
+  width: 150px;
+  height: 100px;
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: rgb(245, 207, 138);
+}
+
+.wordVeryHard {
+  border: 2px solid gray;
+  background-color: rgba(239, 239, 240,1);
+  width: 150px;
+  height: 100px;
+  margin: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Roboto', sans-serif;
+  font-size: 20px;
+  cursor: pointer;
+  background-color: rgb(143, 10, 10);
+}
+
 .image {
   width: 100px;
 }
