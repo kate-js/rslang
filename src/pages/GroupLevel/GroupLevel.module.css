@@ -113,3 +113,10 @@
   font-size: 30px;
   width: 100%;
 }
+
+.levels_group {
+  display: flex;
+  width: 60%;
+  justify-content: center;
+  align-items: center;
+}

@@ -36,15 +36,3 @@
   box-shadow: 10px 5px 5px gray;
   cursor: pointer;
 }
-
-.link {
-  font-weight: 700;
-  text-decoration: none;
-  color: black;
-  padding: 30px;
-}
-
-.levels li:last-child {
-  font-size: 20px;
-  text-align: center;
-} 

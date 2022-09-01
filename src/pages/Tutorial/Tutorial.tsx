@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import styles from './Tutorial.module.css';
 import { LevelDescription } from './LevelDescription/LevelDescription';
-import { Levels } from './Levels/Levels';
+import { LEVELS_main } from '../../data/Data';
+import { Link } from 'react-router-dom';
 
 export const Tutorial = () => {
   const [level, setLevel] = useState(0);
@@ -14,7 +15,15 @@ export const Tutorial = () => {
 
   return (
     <div className={styles.tutorial}>
-      <Levels updateLevel={updateLevel} />
+      <ul className={styles.levels}>
+        {LEVELS_main.map((item, index) => (
+          <li key={index} value={item} onMouseOver={() => updateLevel(index)}>
+            <Link to={`./${item}`} className={styles.link}>
+              {item}
+            </Link>
+          </li>
+        ))}
+      </ul>
       <>
         <LevelDescription level={level} />
       </>

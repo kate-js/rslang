@@ -10,6 +10,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
 import { setLevel, setPage } from './GroupPage';
+import { Levels } from '../Tutorial/Levels/Levels';
 
 export const GroupLevel = () => {
   const dispatch = useDispatch();
@@ -28,6 +29,11 @@ export const GroupLevel = () => {
   useEffect(() => {
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('numberPage', '1');
+    level !== 'HARD WORDS' ? getWords(userId, token) : getHardWords();
+  }, [level]);
 
   useEffect(() => {
     level === 'HARD WORDS' ? getHardWords() : null;
@@ -114,6 +120,10 @@ export const GroupLevel = () => {
 
             <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
             <GameLinks />
+            <div className={styles.levels_group}>
+              <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
+              <Levels onClick={() => getWords(userId, token)} />
+            </div>
           </>
         ) : (
           <div className={styles.no_regictration}>
@@ -144,6 +154,10 @@ export const GroupLevel = () => {
           </ul>
           <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
           <GameLinks />
+          <div className={styles.levels_group}>
+            <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
+            <Levels onClick={() => getWords(userId, token)} />
+          </div>
         </>
       )}
     </div>
