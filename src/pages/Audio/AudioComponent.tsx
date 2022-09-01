@@ -2,7 +2,7 @@ import styles from './AudioComponent.module.css'
 import { getRandomIntInclusive, shuffleArray } from '../../utils/utils';
 import audioImg from './assets/audio.png'
 import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, keys } from '../../utils/constants';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import React, { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import correct from './assets/sounds/correct.mp3'
@@ -15,6 +15,10 @@ import fullscreen from './assets/fullscreen.svg'
 import { EApiParametrs } from '../../utils/Api';
 // import { api } from '../../utils/Api';
 import { Loader } from '../../components/UI/Loader/Loader';
+import { TState } from '../../store/store';
+import { useDispatch, useSelector } from 'react-redux';
+import { apiUsersWords }  from '../../api/apiUsersWords'
+import { IUserWord } from '../../api/apiConstants'
 
 // TODO:
 // 1. Create keyboard support
@@ -377,6 +381,8 @@ export const AudioComponent = () => {
     isAnswered: false,
     isWelcomeScreen: true,
   });
+  const [userWords, setUserWords] = useState<IUserWord[]>();
+  const [streak, setStreak] = useState(0);
 
   const [playCorrect] = useSound(correct, {
     volume: componentState.volumeSettings?.volume
@@ -384,6 +390,11 @@ export const AudioComponent = () => {
   const [playIncorrect] = useSound(wrong, {
     volume: componentState.volumeSettings?.volume
   });
+
+  const isLodined = useSelector((state: TState) => state.auth.isLogined);
+  const token: string = useSelector((state: TState) => state.auth.currentUser.token);
+  const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
+  console.log(isLodined, token, userId);
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
     setComponentState(
@@ -415,9 +426,13 @@ export const AudioComponent = () => {
 
   const setGameWords = async () => {
     const words = await getWords(); 
-    
-    console.log(words);
-    // const words = fafa.slice();
+    const userWords = await apiUsersWords.getsAllUserWords(userId)
+
+    console.log({
+      words,
+      userWords
+    });
+    setUserWords(userWords);
 
     // наши 20 слов
     
