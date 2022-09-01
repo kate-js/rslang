@@ -244,7 +244,6 @@ class Api implements IApi {
       throw new Error(`There was an error with status code ${res.status}`)
     }
     const json = await res.json();
-    console.log('json', json);
     return json;
   }
 
