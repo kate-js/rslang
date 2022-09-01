@@ -1,7 +1,7 @@
 // interface for discussions
 export interface IUserWord {
-  difficulty: 'string';
-  optional: { [key: string]: string };
+  difficulty: 'string'; // 'hard' || 'easy'
+  optional: { [key: string]: string }; // {}
 }
 export interface IUserStatistics {
   learnedWords: number;

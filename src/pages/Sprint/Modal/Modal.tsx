@@ -1,20 +1,21 @@
 import styles from './Modal.module.css';
 
 type Props = {
+  setIsModalVisible: (flag: boolean) => void;
   children: React.ReactNode;
-  visible: boolean;
 };
 
-export const Modal = ({ children, visible }: Props) => {
-  const rootClasses = [styles.modal];
-
-  if (visible) {
-    rootClasses.push(styles.active);
-  }
+export const Modal = ({ children, setIsModalVisible }: Props) => {
+  const handelCloseClick = () => {
+    setIsModalVisible(false);
+  };
 
   return (
-    <div className={rootClasses.join(' ')}>
+    <div className={styles.modal}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
+        {/* <span className={styles.modalClose} onClick={handelCloseClick}>
+          X
+        </span> */}
         {children}
       </div>
     </div>
