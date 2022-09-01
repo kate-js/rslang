@@ -80,9 +80,7 @@ export const GroupLevel = () => {
   }
 
   function getStyle(elem: WordResponse) {
-    if (elem.userWord?.difficulty === 'hard' && elem.userWord?.optional?.learningWord) {
-      return styles.wordVeryHard;
-    } else if (elem.userWord?.difficulty === 'hard') {
+    if (elem.userWord?.difficulty === 'hard') {
       return styles.wordHard;
     } else if (elem.userWord?.optional?.learningWord) {
       return styles.wordLearn;
@@ -102,13 +100,18 @@ export const GroupLevel = () => {
                 <h3>{level}</h3>
               </div>
             </div>
-            <ul className={styles.wordList}>
-              {listWords.map((item, index) => (
-                <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
-                  {item.word}
-                </li>
-              ))}
-            </ul>
+            {listWords.length ? (
+              <ul className={styles.wordList}>
+                {listWords.map((item, index) => (
+                  <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
+                    {item.word}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className={styles.no_wordList}>У вас нет слов, отмеченных как сложное!</div>
+            )}
+
             <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
             <GameLinks />
           </>

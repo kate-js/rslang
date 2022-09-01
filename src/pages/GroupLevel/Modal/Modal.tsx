@@ -45,7 +45,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
       await api.changeHardWord({ userId, token, wordId });
       console.error(error);
     }
+    await api.deleteLearningWord({ userId, token, wordId });
     setHard(true);
+    setLearn(false);
   }
 
   async function deleteHardWord() {
@@ -71,7 +73,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     } catch (error) {
       await api.changeLearningWord({ userId, token, wordId });
     }
+    await api.delHardWord({ userId, token, wordId });
     setLearn(true);
+    setHard(false);
   }
 
   async function deleteLearningWord() {
