@@ -5,13 +5,19 @@ import styles from './GameLinks.module.css';
 
 export const GameLinks = () => {
   return (
-    <div>
-      <Link to="/games/audio">
-        <img src={Game1} alt="" className={styles.game_image} />
-      </Link>
-      <Link to="/games/sprint">
-        <img src={Game2} alt="" className={styles.game_image} />
-      </Link>
+    <div className={styles.game_section}>
+      <div className={styles.game_item}>
+        <p>Играть в Aудио</p>
+        <Link to="/games/audio">
+          <img src={Game1} alt="" className={styles.game_image} />
+        </Link>
+      </div>
+      <div className={styles.game_item}>
+        <p>Играть в Спринт</p>
+        <Link to="/games/sprint">
+          <img src={Game2} alt="" className={styles.game_image} />
+        </Link>
+      </div>
     </div>
   );
 };

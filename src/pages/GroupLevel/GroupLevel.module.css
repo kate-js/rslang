@@ -119,4 +119,6 @@
   width: 60%;
   justify-content: center;
   align-items: center;
+  box-shadow: inset 0px 2px 5px gray;
+  width: 100%;
 }
