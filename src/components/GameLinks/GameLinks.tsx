@@ -4,25 +4,30 @@ import Game2 from './assets/sprint.png';
 import styles from './GameLinks.module.css';
 
 export const GameLinks = ({ learnPage }: { learnPage: boolean }) => {
-  let style;
+  let style: string;
   if (learnPage) {
     style = styles.disabled;
   }
 
+  const data = [
+    { name: 'Играть в Aудио', link: Game1, alt: 'Audio' },
+    { name: 'Играть в Спринт', link: Game2, alt: 'Sprint' }
+  ];
+
   return (
     <div className={styles.game_section}>
-      <div className={learnPage ? styles.game_image_disabled : styles.game_item}>
-        <p>Играть в Aудио</p>
-        <Link to="/games/audio" className={style}>
-          <img src={Game1} alt="image-link to game Audio" className={styles.game_image} />
-        </Link>
-      </div>
-      <div className={learnPage ? styles.game_image_disabled : styles.game_item}>
-        <p>Играть в Спринт</p>
-        <Link to="/games/sprint" className={style}>
-          <img src={Game2} alt="image-link to game Sprint" className={styles.game_image} />
-        </Link>
-      </div>
+      {data.map((game, index) => (
+        <div className={learnPage ? styles.game_image_disabled : styles.game_item} key={index}>
+          <p>{game.name}</p>
+          <Link to="/games/audio" className={style}>
+            <img
+              src={game.link}
+              alt="`image-link to game ${game.alt}`"
+              className={styles.game_image}
+            />
+          </Link>
+        </div>
+      ))}
     </div>
   );
 };
