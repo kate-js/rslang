@@ -1,8 +1,23 @@
 // interface for discussions
 export interface IUserWord {
-  difficulty: 'string';
-  optional: { [key: string]: string };
+  difficulty: 'hard' | 'easy';
+  optional: {
+    // wordId: string;
+    learningWord: boolean;
+    counterCorrectAnswer: number; // if (counter === 3) { SET learningWord: true}
+    answerOrder: { answerArray: boolean[] }; // 'false, true, true, true'
+  };
 }
+
+export const initialUserWordData: IUserWord = {
+  difficulty: 'easy',
+  optional: {
+    learningWord: false,
+    counterCorrectAnswer: 0,
+    answerOrder: { answerArray: [] }
+  }
+};
+
 export interface IUserStatistics {
   learnedWords: number;
   optional: { [key: string]: string };
@@ -28,7 +43,7 @@ export const checkRes = (rawRes: Response): Promise<Response> => {
   if (rawRes.ok) {
     res = rawRes.json();
   } else {
-    res = Promise.reject(new Error(`${401}`));
+    res = Promise.reject(new Error(`${rawRes.status}`));
   }
   return res;
 };
