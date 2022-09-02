@@ -9,7 +9,7 @@ interface IProps {
 }
 
 const Timer = ({ setIsModalVisible, isModalVisible }: IProps) => {
-  const [seconds, setSeconds] = useState(999);
+  const [seconds, setSeconds] = useState(60);
   const [isTimerActive, setIsTimerActive] = useState(true);
 
   // timer functionality
