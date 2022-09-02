@@ -19,6 +19,7 @@ export const GroupLevel = () => {
   const [listWords, setListWords] = useState<WordResponse[]>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
+  const [learnPage, setLearnPage] = useState<boolean>(false);
 
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
@@ -73,9 +74,19 @@ export const GroupLevel = () => {
     try {
       const response = await api.fetchWords({ userId, token, group, numberPage });
       await setListWords(response);
+      checkLearning(response);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function checkLearning(list: WordResponse[]) {
+    let counter = 0;
+    for (const key of list) {
+      key.userWord?.optional?.learningWord ? counter++ : null;
+    }
+    counter !== 20 ? setLearnPage(false) : setLearnPage(true);
+    console.log(counter);
   }
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -117,9 +128,8 @@ export const GroupLevel = () => {
             ) : (
               <div className={styles.no_wordList}>У вас нет слов, отмеченных как сложное!</div>
             )}
-
             <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
-            <GameLinks />
+            <GameLinks learnPage={learnPage} />
             <div className={styles.levels_group}>
               <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
               <Levels />
@@ -145,7 +155,7 @@ export const GroupLevel = () => {
               ))}
             </select>
           </div>
-          <ul className={styles.wordList}>
+          <ul className={learnPage ? styles.wordListLearn : styles.wordList}>
             {listWords.map((item, index) => (
               <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
                 {item.word}
@@ -153,7 +163,7 @@ export const GroupLevel = () => {
             ))}
           </ul>
           <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
-          <GameLinks />
+          <GameLinks learnPage={learnPage} />
           <div className={styles.levels_group}>
             <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
             <Levels />

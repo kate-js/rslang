@@ -36,6 +36,19 @@
   width: 100%;
 }
 
+.wordListLearn {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  background-color: gray;
+  border: 1px solid gray;
+  width: 100%;
+}
+
 .no_wordList {
   display: flex;
   justify-content: space-around;

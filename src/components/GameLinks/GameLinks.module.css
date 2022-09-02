@@ -20,4 +20,23 @@
   padding: 5px;
   height: 140px;
   width: 140px;
+  cursor: pointer;
+}
+
+.game_item_disabled {
+  cursor: default;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  border: 2px solid gray;
+  border-radius: 10px;
+  padding: 5px;
+  height: 140px;
+  width: 140px;
+}
+
+.disabled {
+  pointer-events: none;
+  cursor: default; 
 }
