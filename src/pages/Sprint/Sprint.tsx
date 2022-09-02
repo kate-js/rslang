@@ -1,13 +1,17 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './Sprint.module.css';
 import { setSprintWordSet } from '../../store/sprintSlice';
+import { setIsFromTutorial } from '../../store/levelChoseSlice';
 import { TState } from '../../store/store';
 import { ERoutes, WordResponse } from '../../utils/constants';
+import { LEVELS } from '../../data/Data';
+// import { setLevel, setPage } from '../GroupLevel/GroupPage';
 import { apiWords } from '../../api/apiWords';
-import { EApiParametrs } from '../../api/apiConstants';
+import { apiUsersWords } from '../../api/apiUsersWords';
+import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
 import iconClose from './assets/close.png';
 import iconArrow from './assets/arrow.png';
 import iconNote from './assets/music-note.svg';
@@ -33,48 +37,125 @@ function getRandomInteger(min: number, max: number) {
 
 const answerCorrect: WordResponse[] = [];
 const answerWrong: WordResponse[] = [];
+let currentPage = 0;
+let isWordsLoading = false;
+let wordCurrentData: IUserWord = initialUserWordData as IUserWord;
 
 export const Sprint = () => {
   const dispatch = useDispatch();
   const sprintWordSet = useSelector((state: TState) => state.sprint.wordSet) as WordResponse[];
-  const isFromTutorial = useSelector((state: TState) => state.sprint.isFromTutorial);
+  const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
+  const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
+  const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
+  const currentUser = useSelector((state: TState) => state.auth.currentUser);
   const [isLoading, setIsLoading] = useState(true);
   const [pointsCounter, setPointsCounter] = useState(0);
   const [pointsLevel, setPointsLevel] = useState(0);
-  // const [pointsIncrement, setPointsIncrement] = useState(POINT_INCREMENT_BY_LEVEL[0]);
   const [ansewerRigthCounter, setAnsewerRigthCounter] = useState(0);
   const [wordCurrent, setWordCurrent] = useState({} as WordResponse);
+  // const [wordCurrentData, setWordCurrentData] = useState({} as IUserWord);
   const [wordRandomAnswer, setWordRandomAnswer] = useState('');
   const [wordCounter, setWordCounter] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
 
   // get current words list
-  const getCurrentWordsList = async () => {
+  const getCurrentWordsList = async (numberPage: number) => {
     try {
-      const words = await apiWords.getWords({ group: 1, numberPage: 1 });
-      dispatch(setSprintWordSet(words));
+      isWordsLoading = true;
+      const words = await apiWords.getWords({
+        group: LEVELS[groupLevel],
+        numberPage: numberPage
+      });
+      dispatch(setSprintWordSet([...sprintWordSet, ...words]));
+    } catch (err) {
+      console.log(err);
+    } finally {
+      isWordsLoading = false;
+    }
+  };
+
+  useEffect(() => {
+    if (isFromTutorial) {
+      currentPage = fromTutorialNumberPage;
+    } else {
+      currentPage = getRandomInteger(0, 29);
+    }
+    getCurrentWordsList(currentPage);
+
+    document.addEventListener('keydown', handleArrowDown);
+  }, []);
+
+  // handel data about current word
+  const getWordCurrentData = async (userId: string, wordId: string) => {
+    try {
+      const wordData = await apiUsersWords.getUserWordById(userId, wordId);
+
+      wordCurrentData = wordData;
+    } catch (err) {
+      if (err instanceof Error) {
+        if (err.message === '404') {
+          console.log('Слово ранее не использовалось');
+          wordCurrentData = initialUserWordData;
+        }
+      }
+    }
+  };
+
+  const sendWordCurrentData = async (userId: string, wordId: string, isCorrectAnswer: boolean) => {
+    let learningWord = false;
+    let counterCorrectAnswer = 0;
+
+    if (isCorrectAnswer) {
+      learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      counterCorrectAnswer = wordCurrentData.optional.counterCorrectAnswer + 1;
+    }
+    const answerOrder = [...wordCurrentData.optional.answerOrder.answerArray, isCorrectAnswer];
+
+    const wordData: IUserWord = {
+      difficulty: wordCurrentData.difficulty,
+      optional: {
+        learningWord: learningWord,
+        counterCorrectAnswer: counterCorrectAnswer,
+        answerOrder: { answerArray: answerOrder }
+      }
+    };
+
+    try {
+      if (wordCurrentData.optional.answerOrder.answerArray.length) {
+        apiUsersWords.updateUserWordById(userId, wordId, wordData);
+      } else {
+        apiUsersWords.createUserWordById(userId, wordId, wordData);
+      }
     } catch (err) {
       console.log(err);
     }
   };
 
   useEffect(() => {
-    if (!isFromTutorial) {
-      getCurrentWordsList();
-    }
-    document.addEventListener('keydown', handleArrowDown);
-  }, []);
+    // load additional words if it's near end
+    const isWordsNearEnd =
+      sprintWordSet.length && wordCounter + 10 > sprintWordSet.length && currentPage > 0;
 
-  // handel wordCounter change
-  useEffect(() => {
+    if (isWordsNearEnd && !isWordsLoading) {
+      if (isFromTutorial) {
+        currentPage = currentPage - 1;
+      } else {
+        currentPage = currentPage - 1 > 0 ? currentPage - 1 : 29;
+      }
+      getCurrentWordsList(currentPage);
+    }
+
+    // handel wordCounter change
     if (sprintWordSet.length) {
+      if (isLogined) {
+        getWordCurrentData(currentUser.userId, sprintWordSet[wordCounter].id);
+      }
       setIsLoading(false);
       setWordCurrent(sprintWordSet[wordCounter]);
-
       const maxRandom =
-        wordCounter + 2 > sprintWordSet.length - 1 ? sprintWordSet.length - 1 : wordCounter + 2;
+        wordCounter + 1 > sprintWordSet.length - 1 ? sprintWordSet.length - 1 : wordCounter + 1;
       setWordRandomAnswer(sprintWordSet[getRandomInteger(wordCounter, maxRandom)].wordTranslate);
     }
   }, [sprintWordSet, wordCounter]);
@@ -121,6 +202,10 @@ export const Sprint = () => {
       playAnswerSound(isCorrectAnswer);
     }
 
+    if (isLogined) {
+      sendWordCurrentData(currentUser.userId, wordCurrent.id, isCorrectAnswer);
+    }
+
     if (isCorrectAnswer) {
       setPointsCounter((prev) => prev + POINT_INCREMENT_BY_LEVEL[pointsLevel]);
       increasePointsLevel();
@@ -131,12 +216,11 @@ export const Sprint = () => {
       answerWrong.push(wordCurrent);
     }
 
-    console.log('answerWrong', answerWrong);
-
     if (wordCounter < sprintWordSet.length - 1) {
       setWordCounter((prev) => prev + 1);
     } else {
       setIsModalVisible(true);
+      setIsFromTutorial(false);
     }
   };
 
@@ -149,8 +233,6 @@ export const Sprint = () => {
   };
 
   const handleArrowDown = (e: KeyboardEvent) => {
-    e.preventDefault();
-
     if (e.key === 'ArrowLeft') {
       handelFalsyAnswer();
     } else if (e.key === 'ArrowRight') {

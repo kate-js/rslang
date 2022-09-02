@@ -12,7 +12,6 @@ type Props = {
 };
 
 export const Modal = ({ setIsModalVisible, answerWrong, answerCorrect }: Props) => {
-  console.log('answerWrong', answerWrong);
   const handelCloseClick = () => {
     setIsModalVisible(false);
   };
@@ -43,7 +42,7 @@ export const Modal = ({ setIsModalVisible, answerWrong, answerCorrect }: Props) 
             <div className={styles.section_header}>
               <h3 className={styles.subtitle}>Ошибок</h3>
               <span className={styles.wrong_counter}>
-                {answerWrong.length ? answerWrong.length - 1 : 0}
+                {answerWrong.length ? answerWrong.length : 0}
               </span>
             </div>
             <ul className={styles.section_content} onClick={handelWordAudioPlay}>
@@ -67,7 +66,7 @@ export const Modal = ({ setIsModalVisible, answerWrong, answerCorrect }: Props) 
             <div className={styles.section_header}>
               <h3 className={styles.subtitle}>Знаю</h3>
               <span className={styles.correct_counter}>
-                {answerCorrect.length ? answerCorrect.length - 1 : 0}
+                {answerCorrect.length ? answerCorrect.length : 0}
               </span>
             </div>
             <ul className={styles.section_content} onClick={handelWordAudioPlay}>
