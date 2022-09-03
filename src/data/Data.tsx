@@ -111,15 +111,3 @@ export const LEVELS = {
 export const LEVELS_main = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'HARD WORDS'];
 
 export const Statistics_title = ['Audio', 'Sprint', 'Words'];
-
-export const Statistics_type = [
-  {
-    title: 'Kоличество новых слов за день'
-  },
-  {
-    title: 'Процент правильных ответов'
-  },
-  {
-    title: 'Самая длинная серия правильных ответов' || 'Процент правильных ответов за день'
-  }
-];

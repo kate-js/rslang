@@ -1,31 +1,26 @@
+import { useState } from 'react';
 import { Statistics_title } from '../../data/Data';
 import styles from './Statistics.module.css';
+import { StatValue } from './StatValue/StatValue';
 
 export const Statistics = () => {
+  const [item, setItem] = useState('Audio');
+
+  function changeItem(item: string) {
+    setItem(item);
+  }
+
   return (
     <div className={styles.statictics_section}>
       <h1>Краткосрочная статистика</h1>
       <ul className={styles.statictics_titles}>
         {Statistics_title.map((item, index) => (
-          <li className={styles.statictics_title} key={index}>
+          <li className={styles.statictics_title} key={index} onClick={() => changeItem(item)}>
             {item}
           </li>
         ))}
       </ul>
-      <ul className={styles.statictics_items}>
-        <li className={styles.statictics_item}>
-          <p>Количество новых слов за день</p>
-          <div className={styles.statictics_title}>19</div>
-        </li>
-        <li className={styles.statictics_item}>
-          <p>Процент правильных ответов</p>
-          <div className={styles.statictics_title}>20</div>
-        </li>
-        <li className={styles.statictics_item}>
-          <p>Самая длинная серия правильных ответов</p>
-          <div className={styles.statictics_title}>21</div>
-        </li>
-      </ul>
+      <StatValue item={item} />
     </div>
   );
 };
