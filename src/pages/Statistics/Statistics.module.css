@@ -1,0 +1,52 @@
+.statictics_section {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+
+.statictics_titles {
+  display: flex;
+  gap: 20px;
+}
+
+.statictics_title {
+  list-style: none;
+  border: 2px solid gray ;
+  border-radius: 50%;
+  background-color: rgba(2, 57, 134, 0.8);
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  color:black;
+  font-weight: 700;
+  font-size: 30px;
+  flex-wrap: wrap;
+}
+
+.statictics_items {
+  display: flex;
+  border: 2px solid gray;
+  border-radius: 10px;
+  height: 40%;
+  width: 50%;
+  margin: 20px;
+  flex-direction: row;
+  list-style: none;
+}
+
+.statictics_item {
+  width: 33%;
+  justify-content: space-around;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+.statictics_item p {
+  text-align: center;
+  font-weight: 600;
+}
