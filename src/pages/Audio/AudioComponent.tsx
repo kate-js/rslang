@@ -2,8 +2,8 @@ import styles from './AudioComponent.module.css'
 import { getRandomIntInclusive, shuffleArray } from '../../utils/utils';
 import audioImg from './assets/audio.png'
 import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, keys } from '../../utils/constants';
-import { Link, useLocation } from 'react-router-dom';
-import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import correct from './assets/sounds/correct.mp3'
 import wrong from './assets/sounds/incorrect.mp3'
@@ -16,15 +16,17 @@ import { EApiParametrs } from '../../utils/Api';
 // import { api } from '../../utils/Api';
 import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { apiUsersWords }  from '../../api/apiUsersWords'
 import { IUserWord } from '../../api/apiConstants'
 import { LEVELS } from '../../data/Data';
 
-// TODO:
-// 1. Create keyboard support
-
 let currentPage = 0;
+let isPress = false;
+
+type KeyboardKey = {
+  key: string;
+}
 
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
@@ -65,7 +67,6 @@ export const AudioComponent = () => {
   // const [streak, setStreak] = useState(0);
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
   const [wrongAnswers, setwrongAnswers] = useState<IWord[]>([]);
-  const [counter, setcounter] = useState(0);
 
   const [playCorrect] = useSound(correct, {
     volume: componentState.volumeSettings?.volume
@@ -76,18 +77,18 @@ export const AudioComponent = () => {
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
+  const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
 
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
-  const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
-  const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
+  const navigate = useNavigate();
   
-  console.log({
-    logined: isLogined, 
-    tutorial: isFromTutorial, 
-    page: fromTutorialNumberPage, 
-    level: groupLevel
-  });
+  // console.log({
+  //   logined: isLogined, 
+  //   tutorial: isFromTutorial, 
+  //   page: fromTutorialNumberPage, 
+  //   level: groupLevel
+  // });
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
     setComponentState(
@@ -116,6 +117,7 @@ export const AudioComponent = () => {
   const getWordCurrentData = async (userId: string, wordId: string) => {
     try {
       const wordData = await apiUsersWords.getUserWordById(userId, wordId);
+      console.log(wordData);
 
       // wordCurrentData = wordData;
     } catch (err) {
@@ -128,7 +130,6 @@ export const AudioComponent = () => {
     }
   };
 
-  // работает
   useEffect(() => {
     if (!isFromTutorial) {
       // Это срабатывает по стандарту если убрать !
@@ -140,10 +141,6 @@ export const AudioComponent = () => {
 
     setGameWords();
   }, [isLogined]);
-
-  useEffect(() => {
-    // if(isLogined)
-  })
 
   const setGameWords = async () => {
     const words = await getWords(currentPage); 
@@ -167,10 +164,10 @@ export const AudioComponent = () => {
     //   // Это срабатывает по стандарту если убрать !
     // } 
 
-    console.log({
-      words,
-      userWords,
-    });
+    // console.log({
+    //   words,
+    //   userWords,
+    // });
     
     const newState = {
       appState:  { isLoaded: true, words },
@@ -181,10 +178,17 @@ export const AudioComponent = () => {
   }
 
   const handleWords = async () => {
-    // copy array
+    // to reset keyboard status
+    isPress = false;
+
     let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice() || [];
     
     const answer = possibleAnswers[getRandomIntInclusive(0, possibleAnswers.length - 1)];
+
+    if (isLogined) {
+      await getWordCurrentData(userId, answer.id);
+    }
+
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
     const wordsWithoutAnswer = componentState.appState?.words.filter(word => word !== answer);
     
@@ -214,48 +218,78 @@ export const AudioComponent = () => {
     }
   }, [componentState.isWelcomeScreen, componentState.audio]);
 
-  // useEffect(() => {
-  //   window.addEventListener("keydown", onKeyUpHandler);
+  useEffect(() => {
+    window.addEventListener("keydown", keyDownHandler);
 
-  //   return () => {
-  //     window.removeEventListener("keydown", onKeyUpHandler);
-  //   }
-  // }, []);
+    return () => {
+      (window as any).removeEventListener("keydown", keyDownHandler);
+    };
+  }, [componentState.wordsToShow]);
 
-  // const onKeyUpHandler = ({key}) => {
-  //   console.log(key);
-  // }
+  const keyDownHandler = ({key} : KeyboardKey) => {
+    if (!isPress) {
+      console.log('key press');
+      switch (key) {
+        case "1":     
+        case "2":
+        case "3":
+        case "4":  
+        case "5":
+          checkGuess(document.getElementById(key) as HTMLButtonElement);
+          isPress = true; 
+          break;
+        // case "Enter":
+        //   skipGuess();
+        //   break;
+        default: 
+          break;
+      }
+    } 
+    
+    return false;
+  }
 
-  const checkGuess = ({target}: React.MouseEvent<HTMLButtonElement>) => {
-    const data_id = (target as HTMLButtonElement).getAttribute('data-id');
+  const skipGuess = () => {
+    if (componentState.isAnswered) {
+      handleWords()
+    } else {
+      playIncorrect();
+      const state = {
+        isAnswered: true,
+        answerCount:  (componentState.answerCount || 0) + 1
+      }
+      updateStateByKeys(state);
+    }
+  }
+
+  const checkGuess = async (target: HTMLButtonElement) => {
+    const data_id = target.getAttribute('data-id');
     const rule = data_id === (componentState.answer && componentState.answer.id);
 
-    (target as HTMLButtonElement).classList.add(rule ? styles.correct : styles.wrong);
-
+    target.classList.add(rule ? styles.correct : styles.wrong);
     componentState.answer && (componentState.answer['correct'] = rule ? true : false);
     
     // не готово
     if (isLogined) {
       // getWordCurrentData(, componentState.answer?.id)
+
       // отправлять статистику
       // sendWordCurrentData(currentUser.userId, wordCurrent.id, isCorrectAnswer);
-      console.log(`${componentState.answer} в статистику`);
+      console.log(`${componentState.answer?.word} в статистику`);
     }
 
     if (rule) {
       playCorrect();
-      setcorrectAnswers([...correctAnswers, componentState.answer])
+      setcorrectAnswers([...correctAnswers as IWord[], componentState.answer as IWord])
     } else {
       playIncorrect();
-      setwrongAnswers([...wrongAnswers, componentState.answer])
+      setwrongAnswers([...wrongAnswers as IWord[], componentState.answer as IWord])
     }
     
-
     const state = {
       isAnswered: true,
       answerCount:  (componentState.answerCount || 0) + 1
     }
-    // setcounter(counter => counter + 1)
 
     updateStateByKeys(state);
   }
@@ -306,6 +340,7 @@ export const AudioComponent = () => {
     return (
       <div className={styles.overall}>
         <div className={styles.incorrectAnswers}>
+          <span>Правильно - {correctAnswers.length}</span>
           {correctAnswers.map(({wordTranslate, word, id, audio}) => {
             return (
               <Word 
@@ -317,15 +352,27 @@ export const AudioComponent = () => {
               />
             )
           })}
+          <hr/>
+          <span>Неверно - {wrongAnswers.length}</span>
+          {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
+            return (
+              <Word 
+                key={id}
+                wordTranslate={wordTranslate} 
+                word={word} 
+                id={id}
+                playSound={() => tooglePlayStatistics(audio)}
+              />
+            )
+          })}
         </div>
-        <a href='/games'>
           <button 
-            // onClick={resetGame}
+            onClick={() => {
+              navigate(0);
+            }}
           >
             Try again
           </button>
-        </a>
-        
       </div>
     )
   }
@@ -376,7 +423,7 @@ export const AudioComponent = () => {
                   disabled={componentState.isAnswered}
                   data-id={id}
                   id={`${index + 1}`}
-                  onClick={(e) => checkGuess(e)}
+                  onClick={({target}) => checkGuess(target as HTMLButtonElement)}
                   key={id + index}>
                   {index + 1}. {wordTranslate}
                 </button>)
@@ -385,12 +432,7 @@ export const AudioComponent = () => {
 
           <button 
             id={styles.result} 
-            onClick={() => {
-              // если не отвечено
-              setcounter(counter => counter + 1)
-              
-              handleWords()}
-              }>
+            onClick={skipGuess}>
               {componentState.isAnswered ? '⟶' : 'Не знаю'}
           </button>
 
@@ -402,7 +444,7 @@ export const AudioComponent = () => {
   if (componentState.isWelcomeScreen) {
     return (
       <button
-      onClick={() => updateStateByKey('isWelcomeScreen', false)}
+        onClick={() => updateStateByKey('isWelcomeScreen', false)}
       >Start Game</button>
     )
   }
@@ -410,7 +452,7 @@ export const AudioComponent = () => {
   if (componentState.appState?.isLoaded) {
       return (
         <div className={styles.audio}>
-          {counter === 5 ? showStatistics() : showBody()}
+          {componentState.answerCount === 5 ? showStatistics() : showBody()}
         </div>
       ) 
     } else {
