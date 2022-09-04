@@ -62,7 +62,7 @@ class ApiAggregatedWords implements IApiAggregated {
   ): Promise<WordResponse[]> {
     const group = query.group ? `group=${query.group}` : '';
     const page = query.page ? `page=${query.page}` : '';
-    const wordsPerPage = query.page ? `wordsPerPage=${query.wordsPerPage}` : '';
+    const wordsPerPage = query.wordsPerPage ? `wordsPerPage=${query.wordsPerPage}` : '';
     const filter = query.filter ? `filter=${query.filter}` : '';
 
     const fetchConfig = {
@@ -72,7 +72,7 @@ class ApiAggregatedWords implements IApiAggregated {
 
     const res = await fetch(
       `${this.baseUrl}/users/${userId}/aggregatedWords?${group}${
-        group ? '&' : ''
+      group ? '&' : ''
       }${page}&${wordsPerPage}&${filter}`,
       fetchConfig
     );
