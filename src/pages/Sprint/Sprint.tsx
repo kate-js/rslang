@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './Sprint.module.css';
@@ -11,7 +11,7 @@ import { LEVELS } from '../../data/Data';
 import { apiWords } from '../../api/apiWords';
 import { apiUsersWords } from '../../api/apiUsersWords';
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
-import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
+import { EApiParametrs, IUserWord } from '../../api/apiConstants';
 import iconClose from './assets/close.png';
 import iconArrow from './assets/arrow.png';
 import iconNote from './assets/music-note.svg';
@@ -39,7 +39,7 @@ const answerCorrect: WordResponse[] = [];
 const answerWrong: WordResponse[] = [];
 let currentPage = 0;
 let isWordsLoading = false;
-const wordCurrentData: IUserWord = initialUserWordData as IUserWord;
+
 
 export const Sprint = () => {
   const dispatch = useDispatch();
@@ -55,7 +55,6 @@ export const Sprint = () => {
   const [pointsLevel, setPointsLevel] = useState(0);
   const [ansewerRigthCounter, setAnsewerRigthCounter] = useState(0);
   const [wordCurrent, setWordCurrent] = useState({} as WordResponse);
-  // const [wordCurrentData, setWordCurrentData] = useState({} as IUserWord);
   const [wordRandomAnswer, setWordRandomAnswer] = useState('');
   const [wordCounter, setWordCounter] = useState(0);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -155,24 +154,33 @@ export const Sprint = () => {
   const sendWordCurrentData = async (userId: string, wordId: string, isCorrectAnswer: boolean) => {
     let learningWord = false;
     let counterCorrectAnswer = 0;
-    let difficulty = wordCurrentData.difficulty;
+    let difficulty: 'easy' | 'hard' = 'easy';
+    let answerOrder: boolean[] = [isCorrectAnswer];
 
-    if (isCorrectAnswer) {
-      // check number of correct answers
-      if (wordCurrentData.difficulty === 'hard') {
-        learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 4 ? true : false;
-      } else {
-        learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 2 ? true : false;
+    //check is word known
+    if (wordCurrent.userWord) {
+      if (isCorrectAnswer) {
+        difficulty = wordCurrent.userWord.difficulty;
+        // check word is hard
+        if (difficulty === 'hard') {
+          learningWord = wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 4 ? true : false;
+        } else {
+          learningWord = wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 2 ? true : false;
+        }
+
+        // check number of correct answers
+        if (wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 4) {
+          difficulty = 'easy';
+        }
+
+        counterCorrectAnswer = wordCurrent.userWord.optional.counterCorrectAnswer + 1;
       }
-
-      if (wordCurrentData.optional.counterCorrectAnswer + 1 > 4) {
-        difficulty = 'easy';
+      answerOrder = [...wordCurrent.userWord.optional.answerOrder.answerArray, isCorrectAnswer];
+    } else {
+      if (isCorrectAnswer) {
+        counterCorrectAnswer = 1;
       }
-
-      counterCorrectAnswer = wordCurrentData.optional.counterCorrectAnswer + 1;
     }
-
-    const answerOrder = [...wordCurrentData.optional.answerOrder.answerArray, isCorrectAnswer];
 
     const wordData: IUserWord = {
       difficulty: difficulty,
@@ -182,7 +190,7 @@ export const Sprint = () => {
         answerOrder: { answerArray: answerOrder }
       }
     };
-    console.log('wordCurrent.userWord', wordCurrent.userWord);
+   
     try {
       if (wordCurrent.userWord) {
         apiUsersWords.updateUserWordById(userId, wordId, wordData);

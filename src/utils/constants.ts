@@ -42,12 +42,15 @@ export interface WordResponse {
 }
 
 export interface UserWordsReponse {
-  id?: string,
-  difficulty: string,
-  optional?: {
-    learningWord?: boolean;
-  },
-  wordId?: string
+  id?: string;
+  difficulty: 'hard' | 'easy';
+  optional: {
+    // wordId: string;
+    learningWord: boolean;
+    counterCorrectAnswer: number; // if (counter === 3) { SET learningWord: true}
+    answerOrder: { answerArray: boolean[] }; // 'false, true, true, true'
+  };
+  wordId?: string;
 }
 export interface IModal {
   modal: boolean;

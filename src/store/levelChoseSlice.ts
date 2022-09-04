@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 export const initialState = {
   numberPage: 0,
   level: 'A1',
-  isFromTutorial: true
+  isFromTutorial: false
 };
 
 const levelChose = createSlice({
