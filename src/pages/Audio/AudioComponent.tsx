@@ -18,6 +18,7 @@ import muteImg from './assets/volume-mute.png'
 import unmuteImg from './assets/volume.png'
 import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
+import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 
 let currentPage = 0;
 let isPress = false;
@@ -98,12 +99,12 @@ export const AudioComponent = () => {
     };
   }, [componentState.wordsToShow]);
   
-  // console.log({
-  //   logined: isLogined, 
-  //   tutorial: isFromTutorial, 
-  //   page: fromTutorialNumberPage, 
-  //   level: groupLevel
-  // });
+  console.log({
+    logined: isLogined, 
+    tutorial: isFromTutorial, 
+    page: fromTutorialNumberPage, 
+    level: groupLevel
+  });
 
   useEffect(() => {
     if (!isFromTutorial) {
@@ -136,9 +137,7 @@ export const AudioComponent = () => {
   }
 
   const getWords = async (page: number) => {
-    //page
-    //LEVELS[groupLevel]
-    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${0}&group=${0}`)
+    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${page}&group=${LEVELS[groupLevel]}`)
 
     return await res.json();
   }
@@ -157,12 +156,31 @@ export const AudioComponent = () => {
     }
   };
 
+  const getAggregatedWords = async () => {
+    // let resWords = [];
+    const query = {
+      group: ``,
+      page: ``,
+      wordsPerPage: '20',
+      filter: `{"$and": [{"group":${LEVELS[groupLevel]}}, {"page":${currentPage}}]}`
+    };
+
+    const arrWordsWithDada = (await apiAggregatedWords.getAllAggregatedWords(
+      userId,
+      query
+    ));
+    console.log(arrWordsWithDada);
+  }
+
   const setGameWords = async () => {
     const words = await getWords(currentPage); 
     let userWords: IUserWord[] = [];
+    
     if (isLogined) {
       userWords = await apiUsersWords.getsAllUserWords(userId)
       setUserWords(userWords);
+      const x = await getAggregatedWords();
+      console.log(x);
     }
 
     // если из туторила то надо фильтр сделать по изученным на наличие userWords
@@ -206,7 +224,7 @@ export const AudioComponent = () => {
     }
 
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
-    const wordsWithoutAnswer = componentState.appState?.words.filter(word => word !== answer);
+    const wordsWithoutAnswer = componentState.appState?.words.filter((word: IWord) => word !== answer);
     
     const wordsToCreateArray = shuffleArray(wordsWithoutAnswer || []).slice(0, 4);
     wordsToCreateArray.splice(getRandomIntInclusive(0, 4), 0, answer);
@@ -448,7 +466,7 @@ export const AudioComponent = () => {
           </div>
 
           <div className={styles.words}>
-            {componentState.wordsToShow && componentState.wordsToShow.map(({ wordTranslate, id }, index) => {
+            {componentState.wordsToShow && componentState.wordsToShow.map(({ wordTranslate, id }, index: number) => {
               return (
                 <button
                   disabled={componentState.isAnswered}
