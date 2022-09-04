@@ -1,32 +1,29 @@
 import styles from './AudioComponent.module.css'
 import { getRandomIntInclusive, shuffleArray } from '../../utils/utils';
-import audioImg from './assets/audio.png'
-import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, keys } from '../../utils/constants';
+import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, KeyboardKey, keys } from '../../utils/constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
-import correct from './assets/sounds/correct.mp3'
-import wrong from './assets/sounds/incorrect.mp3'
-import muteImg from './assets/volume-mute.png'
-import unmuteImg from './assets/volume.png'
-import { Word } from './Word';
-import exit from './assets/close.png'
-import fullscreen from './assets/fullscreen.svg'
-import { EApiParametrs } from '../../utils/Api';
 // import { api } from '../../utils/Api';
 import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
 import { useSelector } from 'react-redux';
 import { apiUsersWords }  from '../../api/apiUsersWords'
-import { IUserWord } from '../../api/apiConstants'
+import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
+import { Word } from './Word';
+
+import correct from './assets/sounds/correct.mp3'
+import wrong from './assets/sounds/incorrect.mp3'
+
+import audioImg from './assets/audio.png'
+import muteImg from './assets/volume-mute.png'
+import unmuteImg from './assets/volume.png'
+import exit from './assets/close.png'
+import fullscreen from './assets/fullscreen.svg'
 
 let currentPage = 0;
 let isPress = false;
-
-type KeyboardKey = {
-  key: string;
-}
 
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
@@ -67,6 +64,7 @@ export const AudioComponent = () => {
   // const [streak, setStreak] = useState(0);
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
   const [wrongAnswers, setwrongAnswers] = useState<IWord[]>([]);
+  const [serverData, setServerData] = useState<IUserWord>();
 
   const [playCorrect] = useSound(correct, {
     volume: componentState.volumeSettings?.volume
@@ -82,6 +80,26 @@ export const AudioComponent = () => {
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!componentState.isWelcomeScreen) {
+      handleWords();
+    }
+  }, [componentState.isWelcomeScreen]);
+
+  useEffect(() => {
+    if (!componentState.isWelcomeScreen && componentState.audio) {
+      componentState.audio.play();
+    }
+  }, [componentState.isWelcomeScreen, componentState.audio]);
+
+  useEffect(() => {
+    window.addEventListener("keydown", keyDownHandler);
+
+    return () => {
+      window.removeEventListener("keydown", keyDownHandler);
+    };
+  }, [componentState.wordsToShow]);
   
   // console.log({
   //   logined: isLogined, 
@@ -89,6 +107,18 @@ export const AudioComponent = () => {
   //   page: fromTutorialNumberPage, 
   //   level: groupLevel
   // });
+
+  useEffect(() => {
+    if (!isFromTutorial) {
+      // Это срабатывает по стандарту если убрать !
+      currentPage = fromTutorialNumberPage
+    } else {
+      currentPage = getRandomIntInclusive(0, 29);
+    }
+    console.log(currentPage);
+
+    setGameWords();
+  }, [isLogined]);
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
     setComponentState(
@@ -109,7 +139,9 @@ export const AudioComponent = () => {
   }
 
   const getWords = async (page: number) => {
-    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${page}&group=${LEVELS[groupLevel]}`)
+    //page
+    //LEVELS[groupLevel]
+    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${0}&group=${0}`)
 
     return await res.json();
   }
@@ -117,34 +149,20 @@ export const AudioComponent = () => {
   const getWordCurrentData = async (userId: string, wordId: string) => {
     try {
       const wordData = await apiUsersWords.getUserWordById(userId, wordId);
-      console.log(wordData);
-
-      // wordCurrentData = wordData;
+      setServerData(wordData);
     } catch (err) {
       if (err instanceof Error) {
         if (err.message === '404') {
           console.log('Слово ранее не использовалось');
-          // wordCurrentData = initialUserWordData;
+          setServerData(initialUserWordData);
         }
       }
     }
   };
 
-  useEffect(() => {
-    if (!isFromTutorial) {
-      // Это срабатывает по стандарту если убрать !
-      currentPage = fromTutorialNumberPage
-    } else {
-      currentPage = getRandomIntInclusive(0, 29);
-    }
-    console.log(currentPage);
-
-    setGameWords();
-  }, [isLogined]);
-
   const setGameWords = async () => {
     const words = await getWords(currentPage); 
-    let userWords = [];
+    let userWords: IUserWord[] = [];
     if (isLogined) {
       userWords = await apiUsersWords.getsAllUserWords(userId)
       setUserWords(userWords);
@@ -164,10 +182,10 @@ export const AudioComponent = () => {
     //   // Это срабатывает по стандарту если убрать !
     // } 
 
-    // console.log({
-    //   words,
-    //   userWords,
-    // });
+    console.log({
+      words,
+      userWords,
+    });
     
     const newState = {
       appState:  { isLoaded: true, words },
@@ -187,6 +205,7 @@ export const AudioComponent = () => {
 
     if (isLogined) {
       await getWordCurrentData(userId, answer.id);
+      // setServerData(data);
     }
 
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
@@ -206,29 +225,9 @@ export const AudioComponent = () => {
     updateStateByKeys(newState);
   }
 
-  useEffect(() => {
-    if (!componentState.isWelcomeScreen) {
-      handleWords();
-    }
-  }, [componentState.isWelcomeScreen]);
-
-  useEffect(() => {
-    if (!componentState.isWelcomeScreen && componentState.audio) {
-      componentState.audio.play();
-    }
-  }, [componentState.isWelcomeScreen, componentState.audio]);
-
-  useEffect(() => {
-    window.addEventListener("keydown", keyDownHandler);
-
-    return () => {
-      (window as any).removeEventListener("keydown", keyDownHandler);
-    };
-  }, [componentState.wordsToShow]);
-
   const keyDownHandler = ({key} : KeyboardKey) => {
     if (!isPress) {
-      console.log('key press');
+      // console.log('key press');
       switch (key) {
         case "1":     
         case "2":
@@ -238,9 +237,6 @@ export const AudioComponent = () => {
           checkGuess(document.getElementById(key) as HTMLButtonElement);
           isPress = true; 
           break;
-        // case "Enter":
-        //   skipGuess();
-        //   break;
         default: 
           break;
       }
@@ -262,21 +258,46 @@ export const AudioComponent = () => {
     }
   }
 
+  const sendWordCurrentData = async (userId: string, wordId: string, answerStatus: boolean) => {
+    let learningWord = (serverData as IUserWord).optional.learningWord;
+    let counterCorrectAnswer = 0;
+
+    if (answerStatus) {
+      learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
+    } else {
+      learningWord = false;
+      counterCorrectAnswer = 0;
+    }
+    const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, answerStatus];
+
+    const wordData: IUserWord = {
+      difficulty: (serverData as IUserWord).difficulty,
+      optional: {
+        learningWord,
+        counterCorrectAnswer,
+        answerOrder: { answerArray: answerOrder }
+      }
+    };
+
+    try {
+      if ((serverData as IUserWord).optional.answerOrder.answerArray.length) {
+        apiUsersWords.updateUserWordById(userId, wordId, wordData);
+      } else {
+        apiUsersWords.createUserWordById(userId, wordId, wordData);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
+
   const checkGuess = async (target: HTMLButtonElement) => {
     const data_id = target.getAttribute('data-id');
     const rule = data_id === (componentState.answer && componentState.answer.id);
 
     target.classList.add(rule ? styles.correct : styles.wrong);
     componentState.answer && (componentState.answer['correct'] = rule ? true : false);
-    
-    // не готово
-    if (isLogined) {
-      // getWordCurrentData(, componentState.answer?.id)
-
-      // отправлять статистику
-      // sendWordCurrentData(currentUser.userId, wordCurrent.id, isCorrectAnswer);
-      console.log(`${componentState.answer?.word} в статистику`);
-    }
+    // console.log();
 
     if (rule) {
       playCorrect();
@@ -284,6 +305,12 @@ export const AudioComponent = () => {
     } else {
       playIncorrect();
       setwrongAnswers([...wrongAnswers as IWord[], componentState.answer as IWord])
+    }
+
+    if (isLogined) {
+      // отправлять статистику
+      console.log(`${componentState.answer?.word} в статистику`);
+      sendWordCurrentData(userId, componentState.answer?.id, componentState.answer?.correct);
     }
     
     const state = {
@@ -309,7 +336,7 @@ export const AudioComponent = () => {
           src={`${EApiParametrs.baseUrl}/${componentState.answer?.image}`}
           className={styles.answer}
           alt="Answer Image"
-          onClick={ togglePlay } 
+          onClick={togglePlay} 
         />
         <div className={styles.answer__description}>
           <span className={styles.answer__eng}>
@@ -340,7 +367,7 @@ export const AudioComponent = () => {
     return (
       <div className={styles.overall}>
         <div className={styles.incorrectAnswers}>
-          <span>Правильно - {correctAnswers.length}</span>
+          <span>Знаю - {correctAnswers.length}</span>
           {correctAnswers.map(({wordTranslate, word, id, audio}) => {
             return (
               <Word 
@@ -353,7 +380,7 @@ export const AudioComponent = () => {
             )
           })}
           <hr/>
-          <span>Неверно - {wrongAnswers.length}</span>
+          <span>Ошибок - {wrongAnswers.length}</span>
           {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
             return (
               <Word 
@@ -452,7 +479,7 @@ export const AudioComponent = () => {
   if (componentState.appState?.isLoaded) {
       return (
         <div className={styles.audio}>
-          {componentState.answerCount === 5 ? showStatistics() : showBody()}
+          {componentState.answerCount === 20 ? showStatistics() : showBody()}
         </div>
       ) 
     } else {

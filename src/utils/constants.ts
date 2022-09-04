@@ -102,3 +102,7 @@ export interface IComponentState {
 }
 
 export type keys = 'appState' | 'isAnswered' | 'wordsToShow' | 'answer' | 'audio' | "answerCount" | "volumeSettings" | 'possibleAnswers' | 'isWelcomeScreen';
+
+export type KeyboardKey = {
+  key: string;
+}
