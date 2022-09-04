@@ -23,6 +23,8 @@ import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 let currentPage = 0;
 let isPress = false;
 
+// все isFromTutorial надо проверить
+
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
     answerCount: 0,
@@ -99,21 +101,21 @@ export const AudioComponent = () => {
     };
   }, [componentState.wordsToShow]);
   
-  console.log({
-    logined: isLogined, 
-    tutorial: isFromTutorial, 
-    page: fromTutorialNumberPage, 
-    level: groupLevel
-  });
+  // console.log({
+  //   logined: isLogined, 
+  //   tutorial: isFromTutorial, 
+  //   page: fromTutorialNumberPage, 
+  //   level: groupLevel
+  // });
 
   useEffect(() => {
+    
+    // Это срабатывает по стандарту если убрать !
     if (!isFromTutorial) {
-      // Это срабатывает по стандарту если убрать !
       currentPage = fromTutorialNumberPage
     } else {
       currentPage = getRandomIntInclusive(0, 29);
     }
-    console.log(currentPage);
 
     setGameWords();
   }, [isLogined]);
@@ -136,8 +138,8 @@ export const AudioComponent = () => {
     )
   }
 
-  const getWords = async (page: number) => {
-    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${page}&group=${LEVELS[groupLevel]}`)
+  const getWords = async (page = currentPage, group = LEVELS[groupLevel]) => {
+    const res = await fetch(`${EApiParametrs.baseUrl}/words?page=${page}&group=${group}`)
 
     return await res.json();
   }
@@ -156,46 +158,66 @@ export const AudioComponent = () => {
     }
   };
 
-  const getAggregatedWords = async () => {
-    // let resWords = [];
+  const getAggregatedWords = async (group, page) => {
+
     const query = {
       group: ``,
       page: ``,
-      wordsPerPage: '20',
-      filter: `{"$and": [{"group":${LEVELS[groupLevel]}}, {"page":${currentPage}}]}`
+      wordsPerPage: 20,
+      filter: `{"$and": [{"group": 
+      ${group}
+    }, {"page": 
+    ${page}
+  }, {"userWord.optional.learningWord":false}]}`
     };
 
-    const arrWordsWithDada = (await apiAggregatedWords.getAllAggregatedWords(
+    const aggregatedWords = (await apiAggregatedWords.getAllAggregatedWords(
       userId,
       query
     ));
-    console.log(arrWordsWithDada);
+
+    const normalWords = aggregatedWords[0].paginatedResults.map((word) => {
+      const wordObj = {...word};
+      wordObj.id = word._id;
+      return wordObj
+    });
+
+    return normalWords;
   }
 
   const setGameWords = async () => {
-    const words = await getWords(currentPage); 
+    // make fetch request using page and level
+    let words = []; 
     let userWords: IUserWord[] = [];
     
     if (isLogined) {
-      userWords = await apiUsersWords.getsAllUserWords(userId)
-      setUserWords(userWords);
-      const x = await getAggregatedWords();
-      console.log(x);
+      userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
+      // userWords = await getAggregatedWords(4, 0);
+
+      // поменять надо на рабочую версию
+      if (!isFromTutorial) {
+        words = userWords;
+      } else {
+        words = await getWords(currentPage, LEVELS[groupLevel])
+        // words = await getWords(0, 4)
+      }
+    } else {
+      // заменить на currentPage и LEVELS[groupLevel]
+      words = await getWords(currentPage, LEVELS[groupLevel]);
+      // words = await getWords(0, 4);
+
     }
 
-    // если из туторила то надо фильтр сделать по изученным на наличие userWords
-    // и если их мало запросить ещё, но не включая страницу текущую
-    // const randomPage = getRandomIntInclusive(0, 29);
-    // if (currentPage === 0) {}
-    // const additionalWords = await getWords(randomPage === currentPage ? ); 
-   
-    // if (isFromTutorial) {
-    //   const unique = words.filter(({id}) => userWords.includes({
-    //     wordId: id
-    //   }));
-    //   console.log(unique);
-    //   // Это срабатывает по стандарту если убрать !
-    // } 
+    // если недостаточно слов, то дозапрашиваем слова
+    if (userWords.length < 20) {
+      console.log('недостаточно слов');
+      // запрашивать с предыдущей страницы
+      // const newWords = await getAggregatedWords(4, 1)
+      // console.log(newWords);
+      // userWords = [...userWords, ...newWords];
+    }
+
+    setUserWords(userWords);
 
     console.log({
       words,
@@ -276,13 +298,13 @@ export const AudioComponent = () => {
   const sendWordCurrentData = async (userId: string, wordId: string, answerStatus: boolean) => {
     let learningWord = (serverData as IUserWord).optional.learningWord;
     let counterCorrectAnswer = 0;
-    const difficulty = serverData?.difficulty;
+    let difficulty = (serverData as IUserWord).difficulty;
 
     if (answerStatus) {
       if (difficulty === 'easy') {
         learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? true : false;
       } else {
-        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? true : false;
+        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? (difficulty = 'easy', true) : false;
       }
       
       counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
@@ -294,7 +316,7 @@ export const AudioComponent = () => {
     const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, answerStatus];
 
     const wordData: IUserWord = {
-      difficulty: (serverData as IUserWord).difficulty,
+      difficulty,
       optional: {
         learningWord,
         counterCorrectAnswer,
@@ -319,7 +341,6 @@ export const AudioComponent = () => {
 
     target.classList.add(rule ? styles.correct : styles.wrong);
     componentState.answer && (componentState.answer['correct'] = rule ? true : false);
-    // console.log();
 
     if (rule) {
       playCorrect();
@@ -332,7 +353,7 @@ export const AudioComponent = () => {
     if (isLogined) {
       // отправлять статистику
       console.log(`${componentState.answer?.word} в статистику`);
-      sendWordCurrentData(userId, componentState.answer?.id, componentState.answer?.correct);
+      sendWordCurrentData(userId, (componentState.answer?.id as string), (componentState.answer?.correct as boolean));
     }
     
     const state = {
