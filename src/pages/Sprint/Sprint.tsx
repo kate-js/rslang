@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -8,9 +8,9 @@ import { setIsFromTutorial } from '../../store/levelChoseSlice';
 import { TState } from '../../store/store';
 import { ERoutes, WordResponse } from '../../utils/constants';
 import { LEVELS } from '../../data/Data';
-// import { setLevel, setPage } from '../GroupLevel/GroupPage';
 import { apiWords } from '../../api/apiWords';
 import { apiUsersWords } from '../../api/apiUsersWords';
+import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
 import iconClose from './assets/close.png';
 import iconArrow from './assets/arrow.png';
@@ -39,7 +39,7 @@ const answerCorrect: WordResponse[] = [];
 const answerWrong: WordResponse[] = [];
 let currentPage = 0;
 let isWordsLoading = false;
-let wordCurrentData: IUserWord = initialUserWordData as IUserWord;
+const wordCurrentData: IUserWord = initialUserWordData as IUserWord;
 
 export const Sprint = () => {
   const dispatch = useDispatch();
@@ -47,8 +47,9 @@ export const Sprint = () => {
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
-  const isLogined = useSelector((state: TState) => state.auth.isLogined);
   const currentUser = useSelector((state: TState) => state.auth.currentUser);
+  const isLogined = useSelector((state: TState) => state.auth.isLogined);
+  const isAuthLoading = useSelector((state: TState) => state.auth.isAuthLoading);
   const [isLoading, setIsLoading] = useState(true);
   const [pointsCounter, setPointsCounter] = useState(0);
   const [pointsLevel, setPointsLevel] = useState(0);
@@ -61,14 +62,71 @@ export const Sprint = () => {
   const [isSoundOn, setIsSoundOn] = useState(true);
 
   // get current words list
-  const getCurrentWordsList = async (numberPage: number) => {
-    try {
-      isWordsLoading = true;
-      const words = await apiWords.getWords({
-        group: LEVELS[groupLevel],
-        numberPage: numberPage
+  interface WordResponseWithData extends WordResponse {
+    userWord?: IUserWord;
+  }
+
+  interface WordWithDataResponse {
+    paginatedResults: WordResponseWithData[];
+    totalCount: { count: number }[];
+  }
+
+  const getAggregatedWords = async (numberPage: number) => {
+    let resWords = [] as WordResponseWithData[];
+    const query = {
+      group: ``,
+      page: ``,
+      wordsPerPage: '20',
+      filter: `{"$and": [{"group":${LEVELS[groupLevel]}}, {"page":${numberPage}}]}`
+    };
+
+    const arrWordsWithDada = (await apiAggregatedWords.getAllAggregatedWords(
+      currentUser.userId,
+      query
+    )) as unknown;
+    const wordsWithDada = arrWordsWithDada as WordWithDataResponse[];
+
+    // check is word learned and add id
+    if (isFromTutorial) {
+      resWords = wordsWithDada[0].paginatedResults
+        .filter((el) => {
+          return !el.userWord?.optional.learningWord;
+        })
+        .map((el) => {
+          const newEl = { ...el };
+          newEl.id = el._id;
+          return newEl;
+        });
+    } else {
+      resWords = wordsWithDada[0].paginatedResults.map((el) => {
+        const newEl = { ...el };
+        newEl.id = el._id;
+        return newEl;
       });
-      dispatch(setSprintWordSet([...sprintWordSet, ...words]));
+    }
+
+    return resWords;
+  };
+
+  const getCurrentWordsList = async (numberPage: number, isLoginedChanges = false) => {
+    isWordsLoading = true;
+    let words = [] as WordResponseWithData[];
+    try {
+      if (isLogined) {
+        words = await getAggregatedWords(numberPage);
+      } else {
+        // get common words
+        words = (await apiWords.getWords({
+          group: LEVELS[groupLevel],
+          numberPage: numberPage
+        })) as WordResponseWithData[];
+      }
+
+      if (isLoginedChanges) {
+        dispatch(setSprintWordSet(words));
+      } else {
+        dispatch(setSprintWordSet([...sprintWordSet, ...words]));
+      }
     } catch (err) {
       console.log(err);
     } finally {
@@ -83,47 +141,50 @@ export const Sprint = () => {
       currentPage = getRandomInteger(0, 29);
     }
     getCurrentWordsList(currentPage);
-
-    document.addEventListener('keydown', handleArrowDown);
   }, []);
 
-  // handel data about current word
-  const getWordCurrentData = async (userId: string, wordId: string) => {
-    try {
-      const wordData = await apiUsersWords.getUserWordById(userId, wordId);
-
-      wordCurrentData = wordData;
-    } catch (err) {
-      if (err instanceof Error) {
-        if (err.message === '404') {
-          console.log('Слово ранее не использовалось');
-          wordCurrentData = initialUserWordData;
-        }
-      }
+  useEffect(() => {
+    if (isFromTutorial) {
+      currentPage = fromTutorialNumberPage;
+    } else {
+      currentPage = getRandomInteger(0, 29);
     }
-  };
+    getCurrentWordsList(currentPage, true);
+  }, [isLogined]);
 
   const sendWordCurrentData = async (userId: string, wordId: string, isCorrectAnswer: boolean) => {
     let learningWord = false;
     let counterCorrectAnswer = 0;
+    let difficulty = wordCurrentData.difficulty;
 
     if (isCorrectAnswer) {
-      learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      // check number of correct answers
+      if (wordCurrentData.difficulty === 'hard') {
+        learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 4 ? true : false;
+      } else {
+        learningWord = wordCurrentData.optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      }
+
+      if (wordCurrentData.optional.counterCorrectAnswer + 1 > 4) {
+        difficulty = 'easy';
+      }
+
       counterCorrectAnswer = wordCurrentData.optional.counterCorrectAnswer + 1;
     }
+
     const answerOrder = [...wordCurrentData.optional.answerOrder.answerArray, isCorrectAnswer];
 
     const wordData: IUserWord = {
-      difficulty: wordCurrentData.difficulty,
+      difficulty: difficulty,
       optional: {
         learningWord: learningWord,
         counterCorrectAnswer: counterCorrectAnswer,
         answerOrder: { answerArray: answerOrder }
       }
     };
-
+    console.log('wordCurrent.userWord', wordCurrent.userWord);
     try {
-      if (wordCurrentData.optional.answerOrder.answerArray.length) {
+      if (wordCurrent.userWord) {
         apiUsersWords.updateUserWordById(userId, wordId, wordData);
       } else {
         apiUsersWords.createUserWordById(userId, wordId, wordData);
@@ -149,9 +210,6 @@ export const Sprint = () => {
 
     // handel wordCounter change
     if (sprintWordSet.length) {
-      if (isLogined) {
-        getWordCurrentData(currentUser.userId, sprintWordSet[wordCounter].id);
-      }
       setIsLoading(false);
       setWordCurrent(sprintWordSet[wordCounter]);
       const maxRandom =
@@ -216,6 +274,7 @@ export const Sprint = () => {
       answerWrong.push(wordCurrent);
     }
 
+    // exit it it's end
     if (wordCounter < sprintWordSet.length - 1) {
       setWordCounter((prev) => prev + 1);
     } else {
@@ -232,7 +291,8 @@ export const Sprint = () => {
     handelAnswer(false);
   };
 
-  const handleArrowDown = (e: KeyboardEvent) => {
+  // handel keyboard interaction
+  const handleArrowDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
     if (e.key === 'ArrowLeft') {
       handelFalsyAnswer();
     } else if (e.key === 'ArrowRight') {
@@ -240,10 +300,18 @@ export const Sprint = () => {
     }
   };
 
-  return isLoading ? (
+  const ref = useRef(null);
+
+  useEffect(() => {
+    if (ref.current) {
+      (ref.current as HTMLDivElement).focus();
+    }
+  }, []);
+
+  return isLoading && isAuthLoading ? (
     <Loader />
   ) : (
-    <div className={styles.sprint}>
+    <div className={styles.sprint} onKeyDown={handleArrowDown} tabIndex={-1} ref={ref}>
       <Timer setIsModalVisible={setIsModalVisible} isModalVisible={isModalVisible} />
 
       <div className={styles.main}>
