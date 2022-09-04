@@ -14,11 +14,6 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const [hard, setHard] = useState<boolean>();
   const [learn, setLearn] = useState<boolean>();
-  const page: number = useSelector((state: TState) => state.page.numberPage);
-  const level: string = useSelector((state: TState) => state.page.level);
-
-  console.log(page, 'page');
-  console.log(level, 'level');
 
   useEffect(() => {
     if (word) {
@@ -45,7 +40,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
       await api.changeHardWord({ userId, token, wordId });
       console.error(error);
     }
+    await api.deleteLearningWord({ userId, token, wordId });
     setHard(true);
+    setLearn(false);
   }
 
   async function deleteHardWord() {
@@ -71,7 +68,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     } catch (error) {
       await api.changeLearningWord({ userId, token, wordId });
     }
+    await api.delHardWord({ userId, token, wordId });
     setLearn(true);
+    setHard(false);
   }
 
   async function deleteLearningWord() {

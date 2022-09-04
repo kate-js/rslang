@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import styles from './Tutorial.module.css';
+import { LevelDescription } from './LevelDescription/LevelDescription';
 import { LEVELS_main } from '../../data/Data';
 import { Link } from 'react-router-dom';
-import { LevelDescription } from './LevelDescription/LevelDescription';
 
 export const Tutorial = () => {
   const [level, setLevel] = useState(0);
 
   localStorage.setItem('numberPage', '1');
+
   function updateLevel(index: number) {
     setLevel(index);
   }
