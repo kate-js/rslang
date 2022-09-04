@@ -4,7 +4,6 @@ import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, KeyboardKey, 
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
-// import { api } from '../../utils/Api';
 import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
 import { useSelector } from 'react-redux';
@@ -12,10 +11,8 @@ import { apiUsersWords }  from '../../api/apiUsersWords'
 import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
 import { Word } from './Word';
-
 import correct from './assets/sounds/correct.mp3'
 import wrong from './assets/sounds/incorrect.mp3'
-
 import audioImg from './assets/audio.png'
 import muteImg from './assets/volume-mute.png'
 import unmuteImg from './assets/volume.png'
@@ -261,14 +258,21 @@ export const AudioComponent = () => {
   const sendWordCurrentData = async (userId: string, wordId: string, answerStatus: boolean) => {
     let learningWord = (serverData as IUserWord).optional.learningWord;
     let counterCorrectAnswer = 0;
+    const difficulty = serverData?.difficulty;
 
     if (answerStatus) {
-      learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      if (difficulty === 'easy') {
+        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? true : false;
+      } else {
+        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? true : false;
+      }
+      
       counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
     } else {
       learningWord = false;
       counterCorrectAnswer = 0;
     }
+
     const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, answerStatus];
 
     const wordData: IUserWord = {
