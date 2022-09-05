@@ -1,3 +1,4 @@
+import { checkRes, getJwtToken, IUserStatistics } from "../api/apiConstants";
 import { UserWordsReponse, WordResponse } from "./constants";
 
 export enum EApiParametrs {
@@ -252,22 +253,32 @@ class Api implements IApi {
     return json;
   }
 
-  public async getStatistics({userId, item, token}:{userId: string, item:string, token: string}) {
+  // public async getStatistics({userId, item, token}:{userId: string, item:string, token: string}) {
 
+  //   const fetchConfig = {
+  //     method: 'GET',
+  //     withCredentials: true,
+  //     headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+  //   };
+  //   // aggregatedWords?filter={"userWord.optional.${item}":true}
+  //     const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
+  //     if (res.status !== 200) {
+  //       throw new Error(`There was an error with status code ${res.status}`)
+  //     }
+  //     const json = await res.json();
+  //     console.log('json', json[0].paginatedResults);
+  //     return json[0].paginatedResults;
+  //   }
+  public async getStatistics(userId: string): Promise<any> {
     const fetchConfig = {
       method: 'GET',
-      withCredentials: true,
-      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
-    // aggregatedWords?filter={"userWord.optional.${item}":true}
-      const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
-      if (res.status !== 200) {
-        throw new Error(`There was an error with status code ${res.status}`)
-      }
-      const json = await res.json();
-      console.log('json', json[0].paginatedResults);
-      return json[0].paginatedResults;
-    }
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
+    const json = await res.json();
+          return json.optional;
+  }
 }
 
 export const api = new Api({

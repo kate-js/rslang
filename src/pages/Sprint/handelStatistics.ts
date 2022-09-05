@@ -22,10 +22,7 @@ export const sendStatistics = (
   let newStatistics: IUserStatistics = userStatistic;
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
 
-  if (userStatistic) {
-    // if statistics already exist
-
-    // create learnNewWordToday
+  if (userStatistic.optional) {
     const learnNewWordPerDay = newStatistics.optional.sprint.learnNewWordPerDay;
     const learnNewWordToday = learnNewWordPerDay[learnNewWordPerDay.length - 1];
 
@@ -38,31 +35,27 @@ export const sendStatistics = (
       });
     }
 
-    // create percentRigth
     const percentRigth = newStatistics.optional.sprint.percentRigth;
     percentRigth.right = percentRigth.right + answerCorrectLength;
     percentRigth.wrong = percentRigth.wrong + answerWrongLength;
 
-    // create longestStrick
     const currentMaxStrick = Math.max(...allStricks);
     const serverMaxStrick = newStatistics.optional.sprint.longestStrick;
     const maxStrick = currentMaxStrick > serverMaxStrick ? currentMaxStrick : serverMaxStrick;
     newStatistics.optional.sprint.longestStrick = maxStrick;
   } else {
-    // if statistics not exist yet
     newStatistics = initialUserStatistics;
 
     newStatistics.optional.sprint.learnNewWordPerDay[0].date = currentDate;
     newStatistics.optional.sprint.learnNewWordPerDay[0].counter += learnWordToday;
-    // create percentRigth
+
     const percentRigth = newStatistics.optional.sprint.percentRigth;
     percentRigth.right += answerCorrectLength;
     percentRigth.wrong += answerWrongLength;
 
-    // create longestStrick
+
     newStatistics.optional.sprint.longestStrick = Math.max(...allStricks);
   }
-  // console.log('newStatistics', newStatistics);
 
   try {
     apiUsersStatistic.setNewStatistics(userId, newStatistics);
