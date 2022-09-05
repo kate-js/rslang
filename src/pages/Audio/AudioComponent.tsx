@@ -24,6 +24,7 @@ let currentPage = 0;
 let isPress = false;
 
 // все isFromTutorial надо проверить
+// необходимо продумать кое-что
 
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
@@ -158,17 +159,13 @@ export const AudioComponent = () => {
     }
   };
 
-  const getAggregatedWords = async (group, page) => {
+  const getAggregatedWords = async (page, group) => {
 
     const query = {
       group: ``,
       page: ``,
       wordsPerPage: 20,
-      filter: `{"$and": [{"group": 
-      ${group}
-    }, {"page": 
-    ${page}
-  }, {"userWord.optional.learningWord":false}]}`
+      filter: `{"$or":[{"$and": [{"group": ${group}}, {"page": ${page}}, {"userWord.optional.learningWord":false}]} ,{"$and": [{"group": ${group}}, {"page": ${page}}, {"userWord":null}]}]}`
     };
 
     const aggregatedWords = (await apiAggregatedWords.getAllAggregatedWords(
@@ -185,36 +182,53 @@ export const AudioComponent = () => {
     return normalWords;
   }
 
+  useEffect(() => {
+    const addData = async () => {
+      if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
+        const newWords = await getAggregatedWords(17 - 1, 5)
+        const combinedArray = [...componentState.appState.words, ...newWords];
+
+        const newState = {
+          appState:  { isLoaded: true, words: combinedArray },
+          possibleAnswers : combinedArray,
+        }
+    
+        updateStateByKeys(newState);
+      }
+    }
+
+  }, [])
+
   const setGameWords = async () => {
     // make fetch request using page and level
-    let words = []; 
+    // let words = await getWords(currentPage, LEVELS[groupLevel]); 
+    let words = await getWords(17, 5); 
     let userWords: IUserWord[] = [];
     
     if (isLogined) {
-      userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
+      // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
+      userWords = await getAggregatedWords(17, 5);
+
       // userWords = await getAggregatedWords(4, 0);
 
-      // поменять надо на рабочую версию
-      if (!isFromTutorial) {
-        words = userWords;
+      if (isFromTutorial) {
+        // поменять надо на рабочую версию без !
+          words = userWords;
       } else {
-        words = await getWords(currentPage, LEVELS[groupLevel])
+        // words = await getWords(currentPage, LEVELS[groupLevel])
         // words = await getWords(0, 4)
       }
     } else {
-      // заменить на currentPage и LEVELS[groupLevel]
-      words = await getWords(currentPage, LEVELS[groupLevel]);
+      // words = await getWords(currentPage, LEVELS[groupLevel]);
       // words = await getWords(0, 4);
 
     }
 
     // если недостаточно слов, то дозапрашиваем слова
-    if (userWords.length < 20) {
+    if (words.length < 20) {
       console.log('недостаточно слов');
-      // запрашивать с предыдущей страницы
-      // const newWords = await getAggregatedWords(4, 1)
-      // console.log(newWords);
-      // userWords = [...userWords, ...newWords];
+      const newWords = await getAggregatedWords(17 - 1, 5)
+      words = [...words, ...newWords];
     }
 
     setUserWords(userWords);
@@ -477,7 +491,7 @@ export const AudioComponent = () => {
         </div>
 
         <div className={styles.main}>
-          <span>{componentState.answerCount} / 20</span>
+          <span>{componentState.answerCount} / {componentState.appState?.words.length as number >= 20 ? 20 : componentState.appState?.words.length }</span>
           <div className={styles.answer__wrapper}>
             {
               componentState.isAnswered 
