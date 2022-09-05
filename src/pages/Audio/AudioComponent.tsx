@@ -1,6 +1,16 @@
 import styles from './AudioComponent.module.css'
+import stylesModal from '../Sprint/Modal/Modal.module.css'
 import { getRandomIntInclusive, shuffleArray } from '../../utils/utils';
-import { ERoutes, IComponentState, IState, IVolumeSettings, IWord, KeyboardKey, keys } from '../../utils/constants';
+import { 
+  ERoutes, 
+  IComponentState, 
+  IState, 
+  IVolumeSettings, 
+  IWord, 
+  KeyboardKey, 
+  keys, 
+  WordResponse 
+} from '../../utils/constants';
 import { Link, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
@@ -8,9 +18,13 @@ import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
 import { useSelector, useDispatch } from 'react-redux';
 import { apiUsersWords }  from '../../api/apiUsersWords'
-import { EApiParametrs, IUserWord, initialUserWordData, IUserStatistics } from '../../api/apiConstants';
+import { 
+  EApiParametrs, 
+  IUserWord, 
+  initialUserWordData, 
+  IUserStatistics 
+} from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
-import { Word } from './Word';
 import correct from './assets/sounds/correct.mp3'
 import wrong from './assets/sounds/incorrect.mp3'
 import audioImg from './assets/audio.png'
@@ -20,7 +34,7 @@ import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 import { setIsFromTutorial } from '../../store/sprintSlice';
-import {getStatistics, sendStatistics} from './handelStatistics'
+import { getStatistics, sendStatistics } from './handelStatistics'
 
 let currentPage = 0;
 let isPress = false;
@@ -127,10 +141,9 @@ export const AudioComponent = () => {
   }, [isLogined]);
 
   useEffect(() => {
-    if (isModalOpened) {
+    if (isModalOpened && isLogined) {
       sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
     }
-    
   }, [isModalOpened])
 
   useEffect(() => {
@@ -141,7 +154,6 @@ export const AudioComponent = () => {
 
   const handelGetStatistics = async (userId: string) => {
     userStatistic = await getStatistics(userId);
-    console.log('userStatistic', userStatistic);
   };
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
@@ -197,7 +209,7 @@ export const AudioComponent = () => {
       query
     ));
 
-    const normalWords = aggregatedWords[0].paginatedResults.map((word) => {
+    const normalWords = aggregatedWords[0].paginatedResults.map((word: WordResponse) => {
       const wordObj = {...word};
       wordObj.id = word._id;
       return wordObj
@@ -205,8 +217,6 @@ export const AudioComponent = () => {
 
     return normalWords;
   }
-
-  
 
   // useEffect(() => {
   //   const addData = async () => {
@@ -233,14 +243,11 @@ export const AudioComponent = () => {
     
     // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
     if (isFromTutorial && isLogined) {
-      console.log(1);
-        userWords = await getAggregatedWords(10, 4, true);
-        words = userWords;
+      userWords = await getAggregatedWords(10, 4, true);
+      words = userWords;
     } else if (isLogined) {
-        userWords = await getAggregatedWords(17, 5, false);
-        words = userWords;
-        console.log(2);
-
+      userWords = await getAggregatedWords(17, 5, false);
+      words = userWords;
     } else {
       words = await getWords(11, 5); 
     }
@@ -299,7 +306,6 @@ export const AudioComponent = () => {
 
   const keyDownHandler = ({key} : KeyboardKey) => {
     if (!isPress) {
-      // console.log('key press');
       switch (key) {
         case "1":     
         case "2":
@@ -317,16 +323,11 @@ export const AudioComponent = () => {
     return false;
   }
 
-  const skipGuess = () => {
+  const skipGuess = ({target} : {target: HTMLButtonElement}) => {
     if (componentState.isAnswered) {
-      handleWords()
+      handleWords();
     } else {
-      playIncorrect();
-      const state = {
-        isAnswered: true,
-        answerCount:  (componentState.answerCount || 0) + 1
-      }
-      updateStateByKeys(state);
+      checkGuess(target);
     }
   }
 
@@ -376,7 +377,10 @@ export const AudioComponent = () => {
     const data_id = target.getAttribute('data-id');
     const rule = data_id === (componentState.answer && componentState.answer.id);
 
-    target.classList.add(rule ? styles.correct : styles.wrong);
+    if (data_id) {
+      target.classList.add(rule ? styles.correct : styles.wrong);
+    } 
+
     componentState.answer && (componentState.answer['correct'] = rule ? true : false);
 
     if (rule) {
@@ -392,7 +396,6 @@ export const AudioComponent = () => {
 
     if (isLogined) {
       // отправлять статистику
-      console.log(`${componentState.answer?.word} в статистику`);
       sendWordCurrentData(userId, (componentState.answer?.id as string), (componentState.answer?.correct as boolean));
     }
     
@@ -447,43 +450,115 @@ export const AudioComponent = () => {
   }
 
   const showStatistics = () => {
+    // return (
+    //   <div className={styles.overall}>
+    //     <div className={styles.incorrectAnswers}>
+    //       <span>Знаю - {correctAnswers.length}</span>
+    //       {correctAnswers.map(({wordTranslate, word, id, audio}) => {
+    //         return (
+    //           <Word 
+    //             key={id}
+    //             wordTranslate={wordTranslate} 
+    //             word={word} 
+    //             id={id}
+    //             playSound={() => tooglePlayStatistics(audio)}
+    //           />
+    //         )
+    //       })}
+    //       <hr/>
+    //       <span>Ошибок - {wrongAnswers.length}</span>
+    //       {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
+    //         return (
+    //           <Word 
+    //             key={id}
+    //             wordTranslate={wordTranslate} 
+    //             word={word} 
+    //             id={id}
+    //             playSound={() => tooglePlayStatistics(audio)}
+    //           />
+    //         )
+    //       })}
+    //     </div>
+    //       <button 
+    //         onClick={() => {
+    //           navigate(0);
+    //         }}
+    //       >
+    //         Try again
+    //       </button>
+    //   </div>
+    // )
+
     return (
-      <div className={styles.overall}>
-        <div className={styles.incorrectAnswers}>
-          <span>Знаю - {correctAnswers.length}</span>
-          {correctAnswers.map(({wordTranslate, word, id, audio}) => {
-            return (
-              <Word 
-                key={id}
-                wordTranslate={wordTranslate} 
-                word={word} 
-                id={id}
-                playSound={() => tooglePlayStatistics(audio)}
-              />
-            )
-          })}
-          <hr/>
-          <span>Ошибок - {wrongAnswers.length}</span>
-          {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
-            return (
-              <Word 
-                key={id}
-                wordTranslate={wordTranslate} 
-                word={word} 
-                id={id}
-                playSound={() => tooglePlayStatistics(audio)}
-              />
-            )
-          })}
+      <div className={stylesModal.modal}>
+      <div className={stylesModal.content}>
+        <h2 className={stylesModal.title}>Результаты игры</h2>
+
+        <div className={stylesModal.result_wrap}>
+          <div className={stylesModal.wrong_wrap}>
+            <div className={stylesModal.section_header}>
+              <h3 className={stylesModal.subtitle}>Ошибок</h3>
+              <span className={stylesModal.wrong_counter}>
+                {wrongAnswers.length ? wrongAnswers.length : 0}
+              </span>
+            </div>
+            <ul className={stylesModal.section_content}>
+              {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
+                return (
+                  <li key={id} className={stylesModal.section_item}>
+                    <img
+                      className={stylesModal.speaker}
+                      src={audioImg}
+                      alt="динамик"
+                      onClick={() => tooglePlayStatistics(audio)}
+                    />
+                    <span className={stylesModal.word}>{word}</span>
+                    <span className={stylesModal.translation}>- {wordTranslate}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+          <div className={stylesModal.correct_wrap}>
+            <div className={stylesModal.section_header}>
+              <h3 className={stylesModal.subtitle}>Знаю</h3>
+              <span className={stylesModal.correct_counter}>
+                {correctAnswers.length ? correctAnswers.length : 0}
+              </span>
+            </div>
+            <ul className={stylesModal.section_content}>
+              {correctAnswers.map(({wordTranslate, word, id, audio}) => {
+                return (
+                  <li key={id} className={stylesModal.section_item}>
+                    <img
+                      className={stylesModal.speaker}
+                      src={audioImg}
+                      alt="динамик"
+                      onClick={() => tooglePlayStatistics(audio)}
+                    />
+                    <span className={stylesModal.word}>{word}</span>
+                    <span className={stylesModal.translation}>- {wordTranslate}</span>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
         </div>
-          <button 
-            onClick={() => {
-              navigate(0);
-            }}
-          >
-            Try again
-          </button>
+        <div className={stylesModal.links_wrap}>
+          <Link 
+            // onClick={} 
+            to={ERoutes.games} 
+            className={stylesModal.link}>
+            Вернуться к выбору игры
+          </Link>
+          <Link 
+              onClick={() => navigate(0)}
+              className={stylesModal.link} to={''}>
+              Продолжить играть
+          </Link>
+        </div>
       </div>
+    </div>
     )
   }
 
@@ -542,7 +617,9 @@ export const AudioComponent = () => {
 
           <button 
             id={styles.result} 
-            onClick={skipGuess}>
+            onClick={(e) => skipGuess(e)}
+            // data-id='wrong'
+            >
               {componentState.isAnswered ? '⟶' : 'Не знаю'}
           </button>
 
@@ -553,9 +630,13 @@ export const AudioComponent = () => {
 
   if (componentState.isWelcomeScreen) {
     return (
-      <button
+      <div className={styles.start__game}>
+        <p>Выберите один верный перевод слова из пяти. Для управления игрой используйте клавиши 1, 2, 3, 4, 5, либо просто кликайте мышкой.</p>
+        <button
         onClick={() => updateStateByKey('isWelcomeScreen', false)}
       >Start Game</button>
+      </div>
+      
     )
   }
 
