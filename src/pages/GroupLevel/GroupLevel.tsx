@@ -74,6 +74,7 @@ export const GroupLevel = () => {
 
     try {
       const response = await api.fetchWords({ userId, token, group, numberPage });
+      console.log(response);
       await setListWords(response);
       checkLearning(response);
     } catch (error) {
@@ -119,11 +120,26 @@ export const GroupLevel = () => {
             </div>
             {listWords.length ? (
               <ul className={styles.wordList}>
-                {listWords.map((item, index) => (
-                  <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
-                    {item.word}
-                  </li>
-                ))}
+                {listWords.map((item, index) => {
+                  const answers = item.userWord?.optional?.answerOrder?.answerArray || [];
+
+                  return (
+                    <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
+                      <div className={styles.answers}>
+                        <div>{item.word}</div>
+                        <div className={styles.answers__wrapper}>
+                          {answers.map((value) =>
+                            value ? (
+                              <div className={styles.answer_correct}>v</div>
+                            ) : (
+                              <div className={styles.answer_incorrect}>x</div>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    </li>
+                  );
+                })}
               </ul>
             ) : (
               <div className={styles.no_wordList}>У вас нет слов, отмеченных как сложное!</div>
@@ -156,11 +172,26 @@ export const GroupLevel = () => {
             </select>
           </div>
           <ul className={learnPage ? styles.wordListLearn : styles.wordList}>
-            {listWords.map((item, index) => (
-              <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
-                {item.word}
-              </li>
-            ))}
+            {listWords.map((item, index) => {
+              const answers = item.userWord?.optional?.answerOrder?.answerArray || [];
+
+              return (
+                <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
+                  <div className={styles.answers}>
+                    <div>{item.word}</div>
+                    <div className={styles.answers__wrapper}>
+                      {answers.map((value) =>
+                        value ? (
+                          <div className={styles.answer_correct}>v</div>
+                        ) : (
+                          <div className={styles.answer_incorrect}>x</div>
+                        )
+                      )}
+                    </div>
+                  </div>
+                </li>
+              );
+            })}
           </ul>
           <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
           <GameLinks learnPage={learnPage} />
