@@ -9,19 +9,41 @@ export const Statistics = () => {
   const [audio, setAudio] = useState<IOptional>();
   const [sprint, setSprint] = useState<IOptional>();
   const [total, setTotal] = useState<IOptional>();
+  const [audioDay, setAudioDay] = useState<number>();
+  const [sprintDay, setSprintDay] = useState<number>();
+  const [totalDay, setTotalDay] = useState<number>();
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
 
   useEffect(() => {
     getStat();
   }, []);
 
+  const today = new Date();
+  const date = today.getMonth() + 1 + '/' + today.getDate() + '/' + today.getFullYear();
+
   async function getStat() {
     try {
       const response = await apiUsersStatistic.getStatistics(userId);
       const { audio, sprint, total } = response.optional;
       setAudio(audio);
-      setSprint(sprint);
       setTotal(total);
+      setSprint(sprint);
+
+      const arr = sprint?.learnNewWordPerDay;
+      arr.map((item, index) => {
+        date == sprint?.learnNewWordPerDay[index].date;
+        setSprintDay(sprint?.learnNewWordPerDay[index].counter);
+      });
+      const arr1 = audio?.learnNewWordPerDay;
+      arr1.map((item, index) => {
+        date == audio?.learnNewWordPerDay[index].date;
+        setAudioDay(audio?.learnNewWordPerDay[index].counter);
+      });
+      const arr2 = total?.learnNewWordPerDay;
+      arr2.map((item, index) => {
+        date == total?.learnNewWordPerDay[index].date;
+        setTotalDay(total?.learnNewWordPerDay[index].counter);
+      });
     } catch (error) {
       console.error(error);
     }
@@ -35,7 +57,7 @@ export const Statistics = () => {
           <ul className={styles.statictics_items}>
             <li className={styles.statictics_item}>
               <p>Количество новых слов за день</p>
-              <div className={styles.statictics_title}>{audio?.learnNewWordPerDay[0].counter}</div>
+              <div className={styles.statictics_title}>{audioDay}</div>
             </li>
             <li className={styles.statictics_item}>
               <p>Процент правильных ответов</p>
@@ -52,7 +74,7 @@ export const Statistics = () => {
           <ul className={styles.statictics_items}>
             <li className={styles.statictics_item}>
               <p>Количество новых слов за день</p>
-              <div className={styles.statictics_title}>{sprint?.learnNewWordPerDay[0].counter}</div>
+              <div className={styles.statictics_title}>{sprintDay}</div>
             </li>
             <li className={styles.statictics_item}>
               <p>Процент правильных ответов</p>
@@ -69,7 +91,7 @@ export const Statistics = () => {
           <ul className={styles.statictics_items}>
             <li className={styles.statictics_item}>
               <p>Количество новых слов за день</p>
-              <div className={styles.statictics_title}>{total?.learnNewWordPerDay[0].counter}</div>
+              <div className={styles.statictics_title}>{totalDay}</div>
             </li>
             <li className={styles.statictics_item}>
               <p>Процент правильных ответов</p>
