@@ -3,15 +3,28 @@ import { Link } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 
 import styles from './Sprint.module.css';
+import { getStatistics, sendStatistics } from './handelStatistics';
+import { sendWordCurrentData } from './handelWordData';
 import { setSprintWordSet } from '../../store/sprintSlice';
 import { setIsFromTutorial } from '../../store/levelChoseSlice';
 import { TState } from '../../store/store';
-import { ERoutes, WordResponse } from '../../utils/constants';
+import {
+  ERoutes,
+  WordResponse,
+  getRandomInteger,
+  CIRCLE,
+  POINT_INCREMENT_BY_LEVEL
+} from '../../utils/constants';
 import { LEVELS } from '../../data/Data';
 import { apiWords } from '../../api/apiWords';
-import { apiUsersWords } from '../../api/apiUsersWords';
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
-import { EApiParametrs, IUserWord } from '../../api/apiConstants';
+// import { apiUsersStatistic } from '../../api/apiUsersStatistic';
+import {
+  EApiParametrs,
+  IUserStatistics,
+  WordResponseWithData,
+  WordWithDataResponse
+} from '../../api/apiConstants';
 import iconClose from './assets/close.png';
 import iconArrow from './assets/arrow.png';
 import iconNote from './assets/music-note.svg';
@@ -27,19 +40,14 @@ import Timer from './Timer/Timer';
 import CircleList from './CircleList/CircleList';
 import LevelIconList from './LevelIconList/LevelIconList';
 
-const POINT_INCREMENT_BY_LEVEL = [10, 20, 40, 80];
-const CIRCLE = [0, 1, 2];
-
-function getRandomInteger(min: number, max: number) {
-  const rand = min - 0.5 + Math.random() * (max - min + 1);
-  return Math.round(rand);
-}
-
 const answerCorrect: WordResponse[] = [];
 const answerWrong: WordResponse[] = [];
 let currentPage = 0;
-let isWordsLoading = false;
-
+let isLoadingAdditionalWordsList = false;
+let userStatistic: IUserStatistics;
+let learnWordToday = 0;
+const allStricks: number[] = [];
+let strick = 0;
 
 export const Sprint = () => {
   const dispatch = useDispatch();
@@ -47,28 +55,49 @@ export const Sprint = () => {
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
+
   const currentUser = useSelector((state: TState) => state.auth.currentUser);
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
   const isAuthLoading = useSelector((state: TState) => state.auth.isAuthLoading);
-  const [isLoading, setIsLoading] = useState(true);
-  const [pointsCounter, setPointsCounter] = useState(0);
+
+  const [isLoadingFirstWordsList, setIsLoadingFirstWordsList] = useState(true);
   const [pointsLevel, setPointsLevel] = useState(0);
+  const [pointsCounter, setPointsCounter] = useState(0);
   const [ansewerRigthCounter, setAnsewerRigthCounter] = useState(0);
+
   const [wordCurrent, setWordCurrent] = useState({} as WordResponse);
   const [wordRandomAnswer, setWordRandomAnswer] = useState('');
   const [wordCounter, setWordCounter] = useState(0);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isSoundOn, setIsSoundOn] = useState(true);
 
-  // get current words list
-  interface WordResponseWithData extends WordResponse {
-    userWord?: IUserWord;
-  }
+  //////////// get current words list
+  const getCurrentWordsList = async (numberPage: number, isLoginedChanges = false) => {
+    isLoadingAdditionalWordsList = true;
+    let words = [] as WordResponseWithData[];
+    try {
+      if (isLogined) {
+        words = await getAggregatedWords(numberPage);
+      } else {
+        // get common words
+        words = (await apiWords.getWords({
+          group: LEVELS[groupLevel],
+          numberPage: numberPage
+        })) as WordResponseWithData[];
+      }
 
-  interface WordWithDataResponse {
-    paginatedResults: WordResponseWithData[];
-    totalCount: { count: number }[];
-  }
+      if (isLoginedChanges) {
+        dispatch(setSprintWordSet(words));
+      } else {
+        dispatch(setSprintWordSet([...sprintWordSet, ...words]));
+      }
+    } catch (err) {
+      console.log(err);
+    } finally {
+      isLoadingAdditionalWordsList = false;
+    }
+  };
 
   const getAggregatedWords = async (numberPage: number) => {
     let resWords = [] as WordResponseWithData[];
@@ -107,32 +136,6 @@ export const Sprint = () => {
     return resWords;
   };
 
-  const getCurrentWordsList = async (numberPage: number, isLoginedChanges = false) => {
-    isWordsLoading = true;
-    let words = [] as WordResponseWithData[];
-    try {
-      if (isLogined) {
-        words = await getAggregatedWords(numberPage);
-      } else {
-        // get common words
-        words = (await apiWords.getWords({
-          group: LEVELS[groupLevel],
-          numberPage: numberPage
-        })) as WordResponseWithData[];
-      }
-
-      if (isLoginedChanges) {
-        dispatch(setSprintWordSet(words));
-      } else {
-        dispatch(setSprintWordSet([...sprintWordSet, ...words]));
-      }
-    } catch (err) {
-      console.log(err);
-    } finally {
-      isWordsLoading = false;
-    }
-  };
-
   useEffect(() => {
     if (isFromTutorial) {
       currentPage = fromTutorialNumberPage;
@@ -149,65 +152,18 @@ export const Sprint = () => {
       currentPage = getRandomInteger(0, 29);
     }
     getCurrentWordsList(currentPage, true);
+
+    if (isLogined) {
+      handelGetStatistics(currentUser.userId);
+    }
   }, [isLogined]);
-
-  const sendWordCurrentData = async (userId: string, wordId: string, isCorrectAnswer: boolean) => {
-    let learningWord = false;
-    let counterCorrectAnswer = 0;
-    let difficulty: 'easy' | 'hard' = 'easy';
-    let answerOrder: boolean[] = [isCorrectAnswer];
-
-    //check is word known
-    if (wordCurrent.userWord) {
-      if (isCorrectAnswer) {
-        difficulty = wordCurrent.userWord.difficulty;
-        // check word is hard
-        if (difficulty === 'hard') {
-          learningWord = wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 4 ? true : false;
-        } else {
-          learningWord = wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 2 ? true : false;
-        }
-
-        // check number of correct answers
-        if (wordCurrent.userWord.optional.counterCorrectAnswer + 1 > 4) {
-          difficulty = 'easy';
-        }
-
-        counterCorrectAnswer = wordCurrent.userWord.optional.counterCorrectAnswer + 1;
-      }
-      answerOrder = [...wordCurrent.userWord.optional.answerOrder.answerArray, isCorrectAnswer];
-    } else {
-      if (isCorrectAnswer) {
-        counterCorrectAnswer = 1;
-      }
-    }
-
-    const wordData: IUserWord = {
-      difficulty: difficulty,
-      optional: {
-        learningWord: learningWord,
-        counterCorrectAnswer: counterCorrectAnswer,
-        answerOrder: { answerArray: answerOrder }
-      }
-    };
-   
-    try {
-      if (wordCurrent.userWord) {
-        apiUsersWords.updateUserWordById(userId, wordId, wordData);
-      } else {
-        apiUsersWords.createUserWordById(userId, wordId, wordData);
-      }
-    } catch (err) {
-      console.log(err);
-    }
-  };
 
   useEffect(() => {
     // load additional words if it's near end
     const isWordsNearEnd =
       sprintWordSet.length && wordCounter + 10 > sprintWordSet.length && currentPage > 0;
 
-    if (isWordsNearEnd && !isWordsLoading) {
+    if (isWordsNearEnd && !isLoadingAdditionalWordsList) {
       if (isFromTutorial) {
         currentPage = currentPage - 1;
       } else {
@@ -216,9 +172,13 @@ export const Sprint = () => {
       getCurrentWordsList(currentPage);
     }
 
+    // console.log('sprintWordSet', sprintWordSet);
+  }, [wordCounter]);
+
+  useEffect(() => {
     // handel wordCounter change
     if (sprintWordSet.length) {
-      setIsLoading(false);
+      setIsLoadingFirstWordsList(false);
       setWordCurrent(sprintWordSet[wordCounter]);
       const maxRandom =
         wordCounter + 1 > sprintWordSet.length - 1 ? sprintWordSet.length - 1 : wordCounter + 1;
@@ -258,7 +218,7 @@ export const Sprint = () => {
     }
   };
 
-  const handelAnswer = (flag: boolean) => {
+  const handelAnswer = async (flag: boolean) => {
     let isCorrectAnswer = wordCurrent.wordTranslate === wordRandomAnswer;
     if (!flag) {
       isCorrectAnswer = wordCurrent.wordTranslate !== wordRandomAnswer;
@@ -269,17 +229,26 @@ export const Sprint = () => {
     }
 
     if (isLogined) {
-      sendWordCurrentData(currentUser.userId, wordCurrent.id, isCorrectAnswer);
+      learnWordToday = await sendWordCurrentData(
+        currentUser.userId,
+        wordCurrent.id,
+        isCorrectAnswer,
+        wordCurrent,
+        learnWordToday
+      );
     }
 
     if (isCorrectAnswer) {
       setPointsCounter((prev) => prev + POINT_INCREMENT_BY_LEVEL[pointsLevel]);
       increasePointsLevel();
       answerCorrect.push(wordCurrent);
+      strick += 1;
     } else {
       setAnsewerRigthCounter(0);
       setPointsLevel(0);
       answerWrong.push(wordCurrent);
+      allStricks.push(strick);
+      strick = 0;
     }
 
     // exit it it's end
@@ -301,10 +270,12 @@ export const Sprint = () => {
 
   // handel keyboard interaction
   const handleArrowDown = (e: React.KeyboardEvent<HTMLDivElement>) => {
-    if (e.key === 'ArrowLeft') {
-      handelFalsyAnswer();
-    } else if (e.key === 'ArrowRight') {
-      handelTrulyAnswer();
+    if (!isModalVisible) {
+      if (e.key === 'ArrowLeft') {
+        handelFalsyAnswer();
+      } else if (e.key === 'ArrowRight') {
+        handelTrulyAnswer();
+      }
     }
   };
 
@@ -316,7 +287,27 @@ export const Sprint = () => {
     }
   }, []);
 
-  return isLoading && isAuthLoading ? (
+  ////////////  statistic
+  const handelGetStatistics = async (userId: string) => {
+    userStatistic = await getStatistics(userId);
+
+    // console.log('userStatistic', userStatistic);
+  };
+
+  useEffect(() => {
+    if (isModalVisible) {
+      sendStatistics(
+        currentUser.userId,
+        userStatistic,
+        learnWordToday,
+        answerCorrect.length,
+        answerWrong.length,
+        allStricks
+      );
+    }
+  }, [isModalVisible]);
+
+  return isLoadingFirstWordsList && isAuthLoading ? (
     <Loader />
   ) : (
     <div className={styles.sprint} onKeyDown={handleArrowDown} tabIndex={-1} ref={ref}>
@@ -340,7 +331,7 @@ export const Sprint = () => {
 
           <LevelIconList pointsLevel={pointsLevel} levels={POINT_INCREMENT_BY_LEVEL} />
 
-          <p className={styles.word}>{!isLoading ? wordCurrent.word : null}</p>
+          <p className={styles.word}>{!isLoadingFirstWordsList ? wordCurrent.word : null}</p>
 
           <img
             onClick={handelWordAudioPlay}
@@ -349,7 +340,7 @@ export const Sprint = () => {
             className={styles.speaker}
           />
 
-          <p className={styles.translation}>{!isLoading ? wordRandomAnswer : null}</p>
+          <p className={styles.translation}>{!isLoadingFirstWordsList ? wordRandomAnswer : null}</p>
 
           <div className={styles.button_section}>
             <Button func={handelFalsyAnswer} value="Не верно" />
