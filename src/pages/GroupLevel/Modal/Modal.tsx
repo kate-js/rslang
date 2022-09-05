@@ -108,7 +108,7 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
         <div>
           <div className={styles.modal_examples}>
             <div className={styles.modal_example}>
-              <p>{word?.textExample}</p>
+              <p dangerouslySetInnerHTML={{ __html: word?.textExample as string }} />
               <p>{word?.textExampleTranslate}</p>
               {word?.audioExample ? (
                 <ReactAudioPlayerComponent
@@ -118,7 +118,7 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
               ) : null}
             </div>
             <div className={styles.modal_example}>
-              <p>{word?.textMeaning}</p>
+              <p dangerouslySetInnerHTML={{ __html: word?.textMeaning as string }} />
               <p>{word?.textMeaningTranslate}</p>
               {word?.audioMeaning ? (
                 <ReactAudioPlayerComponent
