@@ -75,7 +75,7 @@ export const AudioComponent = () => {
   });
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
-  const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
+  const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
 
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
@@ -105,7 +105,7 @@ export const AudioComponent = () => {
   // console.log({
   //   logined: isLogined, 
   //   tutorial: isFromTutorial, 
-  //   page: fromTutorialNumberPage, 
+  //   page: tutorialNumberPage, 
   //   level: groupLevel
   // });
 
@@ -113,7 +113,7 @@ export const AudioComponent = () => {
     
     // Это срабатывает по стандарту если убрать !
     if (!isFromTutorial) {
-      currentPage = fromTutorialNumberPage
+      currentPage = tutorialNumberPage
     } else {
       currentPage = getRandomIntInclusive(0, 29);
     }
