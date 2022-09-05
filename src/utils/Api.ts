@@ -73,17 +73,6 @@ class Api implements IApi {
     return this.checkRes(res);
   }
 
-  // public async getWords({group, numberPage} : {group: number, numberPage: number}): Promise<WordResponse[]> {
-  //   const fetchConfig = {
-  //     method: 'GET',
-  //     headers: this.headers,
-  //   };
-
-  //   const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`, fetchConfig);
-  //   const json = await res.json();
-  //   return json;
-  // }
-
   public async getHardWords({userId, token}: {userId: string, token : string}): Promise<WordResponse[]> {
     const fetchConfig = {
       method: 'GET',
@@ -263,6 +252,22 @@ class Api implements IApi {
     return json;
   }
 
+  public async getStatistics({userId, item, token}:{userId: string, item:string, token: string}) {
+
+    const fetchConfig = {
+      method: 'GET',
+      withCredentials: true,
+      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+    };
+  
+      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?filter={"userWord.optional.${item}":true}`, fetchConfig);
+      if (res.status !== 200) {
+        throw new Error(`There was an error with status code ${res.status}`)
+      }
+      const json = await res.json();
+      console.log('json', json[0].paginatedResults);
+      return json[0].paginatedResults;
+    }
 }
 
 export const api = new Api({

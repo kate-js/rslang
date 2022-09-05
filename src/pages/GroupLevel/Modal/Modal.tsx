@@ -9,6 +9,12 @@ import { TState } from '../../../store/store';
 import { IModal } from '../../../utils/constants';
 import { api, EApiParametrs } from '../../../utils/Api';
 
+function fixComponent<T>(component: T): T {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (component as any).default ?? component;
+}
+export const ReactAudioPlayerComponent = fixComponent(ReactAudioPlayer);
+
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
@@ -105,14 +111,20 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
               <p>{word?.textExample}</p>
               <p>{word?.textExampleTranslate}</p>
               {word?.audioExample ? (
-                <ReactAudioPlayer src={`${EApiParametrs.baseUrl}/${word?.audioExample}`} controls />
+                <ReactAudioPlayerComponent
+                  src={`${EApiParametrs.baseUrl}/${word?.audioExample}`}
+                  controls
+                />
               ) : null}
             </div>
             <div className={styles.modal_example}>
               <p>{word?.textMeaning}</p>
               <p>{word?.textMeaningTranslate}</p>
               {word?.audioMeaning ? (
-                <ReactAudioPlayer src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`} controls />
+                <ReactAudioPlayerComponent
+                  src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`}
+                  controls
+                />
               ) : null}
             </div>
           </div>

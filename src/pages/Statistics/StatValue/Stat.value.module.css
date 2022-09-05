@@ -1,14 +1,24 @@
-.statictics_section {
+.statictics_items {
   display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  align-items: center;
-  width: 100%;
+  border: 2px solid gray;
+  border-radius: 10px;
+  height: 40%;
+  width: 50%;
+  margin: 20px;
+  flex-direction: row;
+  list-style: none;
 }
 
-.statictics_titles {
+.statictics_item {
+  width: 33%;
+  justify-content: space-around;
+  flex-direction: column;
   display: flex;
-  gap: 20px;
+  align-items: center;
+}
+.statictics_item p {
+  text-align: center;
+  font-weight: 600;
 }
 
 .statictics_title {
