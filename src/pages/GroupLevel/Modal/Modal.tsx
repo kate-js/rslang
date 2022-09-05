@@ -1,12 +1,13 @@
 import styles from './Modal.module.css';
 import ReactAudioPlayer from 'react-audio-player';
-import { IModal } from '../../../utils/constants';
-import { api, EApiParametrs } from '../../../utils/Api';
-import { useSelector } from 'react-redux';
-import { TState } from '../../../store/store';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
+
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { TState } from '../../../store/store';
+import { IModal } from '../../../utils/constants';
+import { api, EApiParametrs } from '../../../utils/Api';
 
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
@@ -14,11 +15,6 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const [hard, setHard] = useState<boolean>();
   const [learn, setLearn] = useState<boolean>();
-  const page: number = useSelector((state: TState) => state.page.numberPage);
-  const level: string = useSelector((state: TState) => state.page.level);
-
-  console.log(page, 'page');
-  console.log(level, 'level');
 
   useEffect(() => {
     if (word) {
@@ -45,7 +41,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
       await api.changeHardWord({ userId, token, wordId });
       console.error(error);
     }
+    await api.deleteLearningWord({ userId, token, wordId });
     setHard(true);
+    setLearn(false);
   }
 
   async function deleteHardWord() {
@@ -71,7 +69,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     } catch (error) {
       await api.changeLearningWord({ userId, token, wordId });
     }
+    await api.delHardWord({ userId, token, wordId });
     setLearn(true);
+    setHard(false);
   }
 
   async function deleteLearningWord() {

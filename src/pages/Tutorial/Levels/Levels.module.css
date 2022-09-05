@@ -1,17 +1,15 @@
-.tutorial {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  justify-content: center;
-  align-items: center;
+.link {
+  font-weight: 700;
+  text-decoration: none;
+  color: black;
 }
+
 .levels {
   display: flex;
-  justify-content: space-around;
-  padding-left: 0;
-  justify-content: center;
-  gap: 30px;
-  width: 100%;
+  align-items: center;
+  font-size: 20px;
+  justify-items: center;
+  gap: 10px;
 }
 
 .levels li {
@@ -19,15 +17,15 @@
   border: 2px solid gray ;
   border-radius: 50%;
   background-color: rgba(2, 57, 134, 0.8);
-  width: 100px;
-  height: 100px;
+  width: 70px;
+  height: 70px;
   display: flex;
   justify-content: space-around;
   align-items: center;
   flex-direction: row;
   color:black;
-  font-weight: 700;
-  font-size: 30px;
+  font-weight: 500;
+  font-size: 20px;
   flex-wrap: wrap;
 }
 
@@ -36,3 +34,8 @@
   box-shadow: 10px 5px 5px gray;
   cursor: pointer;
 }
+
+.levels li:last-child {
+  font-size: 16px;
+  text-align: center;
+} 

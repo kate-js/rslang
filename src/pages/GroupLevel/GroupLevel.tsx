@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
 import Book from './assets/book.png';
 import { Modal } from './Modal/Modal';
 import { WordResponse } from '../../utils/constants';
 import { api } from '../../utils/Api';
-import { useDispatch, useSelector } from 'react-redux';
 import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
 import { setLevel, setPage } from './GroupPage';
+import { Levels } from '../Tutorial/Levels/Levels';
 
 export const GroupLevel = () => {
   const dispatch = useDispatch();
@@ -18,16 +20,21 @@ export const GroupLevel = () => {
   const [listWords, setListWords] = useState<WordResponse[]>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
+  const [learnPage, setLearnPage] = useState<boolean>(false);
 
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
 
-  dispatch(setLevel(level));
-
   useEffect(() => {
+    dispatch(setLevel(level));
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
+
+  useEffect(() => {
+    localStorage.setItem('numberPage', '1');
+    level !== 'HARD WORDS' ? getWords(userId, token) : getHardWords();
+  }, [level]);
 
   useEffect(() => {
     level === 'HARD WORDS' ? getHardWords() : null;
@@ -67,9 +74,18 @@ export const GroupLevel = () => {
     try {
       const response = await api.fetchWords({ userId, token, group, numberPage });
       await setListWords(response);
+      checkLearning(response);
     } catch (error) {
       console.error(error);
     }
+  }
+
+  function checkLearning(list: WordResponse[]) {
+    let counter = 0;
+    for (const key of list) {
+      key.userWord?.optional?.learningWord ? counter++ : null;
+    }
+    counter !== 20 ? setLearnPage(false) : setLearnPage(true);
   }
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {
@@ -80,9 +96,7 @@ export const GroupLevel = () => {
   }
 
   function getStyle(elem: WordResponse) {
-    if (elem.userWord?.difficulty === 'hard' && elem.userWord?.optional?.learningWord) {
-      return styles.wordVeryHard;
-    } else if (elem.userWord?.difficulty === 'hard') {
+    if (elem.userWord?.difficulty === 'hard') {
       return styles.wordHard;
     } else if (elem.userWord?.optional?.learningWord) {
       return styles.wordLearn;
@@ -102,15 +116,23 @@ export const GroupLevel = () => {
                 <h3>{level}</h3>
               </div>
             </div>
-            <ul className={styles.wordList}>
-              {listWords.map((item, index) => (
-                <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
-                  {item.word}
-                </li>
-              ))}
-            </ul>
+            {listWords.length ? (
+              <ul className={styles.wordList}>
+                {listWords.map((item, index) => (
+                  <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
+                    {item.word}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className={styles.no_wordList}>У вас нет слов, отмеченных как сложное!</div>
+            )}
             <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
-            <GameLinks />
+            <GameLinks learnPage={learnPage} />
+            <div className={styles.levels_group}>
+              <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
+              <Levels />
+            </div>
           </>
         ) : (
           <div className={styles.no_regictration}>
@@ -132,7 +154,7 @@ export const GroupLevel = () => {
               ))}
             </select>
           </div>
-          <ul className={styles.wordList}>
+          <ul className={learnPage ? styles.wordListLearn : styles.wordList}>
             {listWords.map((item, index) => (
               <li className={getStyle(item)} onClick={() => changeModal(item)} key={index}>
                 {item.word}
@@ -140,7 +162,11 @@ export const GroupLevel = () => {
             ))}
           </ul>
           <Modal modal={modal} setModal={setModal} word={words} changeModal={changeModal} />
-          <GameLinks />
+          <GameLinks learnPage={learnPage} />
+          <div className={styles.levels_group}>
+            <p>Сложно? Или слишком easy? Меняй уровень прямо сейчас!</p>
+            <Levels />
+          </div>
         </>
       )}
     </div>
