@@ -44,10 +44,10 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     try {
       await api.addHardWord({ userId, token, wordId });
     } catch (error) {
-      await api.changeHardWord({ userId, token, wordId });
+      const meta = word?.userWord || {};
+      await api.changeHardWord({ userId, token, wordId, meta });
       console.error(error);
     }
-    await api.deleteLearningWord({ userId, token, wordId });
     setHard(true);
     setLearn(false);
   }
@@ -73,9 +73,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     try {
       await api.addLearningWord({ userId, token, wordId });
     } catch (error) {
-      await api.changeLearningWord({ userId, token, wordId });
+      const meta = word?.userWord || {};
+      await api.changeLearningWord({ userId, token, wordId, meta });
     }
-    await api.delHardWord({ userId, token, wordId });
     setLearn(true);
     setHard(false);
   }
