@@ -1,0 +1,18 @@
+.circle_section {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+}
+
+.circle {
+  border: 2px solid gray;
+  border-radius: 50%;
+  width: 25px;
+  height: 25px;
+}
+
+.circle_active {
+  border: 2px solid gray;
+  background-image: 'V';
+  background-color: green;
+}

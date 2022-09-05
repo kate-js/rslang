@@ -43,10 +43,7 @@ class ApiWords implements IApiWords {
       headers: this.headers
     };
 
-    const res = await fetch(
-      `${this.baseUrl}/words?group=${group}&page=${numberPage - 1}`,
-      fetchConfig
-    );
+    const res = await fetch(`${this.baseUrl}/words?group=${group}&page=${numberPage}`, fetchConfig);
 
     const wordsRes = checkRes(res) as unknown;
     return wordsRes as WordResponse[];

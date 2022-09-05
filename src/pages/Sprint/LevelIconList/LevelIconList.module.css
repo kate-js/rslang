@@ -1,0 +1,14 @@
+.level_section {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.level_icon {
+  visibility: hidden;
+  width: 50px;
+}
+
+.level_icon_active {
+  visibility: visible;
+}

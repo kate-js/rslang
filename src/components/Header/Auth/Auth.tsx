@@ -6,7 +6,8 @@ import {
   setIsModalSignupOpen,
   setIsModalSigninOpen,
   setIsLogined,
-  setCurrentUser
+  setCurrentUser,
+  setIsAuthLoading
 } from '../../../store/authSlice';
 import { TState } from '../../../store/store';
 import styles from './Auth.module.css';
@@ -25,6 +26,7 @@ const Auth = () => {
 
   const checkJwtToken = async (): Promise<void> => {
     if (localStorage.getItem('currentUser')) {
+      setIsAuthLoading(true);
       const currentUser = JSON.parse(localStorage.getItem('currentUser') as string);
       // try current jwt
       try {
@@ -51,6 +53,8 @@ const Auth = () => {
         } else {
           console.log(err);
         }
+      } finally {
+        setIsAuthLoading(false);
       }
     }
   };
