@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import useSound from 'use-sound';
 import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { apiUsersWords }  from '../../api/apiUsersWords'
 import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
@@ -19,12 +19,18 @@ import unmuteImg from './assets/volume.png'
 import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
+import { setIsFromTutorial } from '../../store/sprintSlice';
 
 let currentPage = 0;
 let isPress = false;
+let learnWordToday = 0;
+const allStricks: number[] = [];
+let strick = 0;
 
+// статистика
+// подгруз слов
+// поменять фетч UPD. DONE
 // все isFromTutorial надо проверить
-// необходимо продумать кое-что
 
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
@@ -62,10 +68,10 @@ export const AudioComponent = () => {
     isWelcomeScreen: true,
   });
   const [userWords, setUserWords] = useState<IUserWord[]>();
-  // const [streak, setStreak] = useState(0);
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
   const [wrongAnswers, setwrongAnswers] = useState<IWord[]>([]);
   const [serverData, setServerData] = useState<IUserWord>();
+  const dispatch = useDispatch();
 
   const [playCorrect] = useSound(correct, {
     volume: componentState.volumeSettings?.volume
@@ -73,6 +79,8 @@ export const AudioComponent = () => {
   const [playIncorrect] = useSound(wrong, {
     volume: componentState.volumeSettings?.volume
   });
+
+  const [isModal, setIsmodal] = useState(true);
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
@@ -110,6 +118,9 @@ export const AudioComponent = () => {
   // });
 
   useEffect(() => {
+
+    // перенести в конец
+    // dispatch(setIsFromTutorial(false));
     
     // Это срабатывает по стандарту если убрать !
     if (!isFromTutorial) {
@@ -118,7 +129,11 @@ export const AudioComponent = () => {
       currentPage = getRandomIntInclusive(0, 29);
     }
 
+    
     setGameWords();
+    dispatch(setIsFromTutorial(false));
+
+
   }, [isLogined]);
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
@@ -159,13 +174,14 @@ export const AudioComponent = () => {
     }
   };
 
-  const getAggregatedWords = async (page, group) => {
+  const getAggregatedWords = async (page: number, group: number, isFromTutorial: boolean) => {
 
     const query = {
       group: ``,
       page: ``,
       wordsPerPage: 20,
-      filter: `{"$or":[{"$and": [{"group": ${group}}, {"page": ${page}}, {"userWord.optional.learningWord":false}]} ,{"$and": [{"group": ${group}}, {"page": ${page}}, {"userWord":null}]}]}`
+      filter: `{"$or":[{"$and": [{"group": ${group}}, {"page": ${page}}
+      ${isFromTutorial ? `,{"userWord.optional.learningWord":false}` : ''}]} ,{"$and": [{"group": ${group}}, {"page": ${page}}, {"userWord":null}]}]}`
     };
 
     const aggregatedWords = (await apiAggregatedWords.getAllAggregatedWords(
@@ -182,54 +198,47 @@ export const AudioComponent = () => {
     return normalWords;
   }
 
-  useEffect(() => {
-    const addData = async () => {
-      if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
-        const newWords = await getAggregatedWords(17 - 1, 5)
-        const combinedArray = [...componentState.appState.words, ...newWords];
+  // useEffect(() => {
+  //   const addData = async () => {
+  //     if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
+  //       const newWords = await getAggregatedWords(17 - 1, 5)
+  //       const combinedArray = [...componentState.appState.words, ...newWords];
 
-        const newState = {
-          appState:  { isLoaded: true, words: combinedArray },
-          possibleAnswers : combinedArray,
-        }
+  //       const newState = {
+  //         appState:  { isLoaded: true, words: combinedArray },
+  //         possibleAnswers : combinedArray,
+  //       }
     
-        updateStateByKeys(newState);
-      }
-    }
+  //       updateStateByKeys(newState);
+  //     }
+  //   }
 
-  }, [])
+  // }, [])
 
   const setGameWords = async () => {
+    
     // make fetch request using page and level
-    // let words = await getWords(currentPage, LEVELS[groupLevel]); 
-    let words = await getWords(17, 5); 
+    let words = []; 
     let userWords: IUserWord[] = [];
     
-    if (isLogined) {
-      // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
-      userWords = await getAggregatedWords(17, 5);
-
-      // userWords = await getAggregatedWords(4, 0);
-
-      if (isFromTutorial) {
-        // поменять надо на рабочую версию без !
-          words = userWords;
-      } else {
-        // words = await getWords(currentPage, LEVELS[groupLevel])
-        // words = await getWords(0, 4)
-      }
+    // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
+    if (isFromTutorial && isLogined) {
+        userWords = await getAggregatedWords(10, 5, true);
+        words = userWords;
+    } else if (isLogined) {
+        userWords = await getAggregatedWords(17, 5, false);
+        words = userWords;
     } else {
-      // words = await getWords(currentPage, LEVELS[groupLevel]);
-      // words = await getWords(0, 4);
-
+      words = await getWords(11, 5); 
     }
 
     // если недостаточно слов, то дозапрашиваем слова
-    if (words.length < 20) {
-      console.log('недостаточно слов');
-      const newWords = await getAggregatedWords(17 - 1, 5)
-      words = [...words, ...newWords];
-    }
+    // if (words.length < 20) {
+    //   console.log('недостаточно слов');
+    //   // currentPage
+    //   // const newWords = await getAggregatedWords(17 - 1, 5)
+    //   // words = [...words, ...newWords];
+    // }
 
     setUserWords(userWords);
 
@@ -249,7 +258,6 @@ export const AudioComponent = () => {
   const handleWords = async () => {
     // to reset keyboard status
     isPress = false;
-
     let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice() || [];
     
     const answer = possibleAnswers[getRandomIntInclusive(0, possibleAnswers.length - 1)];
@@ -314,17 +322,19 @@ export const AudioComponent = () => {
     let counterCorrectAnswer = 0;
     let difficulty = (serverData as IUserWord).difficulty;
 
-    if (answerStatus) {
-      if (difficulty === 'easy') {
-        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? true : false;
+    if (componentState.answer.userWord) {
+      if (answerStatus) {
+        if (difficulty === 'easy') {
+          learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? (learnWordToday += 1, true) : false;
+        } else {
+          learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? (difficulty = 'easy', learnWordToday += 1, true) : false;
+        }
+        
+        counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
       } else {
-        learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? (difficulty = 'easy', true) : false;
+        learningWord = false;
+        counterCorrectAnswer = 0;
       }
-      
-      counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
-    } else {
-      learningWord = false;
-      counterCorrectAnswer = 0;
     }
 
     const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, answerStatus];
@@ -359,9 +369,12 @@ export const AudioComponent = () => {
     if (rule) {
       playCorrect();
       setcorrectAnswers([...correctAnswers as IWord[], componentState.answer as IWord])
+      strick += 1;
     } else {
       playIncorrect();
       setwrongAnswers([...wrongAnswers as IWord[], componentState.answer as IWord])
+      allStricks.push(strick);
+      strick = 0;
     }
 
     if (isLogined) {
