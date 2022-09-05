@@ -260,7 +260,7 @@ class Api implements IApi {
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
     };
   
-      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?filter={"$and":[{"userWord.optional.${item}"}]}`, fetchConfig);
+      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?filter={"userWord.optional.${item}":true}`, fetchConfig);
       if (res.status !== 200) {
         throw new Error(`There was an error with status code ${res.status}`)
       }

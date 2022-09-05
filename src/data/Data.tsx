@@ -111,3 +111,49 @@ export const LEVELS = {
 export const LEVELS_main = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2', 'HARD WORDS'];
 
 export const Statistics_title = ['Audio', 'Sprint', 'Words'];
+
+export const Statistics = [
+  {
+    optional: {
+      sprint: {
+        learnNewWordPerDay: [
+          {
+            date: '05/09/2022',
+            counter: 30
+          }
+        ],
+        percentRigth: {
+          right: 6,
+          wrong: 4
+        },
+        longestStrick: 4
+      },
+      audio: {
+        learnNewWordPerDay: [
+          {
+            date: '05/09/2022',
+            counter: 13
+          }
+        ],
+        percentRigth: {
+          right: 6,
+          wrong: 3
+        },
+        longestStrick: 8
+      },
+      total: {
+        learnNewWordPerDay: [
+          {
+            date: '05/09/2022',
+            counter: 3
+          }
+        ],
+        percentRigth: {
+          right: 34,
+          wrong: 44
+        },
+        longestStrick: 7
+      }
+    }
+  }
+];

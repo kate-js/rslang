@@ -9,6 +9,7 @@ import Hard from '../assets/hard-word.png';
 import { useEffect, useState } from 'react';
 
 function fixComponent<T>(component: T): T {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (component as any).default ?? component;
 }
 export const ReactAudioPlayerComponent = fixComponent(ReactAudioPlayer);

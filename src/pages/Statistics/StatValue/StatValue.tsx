@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Statistics } from '../../../data/Data';
 import { api } from '../../../utils/Api';
 import styles from './Stat.value.module.css';
 
@@ -12,7 +13,8 @@ export const StatValue = ({ item }: { item: string }) => {
   async function getStat() {
     const userId = '630b42ce0957770016b4bca1';
     const token =
-      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGI0MmNlMDk1Nzc3MDAxNmI0YmNhMSIsImlhdCI6MTY2MjE5NzgwOCwiZXhwIjoxNjYyMjEyMjA4fQ.q4TFZkfKGaJI7cMI0-l0oGk0meV40UX8-P5f7YwzMXI';
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjYzMGI0MmNlMDk1Nzc3MDAxNmI0YmNhMSIsImlhdCI6MTY2MjM3NTg3NCwiZXhwIjoxNjYyMzkwMjc0fQ.W_WJxwti88n-AGdreNDoKT4Gl0a2yoPUVrgqif97GVU';
+
     try {
       const response = await api.getStatistics({ userId, token, item });
       console.log(response);
@@ -21,6 +23,8 @@ export const StatValue = ({ item }: { item: string }) => {
       console.error(error);
     }
   }
+
+  console.log(Statistics[0].optional.audio);
 
   return (
     <>
