@@ -256,7 +256,7 @@ export const Sprint = () => {
       setWordCounter((prev) => prev + 1);
     } else {
       setIsModalVisible(true);
-      setIsFromTutorial(false);
+      dispatch(setIsFromTutorial(false));
     }
   };
 
