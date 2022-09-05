@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+
 import { LEVELS, UNITS } from '../../data/Data';
 import styles from './GroupLevel.module.css';
 import Book from './assets/book.png';
 import { Modal } from './Modal/Modal';
 import { WordResponse } from '../../utils/constants';
 import { api } from '../../utils/Api';
-import { useDispatch, useSelector } from 'react-redux';
 import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
 import { setLevel, setPage } from './GroupPage';
@@ -25,9 +26,8 @@ export const GroupLevel = () => {
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
 
-  dispatch(setLevel(level));
-
   useEffect(() => {
+    dispatch(setLevel(level));
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
 
@@ -86,7 +86,6 @@ export const GroupLevel = () => {
       key.userWord?.optional?.learningWord ? counter++ : null;
     }
     counter !== 20 ? setLearnPage(false) : setLearnPage(true);
-    console.log(counter);
   }
 
   function getPage(e: React.ChangeEvent<HTMLSelectElement>) {

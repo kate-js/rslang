@@ -1,12 +1,13 @@
 import styles from './Modal.module.css';
 import ReactAudioPlayer from 'react-audio-player';
-import { IModal } from '../../../utils/constants';
-import { api, EApiParametrs } from '../../../utils/Api';
-import { useSelector } from 'react-redux';
-import { TState } from '../../../store/store';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
+
 import { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
+import { TState } from '../../../store/store';
+import { IModal } from '../../../utils/constants';
+import { api, EApiParametrs } from '../../../utils/Api';
 
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
