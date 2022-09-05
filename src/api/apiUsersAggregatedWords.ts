@@ -59,7 +59,7 @@ class ApiAggregatedWords implements IApiAggregated {
   public async getAllAggregatedWords(
     userId: string,
     query: IQueryAllAggregated
-  ): Promise<WordResponse[]> {
+  ): Promise<Response> {
     const group = query.group ? `group=${query.group}` : '';
     const page = query.page ? `page=${query.page}` : '';
     const wordsPerPage = query.wordsPerPage ? `wordsPerPage=${query.wordsPerPage}` : '';
@@ -77,8 +77,8 @@ class ApiAggregatedWords implements IApiAggregated {
       fetchConfig
     );
 
-    const wordsRes = checkRes(res) as unknown;
-    return wordsRes as WordResponse[];
+    const wordsRes = checkRes(res);
+    return wordsRes;
   }
 
   /*  getUserAggregatedWordById
@@ -127,7 +127,7 @@ export const apiAggregatedWords = new ApiAggregatedWords({
 export interface IApiAggregated {
   baseUrl: string;
   headers: IHeaders;
-  getAllAggregatedWords: (userId: string, query: IQueryAllAggregated) => Promise<WordResponse[]>;
+  getAllAggregatedWords: (userId: string, query: IQueryAllAggregated) => Promise<Response>;
   getUserAggregatedWordById: (userId: string, wordId: string) => Promise<IUserWord>;
 }
 

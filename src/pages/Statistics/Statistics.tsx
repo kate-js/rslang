@@ -1,28 +1,26 @@
-import React, { useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { incremented, decremented, setCounter } from '../../store/testToolkitSlice';
-import { TState } from '../../store/store';
+import { useState } from 'react';
+import { Statistics_title } from '../../data/Data';
+import styles from './Statistics.module.css';
+import { StatValue } from './StatValue/StatValue';
 
 export const Statistics = () => {
-  const counter = useSelector((state: TState) => state.testToolkit.value);
-  const dispatch = useDispatch();
+  const [item, setItem] = useState('Audio');
 
-  const increment = useCallback(() => dispatch(incremented()), []);
-  const decrement = useCallback(() => dispatch(decremented()), []);
-  const asyncDecrement = useCallback(async () => {
-    setTimeout(() => dispatch(decremented()), 1500);
-  }, []);
-  const asyncSetCounter = useCallback(async () => {
-    setTimeout(() => dispatch(setCounter(5)), 1500);
-  }, []);
+  function changeItem(item: string) {
+    setItem(item);
+  }
 
   return (
-    <div>
-      <p>{counter}</p>
-      <button onClick={increment}>increment</button>
-      <button onClick={decrement}>decrement</button>
-      <button onClick={asyncDecrement}>asyncDecrement</button>
-      <button onClick={asyncSetCounter}>asyncSetCounter</button>
+    <div className={styles.statictics_section}>
+      <h1>Краткосрочная статистика</h1>
+      <ul className={styles.statictics_titles}>
+        {Statistics_title.map((item, index) => (
+          <li className={styles.statictics_title} key={index} onClick={() => changeItem(item)}>
+            {item}
+          </li>
+        ))}
+      </ul>
+      <StatValue item={item} />
     </div>
   );
 };

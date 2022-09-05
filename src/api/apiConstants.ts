@@ -1,3 +1,4 @@
+import { WordResponse } from '../utils/constants';
 // interface for discussions
 export interface IUserWord {
   difficulty: 'hard' | 'easy';
@@ -20,8 +21,102 @@ export const initialUserWordData: IUserWord = {
 
 export interface IUserStatistics {
   learnedWords: number;
-  optional: { [key: string]: string };
+  optional: {
+    sprint: {
+      learnNewWordPerDay: [
+        {
+          date: string;
+          counter: number;
+        }
+      ];
+      percentRigth: {
+        right: number;
+        wrong: number;
+      };
+      longestStrick: number;
+    };
+    audio: {
+      learnNewWordPerDay: [
+        {
+          date: string;
+          counter: number;
+        }
+      ];
+      percentRigth: {
+        right: number;
+        wrong: number;
+      };
+      longestStrick: number;
+    };
+    total: {
+      learnNewWordPerDay: [
+        {
+          date: string;
+          counter: number;
+        }
+      ];
+      percentRigth: {
+        right: number;
+        wrong: number;
+      };
+      longestStrick: number;
+    };
+  };
 }
+
+export interface WordResponseWithData extends WordResponse {
+  userWord?: IUserWord;
+}
+
+export interface WordWithDataResponse {
+  paginatedResults: WordResponseWithData[];
+  totalCount: { count: number }[];
+}
+
+export const initialUserStatistics: IUserStatistics = {
+  learnedWords: 0,
+  optional: {
+    sprint: {
+      learnNewWordPerDay: [
+        {
+          date: '',
+          counter: 0
+        }
+      ],
+      percentRigth: {
+        right: 0,
+        wrong: 0
+      },
+      longestStrick: 0
+    },
+    audio: {
+      learnNewWordPerDay: [
+        {
+          date: '',
+          counter: 0
+        }
+      ],
+      percentRigth: {
+        right: 0,
+        wrong: 0
+      },
+      longestStrick: 0
+    },
+    total: {
+      learnNewWordPerDay: [
+        {
+          date: '',
+          counter: 0
+        }
+      ],
+      percentRigth: {
+        right: 0,
+        wrong: 0
+      },
+      longestStrick: 0
+    }
+  }
+};
 
 export interface IUserSettings {
   wordsPerDay: number;
@@ -69,3 +164,9 @@ export interface ICurrentUser {
   userId: string;
   name: string;
 }
+
+export const optionsDate: Intl.DateTimeFormatOptions = {
+  year: 'numeric',
+  month: 'numeric',
+  day: 'numeric'
+};

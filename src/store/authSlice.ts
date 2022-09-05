@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 
 const currentUser = localStorage.getItem('currentUser');
 
-const DEFAULT_USER  = {
+const DEFAULT_USER = {
   message: '',
   token: '',
   refreshToken: '',
@@ -14,7 +14,8 @@ export const initialState = {
   currentUser: currentUser ? JSON.parse(currentUser) : DEFAULT_USER,
   isModalSignupOpen: false,
   isModalSigninOpen: false,
-  isLogined: false
+  isLogined: false,
+  isAuthLoading: false
 };
 
 const authSlice = createSlice({
@@ -32,15 +33,18 @@ const authSlice = createSlice({
     },
     setIsLogined: (state, actions) => {
       state.isLogined = actions.payload;
+    },
+    setIsAuthLoading: (state, actions) => {
+      state.isAuthLoading = actions.payload;
     }
-    // handelLogout: (state) => {
-    //   state.isLogined = false;
-    //   state.currentUser = initialState.currentUser;
-    //   localStorage.removeItem('currentUser');
-    // },
   }
 });
 
 export const authReducer = authSlice.reducer;
-export const { setCurrentUser, setIsModalSignupOpen, setIsModalSigninOpen, setIsLogined } =
-  authSlice.actions;
+export const {
+  setCurrentUser,
+  setIsModalSignupOpen,
+  setIsModalSigninOpen,
+  setIsLogined,
+  setIsAuthLoading
+} = authSlice.actions;

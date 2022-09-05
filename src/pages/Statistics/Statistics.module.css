@@ -1,21 +1,17 @@
-.tutorial {
+.statictics_section {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-}
-
-.levels {
-  display: flex;
-  justify-content: space-around;
-  padding-left: 0;
-  justify-content: center;
-  gap: 30px;
   width: 100%;
 }
 
-.levels li {
+.statictics_titles {
+  display: flex;
+  gap: 20px;
+}
+
+.statictics_title {
   list-style: none;
   border: 2px solid gray ;
   border-radius: 50%;
@@ -30,10 +26,4 @@
   font-weight: 700;
   font-size: 30px;
   flex-wrap: wrap;
-}
-
-.levels li:hover {
-  background-color: rgba(201, 7, 42, 0.9);
-  box-shadow: 10px 5px 5px gray;
-  cursor: pointer;
 }
