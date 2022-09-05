@@ -23,6 +23,9 @@ export const sendStatistics = (
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
 
   if (userStatistic.optional) {
+    // if statistics already exist
+
+    // create learnNewWordToday
     const learnNewWordPerDay = newStatistics.optional.sprint.learnNewWordPerDay;
     const learnNewWordToday = learnNewWordPerDay[learnNewWordPerDay.length - 1];
 
