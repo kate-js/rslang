@@ -22,7 +22,7 @@ export const sendStatistics = (
   let newStatistics: IUserStatistics = userStatistic;
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
 
-  if (userStatistic) {
+  if (userStatistic.optional) {
     // if statistics already exist
 
     // create learnNewWordToday
