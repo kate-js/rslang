@@ -170,3 +170,18 @@ export const optionsDate: Intl.DateTimeFormatOptions = {
   month: 'numeric',
   day: 'numeric'
 };
+
+export interface IOptional {
+  learnNewWordPerDay: [
+    {
+      date: string;
+      counter: number;
+    }
+  ];
+  percentRigth: {
+    right: number;
+    wrong: number;
+  };
+  longestStrick: number;
+}
+  

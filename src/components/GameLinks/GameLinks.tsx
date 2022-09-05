@@ -10,8 +10,8 @@ export const GameLinks = ({ learnPage }: { learnPage: boolean }) => {
   }
 
   const data = [
-    { name: 'Играть в Aудио', link: Game1, alt: 'Audio' },
-    { name: 'Играть в Спринт', link: Game2, alt: 'Sprint' }
+    { name: 'Играть в Aудио', link: Game1, alt: 'Audio', to: '/games/audio' },
+    { name: 'Играть в Спринт', link: Game2, alt: 'Sprint', to: '/games/sprint' }
   ];
 
   return (
@@ -19,7 +19,7 @@ export const GameLinks = ({ learnPage }: { learnPage: boolean }) => {
       {data.map((game, index) => (
         <div className={learnPage ? styles.game_image_disabled : styles.game_item} key={index}>
           <p>{game.name}</p>
-          <Link to="/games/audio" className={style}>
+          <Link to={game.to} className={style}>
             <img
               src={game.link}
               alt="`image-link to game ${game.alt}`"

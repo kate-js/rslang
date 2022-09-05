@@ -79,7 +79,7 @@
 }
 
 .wordHard {
-  border: 2px solid gray;
+  border: 4px solid rgb(226, 86, 86);
   background-color: rgba(239, 239, 240,1);
   width: 150px;
   height: 100px;
@@ -90,7 +90,6 @@
   font-family: 'Roboto', sans-serif;
   font-size: 20px;
   cursor: pointer;
-  background-color: rgb(226, 86, 86);
 }
 
 .wordLearn {
@@ -134,4 +133,22 @@
   align-items: center;
   box-shadow: inset 0px 2px 5px gray;
   width: 100%;
+}
+
+.answers {
+  display: flex;
+  flex-direction: column;
+}
+
+.answers__wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+.answer_correct {
+  color: green;
+}
+
+.answer_incorrect {
+  color: tomato;
 }

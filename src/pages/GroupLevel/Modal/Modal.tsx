@@ -44,10 +44,10 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     try {
       await api.addHardWord({ userId, token, wordId });
     } catch (error) {
-      await api.changeHardWord({ userId, token, wordId });
+      const meta = word?.userWord || {};
+      await api.changeHardWord({ userId, token, wordId, meta });
       console.error(error);
     }
-    await api.deleteLearningWord({ userId, token, wordId });
     setHard(true);
     setLearn(false);
   }
@@ -73,9 +73,9 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     try {
       await api.addLearningWord({ userId, token, wordId });
     } catch (error) {
-      await api.changeLearningWord({ userId, token, wordId });
+      const meta = word?.userWord || {};
+      await api.changeLearningWord({ userId, token, wordId, meta });
     }
-    await api.delHardWord({ userId, token, wordId });
     setLearn(true);
     setHard(false);
   }
@@ -108,7 +108,7 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
         <div>
           <div className={styles.modal_examples}>
             <div className={styles.modal_example}>
-              <p>{word?.textExample}</p>
+              <p dangerouslySetInnerHTML={{ __html: word?.textExample as string }} />
               <p>{word?.textExampleTranslate}</p>
               {word?.audioExample ? (
                 <ReactAudioPlayerComponent
@@ -118,7 +118,7 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
               ) : null}
             </div>
             <div className={styles.modal_example}>
-              <p>{word?.textMeaning}</p>
+              <p dangerouslySetInnerHTML={{ __html: word?.textMeaning as string }} />
               <p>{word?.textMeaningTranslate}</p>
               {word?.audioMeaning ? (
                 <ReactAudioPlayerComponent

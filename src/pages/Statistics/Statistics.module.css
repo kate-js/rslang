@@ -1,9 +1,12 @@
 .statictics_section {
   display: flex;
-  flex-direction: column;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
+  padding: 20px;
+  flex-flow: column;
+  background-color: rgba(2, 57, 134);
+  color: white;
 }
 
 .statictics_titles {
@@ -26,4 +29,65 @@
   font-weight: 700;
   font-size: 30px;
   flex-wrap: wrap;
+}
+
+.statictics_items {
+  display: flex;
+  border: 2px solid gray;
+  border-radius: 10px;
+  height: 40%;
+  margin: 20px;
+  flex-direction: row;
+  list-style: none;
+  height: fit-content;
+  padding: 10px;
+  background-color: white;
+  color: black;
+}
+
+.statictics_item {
+  width: 33%;
+  justify-content: space-around;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+}
+.statictics_item p {
+  text-align: center;
+  font-weight: 600;
+}
+
+.statictics_title {
+  list-style: none;
+  border: 2px solid gray ;
+  border-radius: 50%;
+  background-color: rgba(2, 57, 134, 0.8);
+  width: 100px;
+  height: 100px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: row;
+  color:black;
+  font-weight: 700;
+  font-size: 30px;
+  flex-wrap: wrap;
+}
+
+.statictics_values {
+  flex-wrap: wrap;
+  min-width: 30vw;
+  justify-content: center;
+  display: flex;
+}
+
+.statictics_value {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.statictics_value h3 {
+  font-size: 25px;
+  color: white;
 }

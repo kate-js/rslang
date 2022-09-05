@@ -1,3 +1,4 @@
+import { getJwtToken } from "../api/apiConstants";
 import { UserWordsReponse, WordResponse } from "./constants";
 
 export enum EApiParametrs {
@@ -140,7 +141,7 @@ class Api implements IApi {
       method: 'POST',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "difficulty": "hard"})
+      body: JSON.stringify({ difficulty: 'hard', optional: { learningWord: false } }),
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -151,12 +152,18 @@ class Api implements IApi {
     return json;
   }
 
-  public async changeHardWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<UserWordsReponse[]> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async changeHardWord({ userId, token, wordId, meta }: {userId: string, token : string, wordId: string, meta: any}): Promise<UserWordsReponse[]> {
+    console.log('meta', meta);
+    const payload = { ...meta };
+    payload.difficulty = 'hard';
+    payload.optional = { ...payload.optional, learningWord: false };
+
     const fetchConfig = {
       method: 'PUT',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "difficulty": "hard"})
+      body: JSON.stringify(payload),
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -185,7 +192,7 @@ class Api implements IApi {
       method: 'POST',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "optional": {learningWord: true}})
+      body: JSON.stringify({ difficulty: 'easy', optional: { learningWord: true }}),
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -195,12 +202,17 @@ class Api implements IApi {
     const json = await res.json();
     return json;
   }
-  public async changeLearningWord({userId, token, wordId}: {userId: string, token : string, wordId: string}): Promise<string> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async changeLearningWord({userId, token, wordId, meta}: {userId: string, token : string, wordId: string, meta: any}): Promise<string> {
+    const payload = { ...meta };
+    payload.difficulty = 'easy';
+    payload.optional = { ...payload.optional, learningWord: true };
+
     const fetchConfig = {
       method: 'PUT',
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
-      body: JSON.stringify({ "optional": {learningWord: true}})
+      body: JSON.stringify(payload),
     };
 
     const res = await fetch(`${this.baseUrl}/users/${userId}/words/${wordId}`, fetchConfig);
@@ -252,22 +264,17 @@ class Api implements IApi {
     return json;
   }
 
-  public async getStatistics({userId, item, token}:{userId: string, item:string, token: string}) {
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  public async getStatistics(userId: string): Promise<any> {
     const fetchConfig = {
       method: 'GET',
-      withCredentials: true,
-      headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
+      headers: { ...this.headers, authorization: getJwtToken() }
     };
-  
-      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?filter={"userWord.optional.${item}":true}`, fetchConfig);
-      if (res.status !== 200) {
-        throw new Error(`There was an error with status code ${res.status}`)
-      }
-      const json = await res.json();
-      console.log('json', json[0].paginatedResults);
-      return json[0].paginatedResults;
-    }
+
+    const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
+    const json = await res.json();
+          return json.optional;
+  }
 }
 
 export const api = new Api({
