@@ -8,7 +8,7 @@ import { Loader } from '../../components/UI/Loader/Loader';
 import { TState } from '../../store/store';
 import { useSelector, useDispatch } from 'react-redux';
 import { apiUsersWords }  from '../../api/apiUsersWords'
-import { EApiParametrs, IUserWord, initialUserWordData } from '../../api/apiConstants';
+import { EApiParametrs, IUserWord, initialUserWordData, IUserStatistics } from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
 import { Word } from './Word';
 import correct from './assets/sounds/correct.mp3'
@@ -20,12 +20,14 @@ import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 import { setIsFromTutorial } from '../../store/sprintSlice';
+import {getStatistics, sendStatistics} from '../Sprint/handelStatistics'
 
 let currentPage = 0;
 let isPress = false;
 let learnWordToday = 0;
 const allStricks: number[] = [];
 let strick = 0;
+let userStatistic: IUserStatistics;
 
 // статистика
 // подгруз слов
@@ -117,6 +119,11 @@ export const AudioComponent = () => {
   //   level: groupLevel
   // });
 
+  const handelGetStatistics = async (userId: string) => {
+    userStatistic = await getStatistics(userId);
+    console.log('userStatistic', userStatistic);
+  };
+
   useEffect(() => {
 
     // перенести в конец
@@ -129,12 +136,16 @@ export const AudioComponent = () => {
       currentPage = getRandomIntInclusive(0, 29);
     }
 
+    if (isLogined) {
+      handelGetStatistics(userId);
+    }
     
     setGameWords();
     dispatch(setIsFromTutorial(false));
 
 
   }, [isLogined]);
+
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
     setComponentState(
@@ -197,6 +208,10 @@ export const AudioComponent = () => {
 
     return normalWords;
   }
+
+  useEffect(() => {
+    sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
+  }, [componentState.answerCount === 20])
 
   // useEffect(() => {
   //   const addData = async () => {
