@@ -8,6 +8,11 @@ import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
 import { useEffect, useState } from 'react';
 
+function fixComponent<T>(component: T): T {
+  return (component as any).default ?? component;
+}
+export const ReactAudioPlayerComponent = fixComponent(ReactAudioPlayer);
+
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
   const userId = useSelector((state: TState) => state.auth.currentUser.userId);
@@ -105,14 +110,20 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
               <p>{word?.textExample}</p>
               <p>{word?.textExampleTranslate}</p>
               {word?.audioExample ? (
-                <ReactAudioPlayer src={`${EApiParametrs.baseUrl}/${word?.audioExample}`} controls />
+                <ReactAudioPlayerComponent
+                  src={`${EApiParametrs.baseUrl}/${word?.audioExample}`}
+                  controls
+                />
               ) : null}
             </div>
             <div className={styles.modal_example}>
               <p>{word?.textMeaning}</p>
               <p>{word?.textMeaningTranslate}</p>
               {word?.audioMeaning ? (
-                <ReactAudioPlayer src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`} controls />
+                <ReactAudioPlayerComponent
+                  src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`}
+                  controls
+                />
               ) : null}
             </div>
           </div>
