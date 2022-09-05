@@ -26,10 +26,9 @@ export const Modal = ({ setIsModalVisible, answerWrong, answerCorrect }: Props) 
     let url;
     if (e.target instanceof HTMLImageElement) {
       url = e.target.dataset.url;
+      const wordAudio = new Audio(`${EApiParametrs.baseUrl}/${url}`);
+      wordAudio.play();
     }
-
-    const wordAudio = new Audio(`${EApiParametrs.baseUrl}/${url}`);
-    wordAudio.play();
   };
 
   return (
