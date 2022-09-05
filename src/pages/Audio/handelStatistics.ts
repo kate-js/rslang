@@ -22,15 +22,15 @@ export const sendStatistics = (
   let newStatistics: IUserStatistics = userStatistic;
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
 
-  console.log('stats', userStatistic);
-  console.log({
-    userId,
-    userStatistic,
-    learnWordToday,
-    answerCorrectLength,
-    answerWrongLength,
-    allStricks
-  });
+  // console.log('stats', userStatistic);
+  // console.log({
+  //   userId,
+  //   userStatistic,
+  //   learnWordToday,
+  //   answerCorrectLength,
+  //   answerWrongLength,
+  //   allStricks
+  // });
 
   if (userStatistic.optional) {
     // if statistics already exist

@@ -79,6 +79,7 @@ export interface IWord {
   textMeaningTranslate: string,
   wordTranslate: string,
   correct?: boolean,
+  userWord?: UserWordsReponse;
 }
 
 export interface IState {
