@@ -20,7 +20,7 @@ import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
 import { setIsFromTutorial } from '../../store/sprintSlice';
-import {getStatistics, sendStatistics} from '../Sprint/handelStatistics'
+import {getStatistics, sendStatistics} from './handelStatistics'
 
 let currentPage = 0;
 let isPress = false;
@@ -29,9 +29,7 @@ const allStricks: number[] = [];
 let strick = 0;
 let userStatistic: IUserStatistics;
 
-// статистика
 // подгруз слов
-// поменять фетч UPD. DONE
 // все isFromTutorial надо проверить
 
 export const AudioComponent = () => {
@@ -82,7 +80,7 @@ export const AudioComponent = () => {
     volume: componentState.volumeSettings?.volume
   });
 
-  const [isModal, setIsmodal] = useState(true);
+  const [isModalOpened, setIsModalOpened] = useState(false);
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
@@ -112,23 +110,7 @@ export const AudioComponent = () => {
     };
   }, [componentState.wordsToShow]);
   
-  // console.log({
-  //   logined: isLogined, 
-  //   tutorial: isFromTutorial, 
-  //   page: tutorialNumberPage, 
-  //   level: groupLevel
-  // });
-
-  const handelGetStatistics = async (userId: string) => {
-    userStatistic = await getStatistics(userId);
-    console.log('userStatistic', userStatistic);
-  };
-
   useEffect(() => {
-
-    // перенести в конец
-    // dispatch(setIsFromTutorial(false));
-    
     // Это срабатывает по стандарту если убрать !
     if (!isFromTutorial) {
       currentPage = tutorialNumberPage
@@ -142,10 +124,25 @@ export const AudioComponent = () => {
     
     setGameWords();
     dispatch(setIsFromTutorial(false));
-
-
   }, [isLogined]);
 
+  useEffect(() => {
+    if (isModalOpened) {
+      sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
+    }
+    
+  }, [isModalOpened])
+
+  useEffect(() => {
+    if (componentState.answerCount === 20) {
+      setIsModalOpened(true);
+    }
+  })
+
+  const handelGetStatistics = async (userId: string) => {
+    userStatistic = await getStatistics(userId);
+    console.log('userStatistic', userStatistic);
+  };
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
     setComponentState(
@@ -209,9 +206,7 @@ export const AudioComponent = () => {
     return normalWords;
   }
 
-  useEffect(() => {
-    sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
-  }, [componentState.answerCount === 20])
+  
 
   // useEffect(() => {
   //   const addData = async () => {
@@ -238,11 +233,14 @@ export const AudioComponent = () => {
     
     // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
     if (isFromTutorial && isLogined) {
-        userWords = await getAggregatedWords(10, 5, true);
+      console.log(1);
+        userWords = await getAggregatedWords(10, 4, true);
         words = userWords;
     } else if (isLogined) {
         userWords = await getAggregatedWords(17, 5, false);
         words = userWords;
+        console.log(2);
+
     } else {
       words = await getWords(11, 5); 
     }
@@ -564,7 +562,7 @@ export const AudioComponent = () => {
   if (componentState.appState?.isLoaded) {
       return (
         <div className={styles.audio}>
-          {componentState.answerCount === 20 ? showStatistics() : showBody()}
+          {isModalOpened ? showStatistics() : showBody()}
         </div>
       ) 
     } else {
