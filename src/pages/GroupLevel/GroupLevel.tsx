@@ -10,8 +10,8 @@ import { WordResponse } from '../../utils/constants';
 import { api } from '../../utils/Api';
 import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
-import { setLevel, setPage } from './GroupPage';
 import { Levels } from '../Tutorial/Levels/Levels';
+import { setIsFromTutorial, setLevel, setPage } from '../../store/levelChoseSlice';
 
 export const GroupLevel = () => {
   const dispatch = useDispatch();
@@ -28,6 +28,7 @@ export const GroupLevel = () => {
 
   useEffect(() => {
     dispatch(setLevel(level));
+    dispatch(setIsFromTutorial(true));
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
 

@@ -259,8 +259,8 @@ class Api implements IApi {
       withCredentials: true,
       headers: { ['Content-Type']: 'application/json', 'Authorization': `Bearer ${token}`, 'Accept': 'application/json',},
     };
-  
-      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?filter={"userWord.optional.${item}":true}`, fetchConfig);
+    // aggregatedWords?filter={"userWord.optional.${item}":true}
+      const res = await fetch(`${this.baseUrl}/users/${userId}/statistics`, fetchConfig);
       if (res.status !== 200) {
         throw new Error(`There was an error with status code ${res.status}`)
       }
