@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setLevel } from '../../store/levelChoseSlice';
+import { setIsFromTutorial, setLevel } from '../../store/levelChoseSlice';
 import { Link } from 'react-router-dom';
 import styles from './Games.module.css';
 import { LangLevel } from './LangLevel';
@@ -7,6 +7,7 @@ import { NewGame } from './NewGame';
 import SprintImage from './assets/sprint.jpeg';
 import AudioImage from './assets/audio.png';
 import { ERoutes } from '../../utils/constants';
+import { useEffect } from 'react';
 
 const data = [
   {
@@ -43,13 +44,16 @@ const data = [
 
 export const Games = () => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setIsFromTutorial(false));
+  })
 
   const handelLevelChose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     let level;
     if (e.target instanceof HTMLInputElement) {
       level = e.target.value;
+      dispatch(setLevel(level));
     }
-    dispatch(setLevel(level));
   };
 
   return (

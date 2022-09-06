@@ -39,7 +39,7 @@ import { getStatistics, sendStatistics } from './handelStatistics'
 
 let currentPage = 0;
 let isPress = false;
-let learnWordToday = 0;
+let newWords = 0;
 const allStricks: number[] = [];
 let strick = 0;
 let userStatistic: IUserStatistics;
@@ -82,13 +82,15 @@ export const AudioComponent = () => {
     isAnswered: false,
     isWelcomeScreen: true,
   });
+  const dispatch = useDispatch();
+
   const [userWords, setUserWords] = useState<WordResponse[]>();
-  const [isAddLoaded, setIsAddLoaded] = useState<boolean>(false);
+  // const [isAddLoaded, setIsAddLoaded] = useState<boolean>(false);
 
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
   const [wrongAnswers, setwrongAnswers] = useState<IWord[]>([]);
   const [serverData, setServerData] = useState<IUserWord>();
-  const dispatch = useDispatch();
+  const [isModalOpened, setIsModalOpened] = useState(false);
 
   const [playCorrect] = useSound(correct, {
     volume: componentState.volumeSettings?.volume
@@ -97,9 +99,8 @@ export const AudioComponent = () => {
     volume: componentState.volumeSettings?.volume
   });
 
-  const [isModalOpened, setIsModalOpened] = useState(false);
-
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
+  console.log(isFromTutorial);
   const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
 
@@ -110,7 +111,7 @@ export const AudioComponent = () => {
 
   useEffect(() => {
     // Это срабатывает по стандарту если убрать !
-    if (!isFromTutorial) {
+    if (isFromTutorial) {
       currentPage = tutorialNumberPage
     } else {
       currentPage = getRandomIntInclusive(0, 29);
@@ -127,18 +128,16 @@ export const AudioComponent = () => {
   useEffect(() => {
     const addData = async () => {
       if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
-        currentPage = currentPage - 1;
-        const newWords = await getAggregatedWords(currentPage, 4, isFromTutorial ? true : false)
-        // console.log('подгруженные слова', newWords);
+        const newPage = currentPage - 1;
+        const newWords = await getAggregatedWords(newPage, LEVELS[groupLevel], isFromTutorial ? true : false)
 
         const combinedArray = [...componentState.appState.words, ...newWords];
-        // console.log('итого', combinedArray);
 
         const newState = {
           appState:  { isLoaded: true, words: combinedArray },
           possibleAnswers : combinedArray,
         }
-        setIsAddLoaded(true);
+        // setIsAddLoaded(true);
     
         updateStateByKeys(newState);
       }
@@ -169,7 +168,7 @@ export const AudioComponent = () => {
   
   useEffect(() => {
     if (isModalOpened && isLogined) {
-      sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
+      sendStatistics(userId, userStatistic, newWords, correctAnswers.length, wrongAnswers.length, allStricks)
     }
   }, [isModalOpened])
 
@@ -364,7 +363,7 @@ export const AudioComponent = () => {
     
     if (!(componentState.answer as IWord).userWord) {
       // console.log('new word +1')
-      learnWordToday = learnWordToday + 1;
+      newWords = newWords + 1;
     }
 
     const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, isCorrect];
