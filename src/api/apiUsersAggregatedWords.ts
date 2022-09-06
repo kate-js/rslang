@@ -134,6 +134,6 @@ export interface IApiAggregated {
 export interface IQueryAllAggregated {
   group: number | string;
   page: number | string;
-  wordsPerPage: number;
+  wordsPerPage: number | string;
   filter: string;
 }
