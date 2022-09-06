@@ -1,5 +1,5 @@
 import { useDispatch } from 'react-redux';
-import { setLevel } from '../../store/levelChoseSlice';
+import { setLevel, setIsFromTutorial } from '../../store/levelChoseSlice';
 import { Link } from 'react-router-dom';
 import styles from './Games.module.css';
 import { LangLevel } from './LangLevel';
@@ -52,11 +52,15 @@ export const Games = () => {
     dispatch(setLevel(level));
   };
 
+  const handelGameClick = () => {
+    dispatch(setIsFromTutorial(false));
+  };
+
   return (
     <div className={styles.games}>
       <h1>Выбор игры</h1>
       <div className={styles.wrapper}>
-        <Link to={`${ERoutes.games}${ERoutes.sprint}`}>
+        <Link to={`${ERoutes.games}${ERoutes.sprint}`} onClick={handelGameClick}>
           <NewGame name="Спринт" img={SprintImage} />
         </Link>
 
@@ -66,7 +70,7 @@ export const Games = () => {
           })}
         </div>
 
-        <Link to={`${ERoutes.games}${ERoutes.audio}`}>
+        <Link to={`${ERoutes.games}${ERoutes.audio}`} onClick={handelGameClick}>
           <NewGame name="Аудиовызов" img={AudioImage} />
         </Link>
       </div>
