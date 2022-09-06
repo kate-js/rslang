@@ -8,6 +8,7 @@ export const getStatistics = async (userId: string) => {
   } catch (err) {
     console.log(err);
   }
+  console.log(stats);
   return stats;
 };
 
@@ -19,39 +20,34 @@ export const sendStatistics = (
   answerWrongLength: number,
   allStricks: number[]
 ) => {
-  let newStatistics: IUserStatistics = userStatistic;
+  let newStatistics: IUserStatistics = {...userStatistic};
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
-
-  // console.log('stats', userStatistic);
-  console.log({
-    userId,
-    newStatistics,
-    learnWordToday,
-    answerCorrectLength,
-    answerWrongLength,
-    allStricks
-  });
 
   if (userStatistic?.optional) {
     // if statistics already exist
 
     // create learnNewWordToday
-    const learnNewWordPerDay = newStatistics.optional.audio.learnNewWordPerDay;
-    const learnNewWordToday = learnNewWordPerDay[learnNewWordPerDay.length - 1];
+    const serverNewWordPerDay = userStatistic.optional.audio.learnNewWordPerDay;
+    let newObj = serverNewWordPerDay.pop();
 
-    if (learnNewWordToday.date === currentDate) {
-      learnNewWordToday.counter += learnWordToday;
+    if (newObj?.date === currentDate) {
+      newObj.counter += learnWordToday;
+      console.log('after',{
+        date: newObj.date,
+        counter: newObj.counter
+      })
+      serverNewWordPerDay.push(newObj);
     } else {
-      learnNewWordPerDay.push({
+      serverNewWordPerDay.push({
         date: currentDate,
         counter: learnWordToday
       });
     }
 
-    // create percentRigth(Works good)
+    // create percentRigth (Works good)
     const percentRigth = newStatistics.optional.audio.percentRigth;
-    percentRigth.right = percentRigth.right + answerCorrectLength;
-    percentRigth.wrong = percentRigth.wrong + answerWrongLength;
+    percentRigth.right += answerCorrectLength;
+    percentRigth.wrong += answerWrongLength;
 
     // create longestStrick
     const currentMaxStrick = Math.max(...allStricks);
@@ -64,6 +60,7 @@ export const sendStatistics = (
 
     newStatistics.optional.audio.learnNewWordPerDay[0].date = currentDate;
     newStatistics.optional.audio.learnNewWordPerDay[0].counter += learnWordToday;
+    
     // create percentRigth
     const percentRigth = newStatistics.optional.audio.percentRigth;
     percentRigth.right += answerCorrectLength;
@@ -72,9 +69,16 @@ export const sendStatistics = (
     // create longestStrick
     newStatistics.optional.audio.longestStrick = Math.max(...allStricks);
   }
-  // console.log('newStatistics', newStatistics);
 
   try {
+    console.log({
+      userId,
+      newStatistics,
+      learnWordToday,
+      answerCorrectLength,
+      answerWrongLength,
+      allStricks
+    });
     apiUsersStatistic.setNewStatistics(userId, newStatistics);
   } catch (err) {
     console.log(err);

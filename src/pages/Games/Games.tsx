@@ -7,6 +7,7 @@ import { NewGame } from './NewGame';
 import SprintImage from './assets/sprint.jpeg';
 import AudioImage from './assets/audio.png';
 import { ERoutes } from '../../utils/constants';
+import { useEffect } from 'react';
 
 const data = [
   {
@@ -43,6 +44,9 @@ const data = [
 
 export const Games = () => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(setIsFromTutorial(false));
+  })
 
   const handelLevelChose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
     let level;
