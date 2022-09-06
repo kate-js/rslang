@@ -23,14 +23,14 @@ export const sendStatistics = (
   const currentDate = new Date().toLocaleString('en-US', optionsDate);
 
   // console.log('stats', userStatistic);
-  // console.log({
-  //   userId,
-  //   userStatistic,
-  //   learnWordToday,
-  //   answerCorrectLength,
-  //   answerWrongLength,
-  //   allStricks
-  // });
+  console.log({
+    userId,
+    newStatistics,
+    learnWordToday,
+    answerCorrectLength,
+    answerWrongLength,
+    allStricks
+  });
 
   if (userStatistic.optional) {
     // if statistics already exist
@@ -48,7 +48,7 @@ export const sendStatistics = (
       });
     }
 
-    // create percentRigth
+    // create percentRigth(Works good)
     const percentRigth = newStatistics.optional.audio.percentRigth;
     percentRigth.right = percentRigth.right + answerCorrectLength;
     percentRigth.wrong = percentRigth.wrong + answerWrongLength;
