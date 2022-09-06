@@ -7,6 +7,8 @@ import B2 from './assets/b2.png';
 import Hard from './assets/hard.png';
 import { cardTutorial } from '../utils/constants';
 import image from '../assets/member-photo.png';
+import imgIvan from './assets/ivan.jpg';
+import imgKate from './assets/kate.jpg';
 
 export const Description: cardTutorial[] = [
   {
@@ -68,27 +70,24 @@ export const Description: cardTutorial[] = [
 
 export const membersData = [
   {
-    img: image,
+    img: imgIvan,
     name: 'Иван Потапов',
     role: 'Team Lead',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. ',
+    description: 'Реализовал авторизацию, игру спринт.',
     link: 'https://github.com/ivnpotapov'
   },
   {
-    img: image,
+    img: imgKate,
     name: 'Екатерина Вакульская',
     role: 'Developer',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    description: 'Реализовала разделы учебник, главную страницу, страницу статистики.',
     link: 'https://github.com/kate-js'
   },
   {
     img: image,
     name: 'Глеб Сидоренко',
     role: 'Developer',
-    description:
-      'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.',
+    description: 'Реализовал раздел о команде, страницу выбора игры, игру аудиовызов.',
     link: 'https://github.com/glsidorenko'
   }
 ];

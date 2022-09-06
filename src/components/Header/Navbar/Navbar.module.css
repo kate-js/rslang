@@ -8,6 +8,7 @@
 }
 
 .link {
+  cursor: pointer;
   font-weight: 700;
   text-decoration: none;
   color: black;
