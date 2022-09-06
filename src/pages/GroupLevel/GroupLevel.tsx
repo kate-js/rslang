@@ -44,6 +44,7 @@ export const GroupLevel = () => {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
     setNumberPage(page);
     dispatch(setPage(page));
+    dispatch(setLevel(level));
   }
 
   async function getHardWords() {
@@ -62,7 +63,6 @@ export const GroupLevel = () => {
   async function changeModal(item: WordResponse) {
     setModal(!modal);
     setWords(item);
-    dispatch(setLevel(level));
   }
 
   async function getWords(userId: string, token: string) {
