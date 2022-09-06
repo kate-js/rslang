@@ -25,10 +25,8 @@ export const sendWordCurrentData = async (
       if (difficulty === 'hard' && counterCorrectAnswer > 4) {
         difficulty = 'easy';
         learningWord = true;
-        newLearnWordToday += 1;
       } else if (counterCorrectAnswer > 2) {
         learningWord = true;
-        newLearnWordToday += 1;
       }
     }
 
@@ -37,6 +35,7 @@ export const sendWordCurrentData = async (
     if (isCorrectAnswer) {
       counterCorrectAnswer = 1;
     }
+    newLearnWordToday += 1;
   }
 
   const wordData: IUserWord = {
