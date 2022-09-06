@@ -45,11 +45,12 @@ export const Games = () => {
   const dispatch = useDispatch();
 
   const handelLevelChose = (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
+    console.log('handelLevelChose');
     let level;
     if (e.target instanceof HTMLInputElement) {
       level = e.target.value;
+      dispatch(setLevel(level));
     }
-    dispatch(setLevel(level));
   };
 
   const handelGameClick = () => {

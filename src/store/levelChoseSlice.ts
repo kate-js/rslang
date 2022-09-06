@@ -17,7 +17,7 @@ const levelChose = createSlice({
       state.level = actions.payload;
     },
     setIsFromTutorial: (state, actions) => {
-      state.level = actions.payload;
+      state.isFromTutorial = actions.payload;
     }
   }
 });
