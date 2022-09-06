@@ -48,8 +48,8 @@ export const Games = () => {
     let level;
     if (e.target instanceof HTMLInputElement) {
       level = e.target.value;
+      dispatch(setLevel(level));
     }
-    dispatch(setLevel(level));
   };
 
   const handelGameClick = () => {
