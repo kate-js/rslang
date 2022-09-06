@@ -63,6 +63,56 @@ export interface HardWordsReponse {
   paginatedResults: WordResponse[] | null;
 }
 
+export interface IWord {
+  id: string,
+  group: number | string,
+  page: number | string,
+  word: string,
+  image: string,
+  audio: string,
+  audioMeaning: string,
+  audioExample: string,
+  textMeaning: string,
+  textExample: string,
+  transcription: string,
+  textExampleTranslate: string,
+  textMeaningTranslate: string,
+  wordTranslate: string,
+  correct?: boolean,
+  userWord?: UserWordsReponse;
+}
+
+export interface IState {
+  isLoaded: boolean,
+  // words: IWord[];
+  words: WordResponse[];
+}
+
+export interface IVolumeSettings {
+  volume: number,
+  isMuted: boolean,
+}
+
+export interface IComponentState {
+  answerCount?: number,
+  volumeSettings?: IVolumeSettings,
+  possibleAnswers?: WordResponse[],
+  answer?: IWord,
+  answers?: IWord[],
+  audio?: HTMLAudioElement,
+  wordsToShow?: WordResponse[],
+  appState?: IState,
+  isAnswered?: boolean,
+  isWelcomeScreen?: boolean,
+}
+
+export type keys = 'appState' | 'isAnswered' | 'wordsToShow' | 'answer' | 'audio' | "answerCount" | "volumeSettings" | 'possibleAnswers' | 'isWelcomeScreen';
+
+export type KeyboardKey = {
+  key: string;
+}
+
+
 export const POINT_INCREMENT_BY_LEVEL = [10, 20, 40, 80];
 export const CIRCLE = [0, 1, 2];
 

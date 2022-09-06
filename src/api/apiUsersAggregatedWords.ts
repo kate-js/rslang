@@ -72,7 +72,7 @@ class ApiAggregatedWords implements IApiAggregated {
 
     const res = await fetch(
       `${this.baseUrl}/users/${userId}/aggregatedWords?${group}${
-        group ? '&' : ''
+      group ? '&' : ''
       }${page}&${wordsPerPage}&${filter}`,
       fetchConfig
     );
@@ -132,8 +132,8 @@ export interface IApiAggregated {
 }
 
 export interface IQueryAllAggregated {
-  group: string;
-  page: string;
-  wordsPerPage: string;
+  group: number | string;
+  page: number | string;
+  wordsPerPage: number | string;
   filter: string;
 }
