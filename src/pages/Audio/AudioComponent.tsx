@@ -34,7 +34,7 @@ import unmuteImg from './assets/volume.png'
 import exit from './assets/close.png'
 import fullscreen from './assets/fullscreen.svg'
 import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
-import { setIsFromTutorial } from '../../store/sprintSlice';
+import { setIsFromTutorial } from '../../store/levelChoseSlice';
 import { getStatistics, sendStatistics } from './handelStatistics'
 
 let currentPage = 0;
@@ -43,9 +43,6 @@ let newWords = 0;
 const allStricks: number[] = [];
 let strick = 0;
 let userStatistic: IUserStatistics;
-
-// подгруз слов
-// все isFromTutorial надо проверить
 
 export const AudioComponent = () => {
   const [componentState, setComponentState] = useState<IComponentState>({
@@ -100,7 +97,6 @@ export const AudioComponent = () => {
   });
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
-  console.log(isFromTutorial);
   const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
 
@@ -108,9 +104,7 @@ export const AudioComponent = () => {
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
   const navigate = useNavigate();
 
-
   useEffect(() => {
-    // Это срабатывает по стандарту если убрать !
     if (isFromTutorial) {
       currentPage = tutorialNumberPage
     } else {
@@ -122,7 +116,6 @@ export const AudioComponent = () => {
     }
     
     setGameWords();
-    dispatch(setIsFromTutorial(false));
   }, [isLogined]);
 
   useEffect(() => {
@@ -138,7 +131,6 @@ export const AudioComponent = () => {
           possibleAnswers : combinedArray,
         }
         // setIsAddLoaded(true);
-    
         updateStateByKeys(newState);
       }
     }
@@ -180,7 +172,6 @@ export const AudioComponent = () => {
 
   const handelGetStatistics = async (userId: string) => {
     userStatistic = await getStatistics(userId);
-    // console.log(userStatistic);
   };
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
@@ -244,8 +235,6 @@ export const AudioComponent = () => {
       return wordObj
     });
 
-    console.log(aggregatedWords);
-
     return normalWords;
   }
 
@@ -255,12 +244,13 @@ export const AudioComponent = () => {
     let words: WordResponse[] = []; 
     let userWords: WordResponse[] = [];
     
-    // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
     if (isFromTutorial && isLogined) {
       userWords = await getAggregatedWords(currentPage, LEVELS[groupLevel], true);
       words = userWords;
+
     } else if (isLogined) {
       userWords = await getAggregatedWords(currentPage, LEVELS[groupLevel], false);
+
       words = userWords;
     } else {
       words = await getWords(currentPage, LEVELS[groupLevel]); 
@@ -271,16 +261,12 @@ export const AudioComponent = () => {
       // console.log('мало');
     }
 
-    // console.log({
-    //   words,
-    //   userWords,
-    // });
-    
     const newState = {
       appState:  { isLoaded: true, words },
       possibleAnswers : words,
     }
 
+    dispatch(setIsFromTutorial(false));
     setUserWords(userWords);
     updateStateByKeys(newState);
   }
@@ -295,7 +281,6 @@ export const AudioComponent = () => {
 
     if (isLogined) {
       await getWordCurrentData(userId, answer.id);
-      // setServerData(data);
     }
 
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
@@ -346,7 +331,6 @@ export const AudioComponent = () => {
     let learningWord = false;
     let counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer;
     let difficulty = (serverData as IUserWord).difficulty;
-    // console.log(componentState.answer);
 
     if (isCorrect) {
       if (difficulty === 'hard' && counterCorrectAnswer > 4) {
@@ -362,7 +346,6 @@ export const AudioComponent = () => {
     }
     
     if (!(componentState.answer as IWord).userWord) {
-      // console.log('new word +1')
       newWords = newWords + 1;
     }
 
@@ -376,8 +359,6 @@ export const AudioComponent = () => {
         answerOrder: { answerArray: answerOrder }
       }
     };
-
-    // console.log('data', wordData)
 
     try {
       if ((serverData as IUserWord).optional.answerOrder.answerArray.length) {
@@ -411,17 +392,9 @@ export const AudioComponent = () => {
       strick = 0;
     }
 
-    // console.log('strick', strick);
-    // console.log('strick-arr', allStricks)
-
-
     if (isLogined) {
-      // отправлять статистику
       sendWordCurrentData(userId, (componentState.answer?.id as string), (componentState.answer?.correct as boolean));
     }
-
-    // const x = document.querySelector(styles.correct);
-    // document.querySelector(styles.correct)?.classList.remove('correct');
     
     const state = {
       isAnswered: true,
@@ -530,7 +503,6 @@ export const AudioComponent = () => {
           </div>
           <div className={stylesModal.links_wrap}>
             <Link 
-              // onClick={} 
               to={ERoutes.games} 
               className={stylesModal.link}>
               Вернуться к выбору игры
@@ -602,7 +574,6 @@ export const AudioComponent = () => {
           <button 
             id={styles.result} 
             onClick={(e: React.MouseEvent) => skipGuess(e)}
-            // data-id='wrong'
             >
               {componentState.isAnswered ? '⟶' : 'Не знаю'}
           </button>
