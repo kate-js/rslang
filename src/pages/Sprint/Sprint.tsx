@@ -55,7 +55,7 @@ export const Sprint = () => {
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
   const fromTutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
-  console.log('groupLevel', groupLevel);
+
   const currentUser = useSelector((state: TState) => state.auth.currentUser);
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
   const isAuthLoading = useSelector((state: TState) => state.auth.isAuthLoading);
@@ -74,7 +74,6 @@ export const Sprint = () => {
 
   //////////// get current words list
   const getCurrentWordsList = async (numberPage: number, isLoginedChanges = false) => {
-    console.log('getCurrentWordsList groupLevel', groupLevel);
     isLoadingAdditionalWordsList = true;
     let words = [] as WordResponseWithData[];
     try {
@@ -101,7 +100,6 @@ export const Sprint = () => {
   };
 
   const getAggregatedWords = async (numberPage: number) => {
-    console.log('getAggregatedWords groupLevel', groupLevel);
     let resWords = [] as WordResponseWithData[];
     const query = {
       group: ``,
