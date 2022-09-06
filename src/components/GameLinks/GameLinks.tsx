@@ -17,7 +17,7 @@ export const GameLinks = ({ learnPage }: { learnPage: boolean }) => {
   return (
     <div className={styles.game_section}>
       {data.map((game, index) => (
-        <Link to={game.to} className={style}>
+        <Link to={game.to} className={style} key={index}>
           <div className={learnPage ? styles.game_image_disabled : styles.game_item} key={index}>
             <p>{game.name}</p>
             <img
