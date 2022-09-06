@@ -22,12 +22,11 @@ export const GroupLevel = () => {
   const [words, setWords] = useState<WordResponse>();
   const [learnPage, setLearnPage] = useState<boolean>(false);
 
-  const isLodined = useSelector((state: TState) => state.auth.isLogined);
+  const isLogined = useSelector((state: TState) => state.auth.isLogined);
   const token: string = useSelector((state: TState) => state.auth.currentUser.token);
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
 
   useEffect(() => {
-    dispatch(setLevel(level));
     dispatch(setIsFromTutorial(true));
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
@@ -45,6 +44,7 @@ export const GroupLevel = () => {
     const page = Number(JSON.parse(localStorage.getItem('numberPage') as string));
     setNumberPage(page);
     dispatch(setPage(page));
+    dispatch(setLevel(level));
   }
 
   async function getHardWords() {
@@ -74,7 +74,6 @@ export const GroupLevel = () => {
 
     try {
       const response = await api.fetchWords({ userId, token, group, numberPage });
-      console.log(response);
       await setListWords(response);
       checkLearning(response);
     } catch (error) {
@@ -110,7 +109,7 @@ export const GroupLevel = () => {
   return (
     <div className={styles.page}>
       {level == 'HARD WORDS' ? (
-        isLodined ? (
+        isLogined ? (
           <>
             <div className={styles.title}>
               <div className={styles.title_block}>
