@@ -27,7 +27,6 @@ export const GroupLevel = () => {
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
 
   useEffect(() => {
-    dispatch(setLevel(level));
     dispatch(setIsFromTutorial(true));
     level !== 'HARD WORDS' ? getLocaleNumberPage() : getHardWords();
   }, []);
@@ -63,6 +62,7 @@ export const GroupLevel = () => {
   async function changeModal(item: WordResponse) {
     setModal(!modal);
     setWords(item);
+    dispatch(setLevel(level));
   }
 
   async function getWords(userId: string, token: string) {
