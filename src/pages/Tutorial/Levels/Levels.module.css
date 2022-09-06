@@ -18,8 +18,6 @@
   border: 2px solid gray ;
   border-radius: 50%;
   background-color: rgba(2, 57, 134, 0.8);
-  width: 70px;
-  height: 70px;
   display: flex;
   justify-content: space-around;
   align-items: center;
