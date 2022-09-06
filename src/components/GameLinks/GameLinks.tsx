@@ -17,16 +17,16 @@ export const GameLinks = ({ learnPage }: { learnPage: boolean }) => {
   return (
     <div className={styles.game_section}>
       {data.map((game, index) => (
-        <div className={learnPage ? styles.game_image_disabled : styles.game_item} key={index}>
-          <p>{game.name}</p>
-          <Link to={game.to} className={style}>
+        <Link to={game.to} className={style}>
+          <div className={learnPage ? styles.game_image_disabled : styles.game_item} key={index}>
+            <p>{game.name}</p>
             <img
               src={game.link}
               alt="`image-link to game ${game.alt}`"
               className={styles.game_image}
             />
-          </Link>
-        </div>
+          </div>
+        </Link>
       ))}
     </div>
   );
