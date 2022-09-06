@@ -295,7 +295,7 @@ export const Sprint = () => {
   };
 
   useEffect(() => {
-    if (isModalVisible) {
+    if (isModalVisible && isLogined) {
       sendStatistics(
         currentUser.userId,
         userStatistic,
