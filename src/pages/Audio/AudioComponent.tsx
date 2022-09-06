@@ -22,7 +22,8 @@ import {
   EApiParametrs, 
   IUserWord, 
   initialUserWordData, 
-  IUserStatistics 
+  IUserStatistics, 
+  WordWithDataResponse
 } from '../../api/apiConstants';
 import { LEVELS } from '../../data/Data';
 import correct from './assets/sounds/correct.mp3'
@@ -81,7 +82,7 @@ export const AudioComponent = () => {
     isAnswered: false,
     isWelcomeScreen: true,
   });
-  const [userWords, setUserWords] = useState<IUserWord[]>();
+  const [userWords, setUserWords] = useState<WordResponse[]>();
   const [isAddLoaded, setIsAddLoaded] = useState<boolean>(false);
 
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
@@ -234,13 +235,17 @@ export const AudioComponent = () => {
     const aggregatedWords = (await apiAggregatedWords.getAllAggregatedWords(
       userId,
       query
-    ));
+    )) as unknown;
 
-    const normalWords = aggregatedWords[0].paginatedResults.map((word: WordResponse) => {
+    const wordsWithData = aggregatedWords as WordWithDataResponse[];
+
+    const normalWords = wordsWithData[0].paginatedResults.map((word: WordResponse) => {
       const wordObj = {...word};
       wordObj.id = word._id;
       return wordObj
     });
+
+    console.log(aggregatedWords);
 
     return normalWords;
   }
@@ -248,8 +253,8 @@ export const AudioComponent = () => {
   const setGameWords = async () => {
     
     // make fetch request using page and level
-    let words = []; 
-    let userWords: IUserWord[] = [];
+    let words: WordResponse[] = []; 
+    let userWords: WordResponse[] = [];
     
     // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
     if (isFromTutorial && isLogined) {
@@ -285,7 +290,7 @@ export const AudioComponent = () => {
     // to reset keyboard status
     isPress = false;
     
-    let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice() || [];
+    let possibleAnswers: WordResponse[] = componentState.possibleAnswers?.slice() || [];
     
     const answer = possibleAnswers[getRandomIntInclusive(0, possibleAnswers.length - 1)];
 
@@ -295,7 +300,7 @@ export const AudioComponent = () => {
     }
 
     possibleAnswers = possibleAnswers.filter((word) => word !== answer);
-    const wordsWithoutAnswer = componentState.appState?.words.filter((word: IWord) => word !== answer);
+    const wordsWithoutAnswer = componentState.appState?.words.filter((word: WordResponse) => word !== answer);
     
     const wordsToCreateArray = shuffleArray(wordsWithoutAnswer || []).slice(0, 4);
     wordsToCreateArray.splice(getRandomIntInclusive(0, 4), 0, answer);
@@ -330,11 +335,11 @@ export const AudioComponent = () => {
     return false;
   }
 
-  const skipGuess = ({target}) => {
+  const skipGuess = (e: React.MouseEvent) => {
     if (componentState.isAnswered) {
       handleWords();
     } else {
-      checkGuess(target as HTMLButtonElement);
+      checkGuess(e.target as HTMLButtonElement);
     }
   }
 
@@ -597,7 +602,7 @@ export const AudioComponent = () => {
 
           <button 
             id={styles.result} 
-            onClick={(e) => skipGuess(e)}
+            onClick={(e: React.MouseEvent) => skipGuess(e)}
             // data-id='wrong'
             >
               {componentState.isAnswered ? '⟶' : 'Не знаю'}

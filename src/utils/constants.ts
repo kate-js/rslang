@@ -65,8 +65,8 @@ export interface HardWordsReponse {
 
 export interface IWord {
   id: string,
-  group: number,
-  page: number,
+  group: number | string,
+  page: number | string,
   word: string,
   image: string,
   audio: string,
@@ -84,7 +84,8 @@ export interface IWord {
 
 export interface IState {
   isLoaded: boolean,
-  words: IWord[];
+  // words: IWord[];
+  words: WordResponse[];
 }
 
 export interface IVolumeSettings {
@@ -95,11 +96,11 @@ export interface IVolumeSettings {
 export interface IComponentState {
   answerCount?: number,
   volumeSettings?: IVolumeSettings,
-  possibleAnswers?: IWord[],
+  possibleAnswers?: WordResponse[],
   answer?: IWord,
   answers?: IWord[],
   audio?: HTMLAudioElement,
-  wordsToShow?: IWord[],
+  wordsToShow?: WordResponse[],
   appState?: IState,
   isAnswered?: boolean,
   isWelcomeScreen?: boolean,
