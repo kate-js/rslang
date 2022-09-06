@@ -32,7 +32,7 @@ export const sendStatistics = (
     allStricks
   });
 
-  if (userStatistic.optional) {
+  if (userStatistic?.optional) {
     // if statistics already exist
 
     // create learnNewWordToday

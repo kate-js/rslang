@@ -128,10 +128,10 @@ export const AudioComponent = () => {
       if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
         currentPage = currentPage - 1;
         const newWords = await getAggregatedWords(currentPage, 4, isFromTutorial ? true : false)
-        console.log('подгруженные слова', newWords);
+        // console.log('подгруженные слова', newWords);
 
         const combinedArray = [...componentState.appState.words, ...newWords];
-        console.log('итого', combinedArray);
+        // console.log('итого', combinedArray);
 
         const newState = {
           appState:  { isLoaded: true, words: combinedArray },
@@ -180,7 +180,7 @@ export const AudioComponent = () => {
 
   const handelGetStatistics = async (userId: string) => {
     userStatistic = await getStatistics(userId);
-    console.log(userStatistic);
+    // console.log(userStatistic);
   };
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
@@ -264,13 +264,13 @@ export const AudioComponent = () => {
 
     // если недостаточно слов, то дозапрашиваем слова
     if (words.length < 20) {
-      console.log('мало');
+      // console.log('мало');
     }
 
-    console.log({
-      words,
-      userWords,
-    });
+    // console.log({
+    //   words,
+    //   userWords,
+    // });
     
     const newState = {
       appState:  { isLoaded: true, words },
@@ -342,7 +342,7 @@ export const AudioComponent = () => {
     let learningWord = false;
     let counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer;
     let difficulty = (serverData as IUserWord).difficulty;
-    console.log(componentState.answer);
+    // console.log(componentState.answer);
 
     if (isCorrect) {
       if (difficulty === 'hard' && counterCorrectAnswer > 4) {
@@ -358,7 +358,7 @@ export const AudioComponent = () => {
     }
     
     if (!(componentState.answer as IWord).userWord) {
-      console.log('new word +1')
+      // console.log('new word +1')
       learnWordToday = learnWordToday + 1;
     }
 
@@ -373,7 +373,7 @@ export const AudioComponent = () => {
       }
     };
 
-    console.log('data', wordData)
+    // console.log('data', wordData)
 
     try {
       if ((serverData as IUserWord).optional.answerOrder.answerArray.length) {
@@ -407,8 +407,8 @@ export const AudioComponent = () => {
       strick = 0;
     }
 
-    console.log('strick', strick);
-    console.log('strick-arr', allStricks)
+    // console.log('strick', strick);
+    // console.log('strick-arr', allStricks)
 
 
     if (isLogined) {
