@@ -82,6 +82,8 @@ export const AudioComponent = () => {
     isWelcomeScreen: true,
   });
   const [userWords, setUserWords] = useState<IUserWord[]>();
+  const [isAddLoaded, setIsAddLoaded] = useState<boolean>(false);
+
   const [correctAnswers, setcorrectAnswers] = useState<IWord[]>([]);
   const [wrongAnswers, setwrongAnswers] = useState<IWord[]>([]);
   const [serverData, setServerData] = useState<IUserWord>();
@@ -104,6 +106,46 @@ export const AudioComponent = () => {
   const userId: string = useSelector((state: TState) => state.auth.currentUser.userId);
   const navigate = useNavigate();
 
+
+  useEffect(() => {
+    // Это срабатывает по стандарту если убрать !
+    if (!isFromTutorial) {
+      currentPage = tutorialNumberPage
+    } else {
+      currentPage = getRandomIntInclusive(0, 29);
+    }
+
+    if (isLogined) {
+      handelGetStatistics(userId);
+    }
+    
+    setGameWords();
+    dispatch(setIsFromTutorial(false));
+  }, [isLogined]);
+
+  useEffect(() => {
+    const addData = async () => {
+      if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
+        currentPage = currentPage - 1;
+        const newWords = await getAggregatedWords(currentPage, 4, isFromTutorial ? true : false)
+        console.log('подгруженные слова', newWords);
+
+        const combinedArray = [...componentState.appState.words, ...newWords];
+        console.log('итого', combinedArray);
+
+        const newState = {
+          appState:  { isLoaded: true, words: combinedArray },
+          possibleAnswers : combinedArray,
+        }
+        setIsAddLoaded(true);
+    
+        updateStateByKeys(newState);
+      }
+    }
+
+    addData();
+  })
+
   useEffect(() => {
     if (!componentState.isWelcomeScreen) {
       handleWords();
@@ -125,22 +167,6 @@ export const AudioComponent = () => {
   }, [componentState.wordsToShow]);
   
   useEffect(() => {
-    // Это срабатывает по стандарту если убрать !
-    if (!isFromTutorial) {
-      currentPage = tutorialNumberPage
-    } else {
-      currentPage = getRandomIntInclusive(0, 29);
-    }
-
-    if (isLogined) {
-      handelGetStatistics(userId);
-    }
-    
-    setGameWords();
-    dispatch(setIsFromTutorial(false));
-  }, [isLogined]);
-
-  useEffect(() => {
     if (isModalOpened && isLogined) {
       sendStatistics(userId, userStatistic, learnWordToday, correctAnswers.length, wrongAnswers.length, allStricks)
     }
@@ -154,6 +180,7 @@ export const AudioComponent = () => {
 
   const handelGetStatistics = async (userId: string) => {
     userStatistic = await getStatistics(userId);
+    console.log(userStatistic);
   };
 
   function updateStateByKey(key: keys, value: number | boolean | IWord | IWord[] | HTMLAudioElement | IVolumeSettings | IState) {
@@ -218,23 +245,6 @@ export const AudioComponent = () => {
     return normalWords;
   }
 
-  // useEffect(() => {
-  //   const addData = async () => {
-  //     if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
-  //       const newWords = await getAggregatedWords(17 - 1, 5)
-  //       const combinedArray = [...componentState.appState.words, ...newWords];
-
-  //       const newState = {
-  //         appState:  { isLoaded: true, words: combinedArray },
-  //         possibleAnswers : combinedArray,
-  //       }
-    
-  //       updateStateByKeys(newState);
-  //     }
-  //   }
-
-  // }, [])
-
   const setGameWords = async () => {
     
     // make fetch request using page and level
@@ -243,24 +253,19 @@ export const AudioComponent = () => {
     
     // userWords = await getAggregatedWords(LEVELS[groupLevel], currentPage);
     if (isFromTutorial && isLogined) {
-      userWords = await getAggregatedWords(10, 4, true);
+      userWords = await getAggregatedWords(currentPage, LEVELS[groupLevel], true);
       words = userWords;
     } else if (isLogined) {
-      userWords = await getAggregatedWords(17, 5, false);
+      userWords = await getAggregatedWords(currentPage, LEVELS[groupLevel], false);
       words = userWords;
     } else {
-      words = await getWords(11, 5); 
+      words = await getWords(currentPage, LEVELS[groupLevel]); 
     }
 
     // если недостаточно слов, то дозапрашиваем слова
-    // if (words.length < 20) {
-    //   console.log('недостаточно слов');
-    //   // currentPage
-    //   // const newWords = await getAggregatedWords(17 - 1, 5)
-    //   // words = [...words, ...newWords];
-    // }
-
-    setUserWords(userWords);
+    if (words.length < 20) {
+      console.log('мало');
+    }
 
     console.log({
       words,
@@ -272,12 +277,14 @@ export const AudioComponent = () => {
       possibleAnswers : words,
     }
 
+    setUserWords(userWords);
     updateStateByKeys(newState);
   }
 
   const handleWords = async () => {
     // to reset keyboard status
     isPress = false;
+    
     let possibleAnswers: IWord[] = componentState.possibleAnswers?.slice() || [];
     
     const answer = possibleAnswers[getRandomIntInclusive(0, possibleAnswers.length - 1)];
@@ -323,35 +330,39 @@ export const AudioComponent = () => {
     return false;
   }
 
-  const skipGuess = ({target} : {target: HTMLButtonElement}) => {
+  const skipGuess = ({target}) => {
     if (componentState.isAnswered) {
       handleWords();
     } else {
-      checkGuess(target);
+      checkGuess(target as HTMLButtonElement);
     }
   }
 
-  const sendWordCurrentData = async (userId: string, wordId: string, answerStatus: boolean) => {
-    let learningWord = (serverData as IUserWord).optional.learningWord;
-    let counterCorrectAnswer = 0;
+  const sendWordCurrentData = async (userId: string, wordId: string, isCorrect: boolean) => {
+    let learningWord = false;
+    let counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer;
     let difficulty = (serverData as IUserWord).difficulty;
+    console.log(componentState.answer);
 
-    if (componentState.answer.userWord) {
-      if (answerStatus) {
-        if (difficulty === 'easy') {
-          learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 2 ? (learnWordToday += 1, true) : false;
-        } else {
-          learningWord = (serverData as IUserWord).optional.counterCorrectAnswer + 1 > 4 ? (difficulty = 'easy', learnWordToday += 1, true) : false;
-        }
-        
-        counterCorrectAnswer = (serverData as IUserWord).optional.counterCorrectAnswer + 1;
-      } else {
-        learningWord = false;
-        counterCorrectAnswer = 0;
+    if (isCorrect) {
+      if (difficulty === 'hard' && counterCorrectAnswer > 4) {
+        learningWord = true;
+        difficulty = 'easy'
+      } else if (difficulty === 'easy' && counterCorrectAnswer > 2) {
+        learningWord = true;
       }
+      
+      counterCorrectAnswer = counterCorrectAnswer + 1;
+    } else {
+      counterCorrectAnswer = 0;
+    }
+    
+    if (!(componentState.answer as IWord).userWord) {
+      console.log('new word +1')
+      learnWordToday = learnWordToday + 1;
     }
 
-    const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, answerStatus];
+    const answerOrder = [...(serverData as IUserWord).optional.answerOrder.answerArray, isCorrect];
 
     const wordData: IUserWord = {
       difficulty,
@@ -361,6 +372,8 @@ export const AudioComponent = () => {
         answerOrder: { answerArray: answerOrder }
       }
     };
+
+    console.log('data', wordData)
 
     try {
       if ((serverData as IUserWord).optional.answerOrder.answerArray.length) {
@@ -394,10 +407,17 @@ export const AudioComponent = () => {
       strick = 0;
     }
 
+    console.log('strick', strick);
+    console.log('strick-arr', allStricks)
+
+
     if (isLogined) {
       // отправлять статистику
       sendWordCurrentData(userId, (componentState.answer?.id as string), (componentState.answer?.correct as boolean));
     }
+
+    // const x = document.querySelector(styles.correct);
+    // document.querySelector(styles.correct)?.classList.remove('correct');
     
     const state = {
       isAnswered: true,
@@ -450,115 +470,75 @@ export const AudioComponent = () => {
   }
 
   const showStatistics = () => {
-    // return (
-    //   <div className={styles.overall}>
-    //     <div className={styles.incorrectAnswers}>
-    //       <span>Знаю - {correctAnswers.length}</span>
-    //       {correctAnswers.map(({wordTranslate, word, id, audio}) => {
-    //         return (
-    //           <Word 
-    //             key={id}
-    //             wordTranslate={wordTranslate} 
-    //             word={word} 
-    //             id={id}
-    //             playSound={() => tooglePlayStatistics(audio)}
-    //           />
-    //         )
-    //       })}
-    //       <hr/>
-    //       <span>Ошибок - {wrongAnswers.length}</span>
-    //       {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
-    //         return (
-    //           <Word 
-    //             key={id}
-    //             wordTranslate={wordTranslate} 
-    //             word={word} 
-    //             id={id}
-    //             playSound={() => tooglePlayStatistics(audio)}
-    //           />
-    //         )
-    //       })}
-    //     </div>
-    //       <button 
-    //         onClick={() => {
-    //           navigate(0);
-    //         }}
-    //       >
-    //         Try again
-    //       </button>
-    //   </div>
-    // )
-
     return (
       <div className={stylesModal.modal}>
-      <div className={stylesModal.content}>
-        <h2 className={stylesModal.title}>Результаты игры</h2>
-
-        <div className={stylesModal.result_wrap}>
-          <div className={stylesModal.wrong_wrap}>
-            <div className={stylesModal.section_header}>
-              <h3 className={stylesModal.subtitle}>Ошибок</h3>
-              <span className={stylesModal.wrong_counter}>
-                {wrongAnswers.length ? wrongAnswers.length : 0}
-              </span>
+        <div className={stylesModal.content}>
+          <h2 className={stylesModal.title}>Результаты игры</h2>
+          <div className={stylesModal.result_wrap}>
+            <div className={stylesModal.wrong_wrap}>
+              <div className={stylesModal.section_header}>
+                <h3 className={stylesModal.subtitle}>Ошибок</h3>
+                <span className={stylesModal.wrong_counter}>
+                  {wrongAnswers.length ? wrongAnswers.length : 0}
+                </span>
+              </div>
+              <ul className={stylesModal.section_content}>
+                {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
+                  return (
+                    <li key={id} className={stylesModal.section_item}>
+                      <img
+                        className={stylesModal.speaker}
+                        src={audioImg}
+                        alt="Audio Img"
+                        onClick={() => tooglePlayStatistics(audio)}
+                      />
+                      <span className={stylesModal.word}>{word}</span>
+                      <span className={stylesModal.translation}>- {wordTranslate}</span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-            <ul className={stylesModal.section_content}>
-              {wrongAnswers.map(({wordTranslate, word, id, audio}) => {
-                return (
-                  <li key={id} className={stylesModal.section_item}>
-                    <img
-                      className={stylesModal.speaker}
-                      src={audioImg}
-                      alt="динамик"
-                      onClick={() => tooglePlayStatistics(audio)}
-                    />
-                    <span className={stylesModal.word}>{word}</span>
-                    <span className={stylesModal.translation}>- {wordTranslate}</span>
-                  </li>
-                );
-              })}
-            </ul>
-          </div>
-          <div className={stylesModal.correct_wrap}>
-            <div className={stylesModal.section_header}>
-              <h3 className={stylesModal.subtitle}>Знаю</h3>
-              <span className={stylesModal.correct_counter}>
-                {correctAnswers.length ? correctAnswers.length : 0}
-              </span>
+            <div className={stylesModal.correct_wrap}>
+              <div className={stylesModal.section_header}>
+                <h3 className={stylesModal.subtitle}>Знаю</h3>
+                <span className={stylesModal.correct_counter}>
+                  {correctAnswers.length ? correctAnswers.length : 0}
+                </span>
+              </div>
+              <ul className={stylesModal.section_content}>
+                {correctAnswers.map(({wordTranslate, word, id, audio}) => {
+                  return (
+                    <li key={id} className={stylesModal.section_item}>
+                      <img
+                        className={stylesModal.speaker}
+                        src={audioImg}
+                        alt="Audio Img"
+                        onClick={() => tooglePlayStatistics(audio)}
+                      />
+                      <span className={stylesModal.word}>{word}</span>
+                      <span className={stylesModal.translation}>- {wordTranslate}</span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
-            <ul className={stylesModal.section_content}>
-              {correctAnswers.map(({wordTranslate, word, id, audio}) => {
-                return (
-                  <li key={id} className={stylesModal.section_item}>
-                    <img
-                      className={stylesModal.speaker}
-                      src={audioImg}
-                      alt="динамик"
-                      onClick={() => tooglePlayStatistics(audio)}
-                    />
-                    <span className={stylesModal.word}>{word}</span>
-                    <span className={stylesModal.translation}>- {wordTranslate}</span>
-                  </li>
-                );
-              })}
-            </ul>
           </div>
-        </div>
-        <div className={stylesModal.links_wrap}>
-          <Link 
-            // onClick={} 
-            to={ERoutes.games} 
-            className={stylesModal.link}>
-            Вернуться к выбору игры
-          </Link>
-          <Link 
-              onClick={() => navigate(0)}
-              className={stylesModal.link} to={''}>
-              Продолжить играть
-          </Link>
+          <div className={stylesModal.links_wrap}>
+            <Link 
+              // onClick={} 
+              to={ERoutes.games} 
+              className={stylesModal.link}>
+              Вернуться к выбору игры
+            </Link>
+            <Link 
+                onClick={() => navigate(0)}
+                className={stylesModal.link} to={''}>
+                Продолжить играть
+            </Link>
+          </div>
         </div>
       </div>
-    </div>
     )
   }
 
