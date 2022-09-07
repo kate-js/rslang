@@ -333,6 +333,8 @@ export const AudioComponent = () => {
     let difficulty = (serverData as IUserWord).difficulty;
 
     if (isCorrect) {
+      counterCorrectAnswer = counterCorrectAnswer + 1;
+
       if (difficulty === 'hard' && counterCorrectAnswer > 4) {
         learningWord = true;
         difficulty = 'easy'
@@ -340,7 +342,6 @@ export const AudioComponent = () => {
         learningWord = true;
       }
       
-      counterCorrectAnswer = counterCorrectAnswer + 1;
     } else {
       counterCorrectAnswer = 0;
     }
@@ -360,10 +361,14 @@ export const AudioComponent = () => {
       }
     };
 
+    // console.log(wordData);
+
     try {
       if ((serverData as IUserWord).optional.answerOrder.answerArray.length) {
+        // console.log('upd');
         apiUsersWords.updateUserWordById(userId, wordId, wordData);
       } else {
+        // console.log('create');
         apiUsersWords.createUserWordById(userId, wordId, wordData);
       }
     } catch (err) {
