@@ -13,22 +13,22 @@ export const Navbar = () => {
         </li>
         <li>
           <Link to={ERoutes.about} className={styles.link}>
-            About us
+            О команде
           </Link>
         </li>
         <li>
           <Link to={ERoutes.games} className={styles.link}>
-            Games
+            Игры
           </Link>
         </li>
         <li>
           <Link to={ERoutes.statistics} className={styles.link}>
-            Statistics
+            Статистика
           </Link>
         </li>
         <li>
           <Link to={ERoutes.tutorial} className={styles.link}>
-            Tutorial
+            Учебник
           </Link>
         </li>
       </ul>

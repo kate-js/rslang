@@ -57,7 +57,16 @@ export const Statistics = () => {
             </li>
             <li className={styles.statictics_item}>
               <p>Процент правильных ответов</p>
-              <div className={styles.statictics_title}>{audio?.percentRigth.right}</div>
+              <div className={styles.statictics_title}>
+                <div className={styles.statictics_title}>
+                  {Math.round(
+                    ((audio?.percentRigth.right as number) /
+                      ((audio?.percentRigth.right as number) +
+                        (audio?.percentRigth.wrong as number))) *
+                      100
+                  ) | 0}
+                </div>
+              </div>
             </li>
             <li className={styles.statictics_item}>
               <p>Самая длинная серия правильных ответов</p>
@@ -74,7 +83,14 @@ export const Statistics = () => {
             </li>
             <li className={styles.statictics_item}>
               <p>Процент правильных ответов</p>
-              <div className={styles.statictics_title}>{sprint?.percentRigth.right}</div>
+              <div className={styles.statictics_title}>
+                {Math.round(
+                  ((sprint?.percentRigth.right as number) /
+                    ((sprint?.percentRigth.right as number) +
+                      (sprint?.percentRigth.wrong as number))) *
+                    100
+                ) | 0}
+              </div>
             </li>
             <li className={styles.statictics_item}>
               <p>Самая длинная серия правильных ответов</p>
@@ -93,7 +109,18 @@ export const Statistics = () => {
               <p>Процент правильных ответов</p>
               <div className={styles.statictics_title}>
                 {(Math.round(
-                  ((sprint?.percentRigth.right as number) + (audio?.percentRigth.right as number)) /
+                  (Math.round(
+                    ((audio?.percentRigth.right as number) /
+                      ((audio?.percentRigth.right as number) +
+                        (audio?.percentRigth.wrong as number))) *
+                      100
+                  ) +
+                    Math.round(
+                      ((sprint?.percentRigth.right as number) /
+                        ((sprint?.percentRigth.right as number) +
+                          (sprint?.percentRigth.wrong as number))) *
+                        100
+                    )) /
                     2
                 ) as number) | 0}
               </div>
