@@ -12,12 +12,14 @@ import { TState } from '../../store/store';
 import { GameLinks } from '../../components/GameLinks/GameLinks';
 import { Levels } from '../Tutorial/Levels/Levels';
 import { setIsFromTutorial, setLevel, setPage } from '../../store/levelChoseSlice';
+import { apiAggregatedWords } from '../../api/apiUsersAggregatedWords';
+import { WordWithDataResponse } from '../../api/apiConstants';
 
 export const GroupLevel = () => {
   const dispatch = useDispatch();
   const [modal, setModal] = useState(false);
   const { level } = useParams<{ level: string }>();
-  const [listWords, setListWords] = useState<WordResponse[]>([]);
+  const [listWords, setListWords] = useState<WordResponse[] | WordResponse[]>([]);
   const [numberPage, setNumberPage] = useState<number>(1);
   const [words, setWords] = useState<WordResponse>();
   const [learnPage, setLearnPage] = useState<boolean>(false);
@@ -73,9 +75,27 @@ export const GroupLevel = () => {
     const group = LEVELS[level as keyof typeof LEVELS];
 
     try {
-      const response = await api.fetchWords({ userId, token, group, numberPage });
-      await setListWords(response);
-      checkLearning(response);
+      const query = {
+        group: ``,
+        page: ``,
+        wordsPerPage: 20,
+        filter: `{"$and": [{"group": ${group}}, {"page": ${numberPage - 1}}]}`
+      };
+  
+      const words = (await apiAggregatedWords.getAllAggregatedWords(
+        userId,
+        query
+      )) as unknown;
+
+      const response = words as WordWithDataResponse[];
+
+      console.log(response[0].paginatedResults)
+      // const response = await api.fetchWords({ userId, token, group, numberPage });
+      setListWords(response[0].paginatedResults);
+      // setListWords(response);
+      // checkLearning(response);
+      checkLearning(response[0].paginatedResults);
+
     } catch (error) {
       console.error(error);
     }
