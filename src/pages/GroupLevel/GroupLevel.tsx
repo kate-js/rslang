@@ -160,7 +160,14 @@ export const GroupLevel = () => {
           <div className={styles.title}>
             <div className={styles.title_block}>
               <img src={Book} alt="book" className={styles.image} />
-              <h3>Топ слов уроверь {level}</h3>
+              <h3
+                style={{
+                  color: `#${Math.floor(Math.random() * 8)}8${Math.floor(
+                    Math.random() * 8
+                  )}00${Math.floor(Math.random() * 8)}`
+                }}>
+                Топ слов уроверь {level}
+              </h3>
             </div>
             <select className={styles.select} onChange={getPage} value={numberPage}>
               {UNITS.map((number: number) => (
