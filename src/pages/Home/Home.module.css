@@ -45,13 +45,15 @@
   background-color: white;
   color: black;
   width: 25%;
-  height: 160px;
+  height: 200px;
   display: flex;
   flex-direction: column;
   padding: 20px;
   border: 2px solid gray;
   align-items: center;
+  font-family: 'Roboto', sans-serif;
 }
+
 
 @media screen and (max-width: 1024px) {
   .main {
