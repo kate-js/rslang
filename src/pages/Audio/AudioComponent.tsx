@@ -118,26 +118,26 @@ export const AudioComponent = () => {
     setGameWords();
   }, [isLogined]);
 
-  useEffect(() => {
-    const addData = async () => {
-      if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
-        let newPage = currentPage;
-        newPage -= 1;
-        const newWords = await getAggregatedWords(newPage, LEVELS[groupLevel], isFromTutorial ? true : false)
+  // useEffect(() => {
+  //   const addData = async () => {
+  //     if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
+  //       let newPage = currentPage;
+  //       newPage -= 1;
+  //       const newWords = await getAggregatedWords(newPage, LEVELS[groupLevel], isFromTutorial ? true : false)
 
-        const combinedArray = [...componentState.appState.words, ...newWords];
+  //       const combinedArray = [...componentState.appState.words, ...newWords];
 
-        const newState = {
-          appState:  { isLoaded: true, words: combinedArray },
-          possibleAnswers : combinedArray,
-        }
-        // setIsAddLoaded(true);
-        updateStateByKeys(newState);
-      }
-    }
+  //       const newState = {
+  //         appState:  { isLoaded: true, words: combinedArray },
+  //         possibleAnswers : combinedArray,
+  //       }
+  //       // setIsAddLoaded(true);
+  //       updateStateByKeys(newState);
+  //     }
+  //   }
 
-    addData();
-  })
+  //   addData();
+  // }, [componentState.appState?.words])
 
   useEffect(() => {
     if (!componentState.isWelcomeScreen) {
@@ -166,9 +166,12 @@ export const AudioComponent = () => {
   }, [isModalOpened])
 
   useEffect(() => {
-    if (componentState.answerCount === 20) {
-      setIsModalOpened(true);
+    if (componentState.appState?.isLoaded) {
+      if (componentState.answerCount === componentState.appState?.words.length) {
+        setIsModalOpened(true);
+      }
     }
+    
   })
 
   const handelGetStatistics = async (userId: string) => {
