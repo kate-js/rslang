@@ -232,7 +232,7 @@ class Api implements IApi {
     };
 
     if (userId) {
-      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?group=${group}&page=${numberPage-1}&wordsPerPage=20`, fetchConfig);
+      const res = await fetch(`${this.baseUrl}/users/${userId}/aggregatedWords?group=${''}&page=${''}&wordsPerPage=20&filter={"$and": [{"group": ${group}}, {"page": ${numberPage - 1}}]}`, fetchConfig);
       if (res.status !== 200) {
         throw new Error(`There was an error with status code ${res.status}`)
       }

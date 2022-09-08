@@ -75,26 +75,11 @@ export const GroupLevel = () => {
     const group = LEVELS[level as keyof typeof LEVELS];
 
     try {
-      const query = {
-        group: ``,
-        page: ``,
-        wordsPerPage: 20,
-        filter: `{"$and": [{"group": ${group}}, {"page": ${numberPage - 1}}]}`
-      };
-  
-      const words = (await apiAggregatedWords.getAllAggregatedWords(
-        userId,
-        query
-      )) as unknown;
+      const response = await api.fetchWords({ userId, token, group, numberPage });
+      // console.log(response)
 
-      const response = words as WordWithDataResponse[];
-
-      console.log(response[0].paginatedResults)
-      // const response = await api.fetchWords({ userId, token, group, numberPage });
-      setListWords(response[0].paginatedResults);
-      // setListWords(response);
-      // checkLearning(response);
-      checkLearning(response[0].paginatedResults);
+      setListWords(response);
+      checkLearning(response);
 
     } catch (error) {
       console.error(error);
