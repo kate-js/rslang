@@ -1,5 +1,5 @@
 import styles from './Modal.module.css';
-import ReactAudioPlayer from 'react-audio-player';
+import AudioPlayer from 'react-audio-player';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
 
@@ -8,12 +8,7 @@ import { useSelector } from 'react-redux';
 import { TState } from '../../../store/store';
 import { IModal } from '../../../utils/constants';
 import { api, EApiParametrs } from '../../../utils/Api';
-
-function fixComponent<T>(component: T): T {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return (component as any).default ?? component;
-}
-export const ReactAudioPlayerComponent = fixComponent(ReactAudioPlayer);
+import AudioImage from '../../Audio/assets/audio.png';
 
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
@@ -21,6 +16,7 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const isLodined = useSelector((state: TState) => state.auth.isLogined);
   const [hard, setHard] = useState<boolean>();
   const [learn, setLearn] = useState<boolean>();
+  const [audio, setAudio] = useState<boolean>();
 
   useEffect(() => {
     if (word) {
@@ -93,6 +89,15 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
     setLearn(false);
   }
 
+  const music = [
+    `${EApiParametrs.baseUrl}/${word?.audio}`,
+    `${EApiParametrs.baseUrl}/${word?.audioExample}`,
+    `${EApiParametrs.baseUrl}/${word?.audioMeaning}`
+  ];
+
+  const [currentSong, setCurrentSong] = useState(0);
+  const song = music[currentSong];
+
   return (
     <div className={rootClasses.join(' ')} onClick={() => setModal(false)}>
       <div className={styles.ModalContent} onClick={(e) => e.stopPropagation()}>
@@ -101,7 +106,18 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
             <h1>{word?.word}</h1>
             <p>{word?.transcription}</p>
             <h3>{word?.wordTranslate}</h3>
-            {hard ? <img src={Hard} alt="mark-hard-word" className={styles.hard_word} /> : null}
+            <div>
+              {hard ? <img src={Hard} alt="mark-hard-word" className={styles.hard_word} /> : null}
+              <img src={AudioImage} onClick={() => setAudio(!audio)} className={styles.hard_word} />
+              {audio ? (
+                <AudioPlayer
+                  autoPlay
+                  src={song}
+                  onPlay={() => console.log('playing')}
+                  onEnded={() => setCurrentSong((i) => i + 1)}
+                />
+              ) : null}
+            </div>
           </div>
           {word?.image ? <img src={`${EApiParametrs.baseUrl}/${word?.image}`} alt="" /> : null}
         </div>
@@ -110,22 +126,10 @@ export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
             <div className={styles.modal_example}>
               <p dangerouslySetInnerHTML={{ __html: word?.textExample as string }} />
               <p>{word?.textExampleTranslate}</p>
-              {word?.audioExample ? (
-                <ReactAudioPlayerComponent
-                  src={`${EApiParametrs.baseUrl}/${word?.audioExample}`}
-                  controls
-                />
-              ) : null}
             </div>
             <div className={styles.modal_example}>
               <p dangerouslySetInnerHTML={{ __html: word?.textMeaning as string }} />
               <p>{word?.textMeaningTranslate}</p>
-              {word?.audioMeaning ? (
-                <ReactAudioPlayerComponent
-                  src={`${EApiParametrs.baseUrl}/${word?.audioMeaning}`}
-                  controls
-                />
-              ) : null}
             </div>
           </div>
         </div>
