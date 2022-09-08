@@ -138,7 +138,8 @@ export const Sprint = () => {
 
   useEffect(() => {
     if (isFromTutorial) {
-      currentPage = fromTutorialNumberPage;
+      console.log('isFromTutorial', isFromTutorial);
+      currentPage = fromTutorialNumberPage - 1;
     } else {
       currentPage = getRandomInteger(0, 29);
     }
@@ -147,7 +148,7 @@ export const Sprint = () => {
 
   useEffect(() => {
     if (isFromTutorial) {
-      currentPage = fromTutorialNumberPage;
+      currentPage = fromTutorialNumberPage - 1;
     } else {
       currentPage = getRandomInteger(0, 29);
     }
