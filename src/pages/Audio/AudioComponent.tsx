@@ -97,7 +97,7 @@ export const AudioComponent = () => {
   });
 
   const isFromTutorial = useSelector((state: TState) => state.level.isFromTutorial);
-  const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage);
+  const tutorialNumberPage = useSelector((state: TState) => state.level.numberPage) - 1;
   const groupLevel = useSelector((state: TState) => state.level.level) as keyof typeof LEVELS;
 
   const isLogined = useSelector((state: TState) => state.auth.isLogined);
@@ -121,7 +121,8 @@ export const AudioComponent = () => {
   useEffect(() => {
     const addData = async () => {
       if (componentState.appState?.isLoaded && componentState.appState?.words.length < 20) {
-        const newPage = currentPage - 1;
+        let newPage = currentPage;
+        newPage -= 1;
         const newWords = await getAggregatedWords(newPage, LEVELS[groupLevel], isFromTutorial ? true : false)
 
         const combinedArray = [...componentState.appState.words, ...newWords];
