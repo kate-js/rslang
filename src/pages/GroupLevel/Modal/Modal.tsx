@@ -1,5 +1,5 @@
 import styles from './Modal.module.css';
-import AudioPlayer from 'react-audio-player';
+// import AudioPlayer from 'react-audio-player';
 import buttonStyles from '../../../components/UI/Button/Button.module.css';
 import Hard from '../assets/hard-word.png';
 
@@ -9,6 +9,13 @@ import { TState } from '../../../store/store';
 import { IModal } from '../../../utils/constants';
 import { api, EApiParametrs } from '../../../utils/Api';
 import AudioImage from '../../Audio/assets/audio.png';
+import ReactAudioPlayer from 'react-audio-player';
+
+function fixComponent<T>(component: T): T {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return (component as any).default ?? component;
+}
+export const AudioPlayer = fixComponent(ReactAudioPlayer);
 
 export const Modal = ({ modal, setModal, word, changeModal }: IModal) => {
   const token = useSelector((state: TState) => state.auth.currentUser.token);
