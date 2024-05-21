@@ -7,3 +7,6 @@ https://github.com/rolling-scopes-school/tasks/blob/master/tasks/stage-2/rs-lang
 
 ### Link to Pull Request:
 https://github.com/ivnpotapov/rslang/pull/27
+
+### Deploy:
+https://rslang-ivnpotapov-front.netlify.app/
